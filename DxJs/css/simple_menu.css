@@ -1,0 +1,233 @@
+@charset "utf-8";
+/* CSS Document */
+body {
+	padding:0;
+	margin:0;
+	font-size:12px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	line-height:22px;
+	background:#FFF;
+}
+img {
+	border:none;
+	padding:0;
+	margin:0;
+}
+ul li {
+	list-style:none;
+}
+ul, li {
+	padding:0;
+	margin:0;
+}
+dl, dt, dd {
+	padding:0;
+	margin:0;
+}
+form, br, p, h1, h2, h3, h4, h5, h6, input, lable {
+	padding:0;
+	margin:0;
+}
+a {
+	text-decoration:none;
+	color:#333333
+}
+a:hover {
+	color:#FF6600;
+}
+
+
+
+.wrapper-250 {
+	width:250px;
+	margin:0 auto;
+}
+
+.accordion li {
+	list-style: none;
+	border-bottom:1px solid #FFFFFF;
+}
+
+/*风格1
+.accordion, .accordion ul, .accordion li, .accordion a, .accordion span {
+	margin: 0;
+	padding: 0;
+	border: none;
+	outline: none;
+}
+.accordion li a {
+	display: block;
+	position: relative;
+	min-width: 110px;
+	padding: 0 10px 0 40px;
+	height: 32px;
+	color: #fdfdfd;
+	font:14px/32px Arial, sans-serif;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px rgba(0, 0, 0, .35);
+	background: #6c6e74;
+	background: -moz-linear-gradient(top, #6c6e74 0%, #4b4d51 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #6c6e74), color-stop(100%, #4b4d51));
+	background: -webkit-linear-gradient(top, #6c6e74 0%, #4b4d51 100%);
+	background: -o-linear-gradient(top, #6c6e74 0%, #4b4d51 100%);
+	background: -ms-linear-gradient(top, #6c6e74 0%, #4b4d51 100%);
+	background: linear-gradient(top, #6c6e74 0%, #4b4d51 100%);
+	-webkit-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, .1), 0px 1px 0px 0px rgba(0, 0, 0, .1);
+	-moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, .1), 0px 1px 0px 0px rgba(0, 0, 0, .1);
+	box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, .1), 0px 1px 0px 0px rgba(0, 0, 0, .1);
+}
+*/
+
+/*风格2 黑
+.accordion, .accordion ul, .accordion li, .accordion a, .accordion span {
+	margin: 0;
+	padding: 0;
+	outline: none;
+}
+.accordion li a {
+	display: block;
+	position: relative;
+	min-width: 110px;
+	padding: 0 10px 0 40px;
+	height: 32px;
+	color: #fdfdfd;
+	font:14px/32px Arial, sans-serif;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px rgba(0, 0, 0, .35);
+	background:url(../simple_menu_img/lan/hei/01.png) no-repeat center center;
+	-webkit-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, .1), 0px 1px 0px 0px rgba(0, 0, 0, .1);
+	-moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, .1), 0px 1px 0px 0px rgba(0, 0, 0, .1);
+	box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, .1), 0px 1px 0px 0px rgba(0, 0, 0, .1);
+}
+*/
+
+/*风格3 蓝*/
+.accordion, .accordion ul, .accordion li, .accordion a, .accordion span {
+	margin: 0;
+	padding: 0;
+	outline: none;
+}
+.accordion{border-top:#CCCCCC;}
+.accordion li {
+	list-style: none;
+	border-bottom:1px solid #FFFFFF;
+}
+.accordion li a {
+	display: block;
+	position: relative;
+	min-width: 110px;
+	padding: 0 10px 0 40px;
+	height: 32px;
+	color: #2966a1;
+	font:14px/32px Arial, sans-serif;
+	text-decoration: none;
+	text-shadow: 0px 1px 0px rgba(0, 0, 0, .10);
+	background:url(../simple_menu_img/lan/01.png) no-repeat center center;
+	-webkit-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, .1), 0px 1px 0px 0px rgba(0, 0, 0, .1);
+	-moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, .1), 0px 1px 0px 0px rgba(0, 0, 0, .1);
+	box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, .1), 0px 1px 0px 0px rgba(0, 0, 0, .1);
+}
+
+
+.accordion li a:hover{ color: #b2d9f6;
+	height:32px;
+	line-height:32px;
+	text-shadow: 1px 1px 1px rgba(255, 255, 255, .2);
+	background: url(../simple_menu_img/lan/active.png) repeat-x;
+}
+	
+.accordion li:target a, .accordion li a.active {
+	color: #b2d9f6;
+	height:32px;
+	line-height:32px;
+	text-shadow: 1px 1px 1px rgba(255, 255, 255, .2);
+	background: url(../simple_menu_img/lan/active.png) repeat-x;
+	/*background: #a5cd4e;
+	background: -moz-linear-gradient(top, #a5cd4e 0%, #6b8f1a 100%);
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #a5cd4e), color-stop(100%, #6b8f1a));
+	background: -webkit-linear-gradient(top, #a5cd4e 0%, #6b8f1a 100%);
+	background: -o-linear-gradient(top, #a5cd4e 0%, #6b8f1a 100%);
+	background: -ms-linear-gradient(top, #a5cd4e 0%, #6b8f1a 100%);
+	background: linear-gradient(top, #a5cd4e 0%, #6b8f1a 100%);*/
+}
+.accordion li a span {
+	display: block;
+	position: absolute;
+	top: 7px;
+	right: 0;
+	padding: 0 10px;
+	margin-right: 10px;
+	width:15px;
+	font: normal bold 12px/18px Arial, sans-serif;
+	background:url(../simple_menu_img/lan/next.png) no-repeat right center;
+	/*background: #404247;
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	-webkit-box-shadow: inset 1px 1px 1px rgba(0, 0, 0, .2), 1px 1px 1px rgba(255, 255, 255, .1);
+	-moz-box-shadow: inset 1px 1px 1px rgba(0, 0, 0, .2), 1px 1px 1px rgba(255, 255, 255, .1);
+	box-shadow: inset 1px 1px 1px rgba(0, 0, 0, .2), 1px 1px 1px rgba(255, 255, 255, .1);*/
+}
+.accordion li:hover a span, .accordion li:target a span, .accordion li a.active span {
+	width:15px;
+	color: #fdfdfd;
+	text-shadow: 0px 1px 0px rgba(0, 0, 0, .35);
+	background:url(../simple_menu_img/lan/0next.png) no-repeat right center;
+}
+/* Images */
+
+.accordion li a:before {
+	position: absolute;
+	top: 0;
+	left: 0;
+	content: '';
+	width: 24px;
+	height: 24px;
+	margin: 4px 8px;
+	/*background-repeat: no-repeat;
+	background-image: url(../simple_menu_img/lan/icons.png);
+	background-position: 0px 0px;*/
+}
+
+.files a:before {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat 0 0;
+}
+.files:hover a:before,.files:target a:before,.files a.active:before {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat 0 -24px;
+}
+.mail a:before {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat -24px 0;
+}
+.mail:hover a:before,.mail:target a:before,.mail a.active:before {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat -24px -24px;
+}
+.mail0 a:before {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat -96px 0;
+}
+.mail0:hover a:before,.mail0:target a:before,.mail0 a.active:before {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat -96px -24px;
+}
+.cloud0 a:before {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat -48px 0px;
+}
+.cloud0:hover a:before,.cloud0:target a:before,.cloud0 a.active:before {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat -48px -24px;
+}
+.cloud a:before {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat -120px 0px;
+}
+.cloud:hover a:before,.cloud:target a:before,.cloud a.active:before {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat -120px -24px;
+}
+.sign a:before{
+	background:url(../simple_menu_img/lan/icons.png) no-repeat -168px 0px;
+}
+.sign:hover a:before,.sign:target a:before,.sign a.active:before  {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat -168px -24px;
+}
+.sign0 a:before {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat -144px 0px;
+}
+.sign0:hover a:before,.sign0:target a:before,.sign0 a.active:before {
+	background:url(../simple_menu_img/lan/icons.png) no-repeat -144px -24px;
+}

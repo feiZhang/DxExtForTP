@@ -1,0 +1,99 @@
+@charset "utf-8";
+/* CSS Document */
+/*==========================================================
+**********全局css定义
+============================================================*/
+html,body {
+	padding:0;
+	margin:0;
+	font-size:12px;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	line-height:20px;
+	color:#333;
+}
+img {
+	border:none;
+	padding:0;
+	margin:0;
+}
+ul li {
+	list-style-type: none;
+}
+ul, li {
+	padding:0;
+	margin:0;
+}
+dl, dt, dd {
+	padding:0;
+	margin:0;
+}
+form, br, p, h1, h2, h3, h4, h5, h6,td,tr,input,textarea,table,lable {
+	padding:0;
+	margin:0;
+}
+a {
+	text-decoration:none;
+	color:#336699;
+}
+a:hover {
+	color:#FF6600;
+}
+
+/* 修改数据的页面样式 */
+table.editData{
+	border-collapse: collapse;
+}
+table.editData td.groupTitle {
+	background:
+		url("../images/edit_td_title_bg.gif")
+		repeat-x scroll 0 0 transparent;
+	color: #375EA3;
+	font-weight: bold;
+	padding-left: 20px;
+	line-height: 26px;
+	font-size:16px;
+}
+table.editData td {
+	border: 1px solid #C5DFF9;
+	border-collapse: collapse;
+	line-height: 25px;
+}
+table.editData tr.shen {
+	background-color: #E6EEFB;
+}
+table.editData tr.qian {
+	background-color: #F7FAFF;
+}
+
+.input-focus{ background: none repeat scroll 0 0 #FEF3AB;  border:1px solid #ccc; border-color:#5180d0 #96c5f4 #96c5f4  #5180d0; padding-left:3px; font-size:12px; font-family:Verdana, Geneva, sans-serif; color:#333;}
+.data-input-focus{ background: none repeat scroll 0 0 #FEF3AB;  border:1px solid #ccc; border-color:#5180d0 #96c5f4 #96c5f4  #5180d0; padding-left:3px; font-size:12px; font-family:Verdana, Geneva, sans-serif; color:#333;}
+input.z_button{width:71px; height:26px; cursor: pointer; line-height:26px; color:#FFF; border:none; text-align:center; font-size:12px; background:url(../images/button-bg.png) no-repeat;}
+input.z_button:hover{width:71px; height:26px; cursor: pointer; line-height:26px; color:#FFF; border:none; text-align:center; font-size:12px; background:url(../images/button-bg-hover.png) no-repeat;}
+span#selectCanton select{width:60px;}
+
+/* artDialog的滚动条样式 */
+td.d-main div.d-content {
+    max-height: 500px;
+    padding: 0px 0px;
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+/* 图片预览样式 **/
+#imgPreviewWithStyles {
+    background: #222;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    padding: 15px;
+    z-index: 999;
+    border: none;
+}
+#imgPreviewWithStyles span {
+    color: white;
+    text-align: center;
+    display: block;
+    padding: 10px 0 3px 0;
+}
+.loading{
+	
+}

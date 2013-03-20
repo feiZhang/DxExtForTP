@@ -1,0 +1,20 @@
+<!--<eq name="readOnly" value="false">数据readonly模式-->
+<label class="radio inline">
+{$set[$value]|escapeHtmlValue}
+<input type="hidden" name="{$name}" value="{$value}" class="{$class} {$validclass} {$custom_class}">
+</label>
+<!--<else/>-->
+<!--<volist name="set" id="vo" key="k">-->
+<!--<eq name="key" value="$value">-->
+<label class="radio inline">
+<input type="radio" name="{$name}" value="{$key}" checked class="{$class} {$validclass} {$custom_class}">
+{$vo|escapeHtmlValue}
+</label>
+<!--<else/>-->
+<label class="radio inline">
+<input type="radio" name="{$name}" value="{$key}" class="{$class} {$validclass} {$custom_class}">
+{$vo|escapeHtmlValue}
+</label>
+<!--</eq>-->
+<!--</volist>-->
+<!--</eq>-->

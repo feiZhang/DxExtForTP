@@ -1,0 +1,109 @@
+<script type="text/javascript" src="__ROOT__/min/f=
+__PUBLIC__/project/formvalidator/formValidator.js,
+__PUBLIC__/project/formvalidator/formValidatorRegex.js
+"></script>
+    
+	<!-- sigma_grid 控件 -->
+	<link rel="stylesheet" type="text/css" media="all" href="__PUBLIC__/public/sigma_grid/calendar/calendar-blue.css"  />
+	<script type="text/javascript" src="__PUBLIC__/public/sigma_grid/calendar/calendar.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/public/sigma_grid/calendar/calendar-cn-utf8.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/public/sigma_grid/calendar/calendar-setup.js"></script>
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/public/sigma_grid/gt_grid.css" />
+	<link rel="stylesheet" type="text/css" href="__PUBLIC__/public/sigma_grid/skin/vista/skinstyle.css" />
+    <eq name="Think.config.APP_DEBUG" value="true">
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/src/gt_base.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/src/gt_ajax.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/src/gt_const.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/src/gt_column.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/src/gt_chart.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/src/gt_dataset.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/src/gt_tool.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/src/gt_editor.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/src/gt_template.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/src/gt_validator.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/src/gt_dialog.js"></script>
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/src/gt_grid.js"></script>
+    <else/>
+        <script type="text/javascript" src="__PUBLIC__/public/sigma_grid/gt_grid_all.js"></script>
+    </eq>
+	<script type="text/javascript" src="__PUBLIC__/public/sigma_grid/gt_msg_cn.js"></script>
+	<script type="text/javascript" src="__PUBLIC__/basic/js/sigma_custom/fix.toolbar.js"></script>
+
+<script type="text/javascript">
+	var SITE_ROOT = '__ROOT__';
+	var URL_PATH='__URL__';
+	var APP_PATH='__APP__';
+	var PUBLIC_PATH='__PUBLIC__';
+	/*sigma所需设置*/
+	var __SIGMA__WIDTH__ = '100%';
+	var __SIGMA__HEIGHT__ = '508';
+	var __ToolBarPosition__ = "bottom";
+	var __ToolBarContent__ = "nav | goto| pagesize |  print | dx_export | state";
+	var __ToolBarContent_NoPage__ = "/print , filter  ";
+	var __ExportURL__ = '/SigmaData/export/export/true';
+	var __showGridMenu__ = false;
+	var __pageSize__ = 20;
+	var __pageSizeList__ = [ 5, 10, 15, 20 ];
+	var __remotePaging__ = parseInt("{$page_remote}") == 0 ? false : true;
+	/*公用弹出函数*/
+	//弹出框选择地区，folder=1表示可选择父区域，=0表示只能选择叶子节点
+	var pop_select_canton = function(folder) {
+		var url = '__APP__/Canton/selectCanton/folder/' + folder;
+		/*页面调用方法：$.pop(callback,href,title,width,height)
+		 * callback为一个回调函数，当弹出框中的iframe内嵌页面处理完后，可调用所在iframe框的一个绑定函数，此绑定函数负责关闭弹出框并主动调用回调函数
+		 * 回调函数是弹出框的触发页面定义的函数
+		 * */
+		var href = url;
+		var title = '选择行政区域';
+		$.pop_win(popsel_dis_canton, href, title);
+	}
+
+	/**
+	 * 弹出选择区域后的处理方式 ，其中可以通过自定义 dis_canton_extend函数来处理相关信息
+	 * @param caton_info 区域信息串
+	 * @param canton_id 区域ID
+	 */
+	var popsel_dis_canton = function(data) {
+		var canton_id = data['canton_id'];
+		var canton_info = data['canton_info'];
+		try {
+			if (typeof (eval(dis_canton_extend)) == "function") {
+				dis_canton_extend(canton_info, canton_id);
+			}
+
+		} catch (e) {
+			$('#canton_id').val(canton_id);
+			$('#canton_dis').val(canton_info);
+
+		}
+	}
+</script>
+
+<script>
+    var appUrl = '__APP__/';     //请求的appurl
+    var baseUrl = '__URL__/';     //请求的url
+    
+    var defaultImg = "{$SKIN_ROOT}images/defaultPhoto_";  //默认老人头像
+    var defaultImgSuffix = ".jpg";//默认老人图像文件格式后缀
+    
+    var defaultBedImg = "{$SKIN_ROOT}images/chuang_";  //默认床位图标
+    var defaultBedImgSuffix = ".png";//默认床位图标格式后缀
+    
+    var defaultBuidingImg = "{$SKIN_ROOT}images/lou_";  //默认楼宇图片
+    var defaultBuidingImgSuffix = ".png";//默认楼宇图片格式后缀
+    var showOlderInfoUrl = "__APP__/OlderInfo/queryUserInfo";
+    
+    /* showAdd 变量在 orgWorker模块使用，用来控制是否在员工照片绑定click事件 */
+    <neq name="showAdd" value="1">
+        var showAdd = 0;
+    <else/>
+        var showAdd = 1;
+    </neq>
+    
+    <present name="flag">
+    var bindFlag = 0; /* 表示不再空床位上绑定click事件 */
+    <else/>
+    var bindFlag = 1;/* 表示在空床位上绑定click事件 */
+    </present>
+    
+</script>

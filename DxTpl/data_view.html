@@ -1,0 +1,28 @@
+<script type="text/javascript">
+<!--
+//-->
+</script>
+<form id="itemAddForm">
+    <table>
+		<?php
+		foreach($listFields as $field){
+            printf("<tr style='display:%s'>",$field["hide"]?"none":"");
+            printf("<td align='right'>%s:</td>",$field["title"]);
+            switch($field["type"]){
+            case "enum":
+                $fieldInput = sprintf("<select name='%s'>",$field["name"]);
+                foreach($enum as $key=>$val){
+                    $fieldInput .= sprintf("<option value='%s'>%s</option>",$key,$val);
+                }
+                $fieldInput .= "</select>";
+                break;
+            default:
+                $fieldInput = sprintf("<input name='%s' value='' />",$field["name"]);
+                break;
+            }
+            printf("<td>%s</td>",$fieldInput);
+            echo "</tr>";            
+        } 
+		?>
+    </table>
+</form>

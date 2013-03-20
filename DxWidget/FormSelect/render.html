@@ -1,0 +1,17 @@
+<!--<eq name="readOnly" value="false">数据readonly模式-->
+<label>
+    {$set[$value]}
+    <input type="hidden" name="{$name}" class="{$class} {$validclass} {$custom_class}" value="{$value|escapeHtmlValue}">
+</label>
+<!--<else/>-->
+<select name="{$name}" class="{$class} {$validclass} {$custom_class}">
+    <option value="">{$placeholder}</option>
+    <!--<volist name="set" id="vo" key="k">-->
+        <!--<eq name="key" value="$value">-->
+        <option value="{$key}" selected=>{$vo|escapeHtmlValue}</option>
+        <!--<else/>-->
+        <option value="{$key}">{$vo|escapeHtmlValue}</option>
+        <!--</eq>-->
+    <!--</volist>-->
+</select>
+<!--</eq>-->

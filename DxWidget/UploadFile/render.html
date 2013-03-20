@@ -1,0 +1,26 @@
+<div id="{$name}">
+<table class="table table-striped">
+    <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
+</table>
+<span class="btn btn-success fileinput-button">
+    <i class="icon-plus icon-white"></i>
+    <span>{$prompt}</span>
+    <input type="file" name="files[]" "{$uploadType}">
+</span>
+<div class="span4 fileupload-progress">
+    <div class="fade progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
+        <div class="bar" style="width:0%;"></div>
+    </div>
+    <div class="progress-extended">&nbsp;</div>
+</div>
+<script>
+(function($) {
+    $(function() {
+        var options	= {$option|escapeJson};
+        uploadFile($("#{$name}"),options);
+    });
+})(jQuery);
+</script>
+</div>
+<input type='hidden' name='old_{$name}' value="{$value}" />
+

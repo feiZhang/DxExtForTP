@@ -1,0 +1,32 @@
+<!--<empty name="set">-->
+<label>无</label>
+<!--<else/>-->
+<!--<eq name="returnString" value="0">返回数组结果-->
+<!--<volist name="set" id="vo" key="k">-->
+<!--<if condition="in_array($key, $value)">-->
+<label class="checkbox inline">
+<input type="checkbox" name="{$name}[]" value="{$key}" checked class="{$class} {$validclass} {$custom_class}">{$vo}
+</label>
+<!--<else/>-->
+<label class="checkbox inline">
+<input type="checkbox" name="{$name}[]" value="{$key}" class="{$class} {$validclass} {$custom_class}">{$vo}
+</label>
+<!--</if>-->
+<!--</volist>-->
+<!--<else/>返回字符串-->
+<span class="checkset">
+<!--<volist name="set" id="vo" key="k">-->
+<!--<if condition="in_array($key, $value)">-->
+<label class="checkbox inline">
+<input type="checkbox" value="{$key}" onchange="_dataope_onCheckChange(this)" checked class="checkitem {$class} {$validclass} {$custom_class}">{$vo}
+</label>
+<!--<else/>-->
+<label class="checkbox inline">
+<input type="checkbox" value="{$key}" onchange="_dataope_onCheckChange(this)" class="checkitem {$class} {$validclass} {$custom_class}">{$vo}
+</label>
+<!--</if>-->
+<!--</volist>-->
+<input type="hidden" name="{$name}" value="{$stringResult}" class="checksetval">
+</span>
+<!--</eq>-->
+<!--</empty>-->

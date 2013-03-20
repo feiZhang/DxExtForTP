@@ -1,0 +1,22 @@
+<!--<eq name="readOnly" value="false">数据readonly模式-->
+<label>
+    <!--<volist name="set" id="vo" key="k">-->
+        <!--<if condition="in_array($key, $val)">符合条件的记录-->
+        <span class="SelectedItem">{$vo|escapeHtmlValue}</span>
+        <!--</if>-->
+    <!--</volist>-->
+    <input type="hidden" name="{$name}" class="{$class} {$validclass} {$custom_class}" value="{$value|escapeHtmlValue}">
+</label>
+<!--<else/>-->
+<select multiple size='{$size}' class="{$class} {$validclass} {$custom_class}" onchange="_dataope_onSetChange(this)">
+    <!-- 多选是不需要提示了.<option value="">{$placeholder}</option>-->
+    <!--<volist name="set" id="vo" key="k">-->
+        <!--<if condition="in_array($key, $val)">符合条件的记录-->
+        <option value="{$key}" selected>{$vo|escapeHtmlValue}</option>
+        <!--<else/>-->
+        <option value="{$key}">{$vo|escapeHtmlValue}</option>
+        <!--</if>-->
+    <!--</volist>-->
+</select>
+<input type="hidden" name="{$name}" class="{$class} {$custom_class}" value="{$value|escapeHtmlValue}">
+<!--</eq>-->

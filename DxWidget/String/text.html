@@ -1,0 +1,6 @@
+<if condition="$readOnly eq true">
+{$value}
+<input type="text" name='{$name}' value='{$value}' style="display: none;" class="{$class} {$custom_class} {$validclass} " />
+<else/>
+<input type="text" name='{$name}' value='{$value}' placeholder="{$placeholder}" style='{$cwidth}' size="{$size}" maxsize="{$maxsize}" minsize="{$minsize}" class="{$class} {$custom_class} {$validclass} " />
+</if>

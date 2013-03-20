@@ -1,0 +1,34 @@
+<textarea id="{$id}" cols='50' name='{$name}' rows='{$row}' class="{$textareaClass} {$class}" style="{$cwidth}{$cheight}">{$value}</textarea>
+<script type="text/javascript">
+    (function($){
+        require(['basic/js/load'], function(loader){
+            loader("FCKeditor", "__PUBLIC__/public/FCKeditor/fckeditor.js");
+        });
+        var init=function(){
+            var id="{$id}";
+            var obj=$("#"+id);
+            var h=obj.height();
+            var w=obj.width();
+            var oFCKeditor = new FCKeditor( id ) ;
+            oFCKeditor.BasePath=PUBLIC_URL+'/public/FCKeditor/';
+            oFCKeditor.Width=w;
+            oFCKeditor.Height=h;
+            oFCKeditor.CheckBrowser=true;
+            oFCKeditor.ToolbarSet="Default"; //原值 FormEdit
+            oFCKeditor.ReplaceTextarea() ;
+            obj.bind("savedata.updateval", function(){
+                try{
+                    //save editor value
+                    var inst=FCKeditorAPI.GetInstance(id);
+                    $(this).val(inst.GetData());
+                }catch(e){
+                    alert("please wait, fckeditor init");
+                    //thrown Exception("wo");
+                }
+            });
+        }
+        $(function(){
+            setTimeout(init, 300);
+        });
+    })(jQuery);
+</script>

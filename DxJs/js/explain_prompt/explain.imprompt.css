@@ -1,0 +1,50 @@
+body {
+	background-image: url(about:blank);
+	background-attachment: fixed; /*必要，防抖动*/
+}
+
+.jqi_btn li {
+	list-style: none;
+}
+
+.jqi_btn .jqi_step {
+	padding-top: 5px;
+	text-align: center;
+	background: url(images/yi_08.gif) no-repeat center center;
+	width: 35px;
+	height: 40px;
+	cursor: pointer;
+	line-height: 35px;
+}
+
+.jqi_btn .jqi_step:hover,.jqi_btn .jqi_step.explain_selected {
+	background: url(images/yi_16.gif) no-repeat center center;
+}
+
+.jqi_btn .jqi_prev {
+	width: 40px;
+	height: 40px;
+	background: url(images/yi_03.gif) no-repeat center center;
+	text-indent: -9999px;
+}
+
+.jqi_btn .jqi_next {
+	width: 40px;
+	height: 40px;
+	background: url(images/yi_05.gif) no-repeat center center;
+	text-indent: -9999px;
+}
+
+.jqi_btn .jqi_prev.explain_disabled,.jqi_btn .disabled_prev {
+	background: url(images/yi_14.gif) no-repeat center center;
+}
+
+.jqi_btn .jqi_next.explain_disabled,.jqi_btn .disabled_next {
+	background: url(images/yi_06.gif) no-repeat center center;
+}
+
+.mm {
+	/*border: 1px solid #BF5E26*/;
+	background: none;
+	opacity: 1;
+}

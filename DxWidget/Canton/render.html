@@ -1,0 +1,22 @@
+<span id='selectselectselect_{$id}'></span>
+<input type='hidden' class='dataOpeSearch z_input likeRight {$validclass}' name='{$name}' id='{$name}' value="{$value}" />
+<script type="text/javascript">
+$.selectselectselect(0,"selectselectselect_{$id}","{$value}",{$rootCantonId},function(t){
+    $("#{$name}").val($(t).val());
+});
+</script>
+
+
+<!-- 
+				$fieldInput		= "";
+				$fieldInput		.= sprintf("
+					<span id='selectselectselect_%s'></span>
+					<input type='hidden'  name='%s' id='%s' value=\"%s\" />
+					<script type=\"text/javascript\">
+					(function($){
+						\$.selectselectselect(0,\"selectselectselect_%s\",\"%s\",%d,function(t){
+							\$(\"#%s\").val(\$(t).val());
+						});
+					})(jQuery);
+					</script>",$field_name,$field_name,$field_name,"{".$field_content."}",$field_name,"{".$field_content."}",$rootCantonId,$field_name);
+-->

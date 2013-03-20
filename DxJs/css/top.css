@@ -1,0 +1,42 @@
+@charset "utf-8";
+.glo_top{ width:100%; height:75px;}
+.glo_top .inx_logo{margin-left:15px; font-family:"微软雅黑", "黑体"; font-size:32px; line-height:30px;color:#333333; letter-spacing:5px;}
+.glo_top .inx_name{margin-left:5px;font-family:"微软雅黑", "黑体"; font-size:28px;color:#fdbb5b;line-height:28px;}
+.glo_top .inx_tab{ text-align:center;}
+.glo_top .inx_tab a{ color:#FFF;}
+.glo_top .inx_ext{width:30px; height:60px;margin-right:15px;}
+.glo_top .inx_ext p{text-align:left;}
+.glo_top .inx_ext a{ display:block;}
+/*顶部css*/
+.inx_tab td a:hover img{ box-shadow: 0 0 5px 3px #666;border-radius:8px;}
+.body_header{ background:url(../images/top-body-bg.jpg) no-repeat #4a95bf;}
+.glo_header{ width:100%; background:url(../images/top-nav-bg.png) 0 0 repeat-x; height:35px;} 
+.glo_header .nav_notic{ height:30px; line-height:30px;}
+.glo_header .nav_notic span{ float:left; padding:0 10px;}
+.glo_header .nav_notic .notsp{ float:left; width:16px; height:15px; margin:7px 0 0 10px; line-height:30px; background:url(../images/top-nav-bg.png) 0px -80px no-repeat;}
+.glo_header .nav_sear{}
+.glo_header .nav_sear .nav_input{width:171px; float:left; padding:0 10px; line-height:22px;  height:22px; border:none; background:url(../images/top-nav-bg.png) 0px -78px no-repeat;}
+.glo_header .nav_sear .em{ width:25px; cursor:pointer; float:left; margin:5px 0 0 5px; height:15px; background:url(../images/top-nav-bg.png) 0px -111px no-repeat;} 
+.glo_header .nav_right{ background:url(../images/top-nav-bg.png) no-repeat 0px -41px; width:279px; padding:0 10px 0 20px; height:30px; line-height:30px; color:#FFF; float:right;}
+.glo_header .nav_right span a{ float:right; padding-left:5px; color:#EDD52A;}
+
+/*顶部仿mac的快捷操作图标*/
+.dock{margin-top:2px; text-align:right;float:right}
+.dock .dock-container {padding:2px 3px 2px 3px; }
+.dock .dock-container a.dock-item { font-size:12px; float:left; display: block; width:65px; height:68px; padding-top:4px; text-align: center; text-decoration: none; color: #fff;font-weight:bold; }
+.dock .dock-container a.dock-item:hover{color:#cc0000;background: url(../images/Menu/sc_bg.png) no-repeat center center;}
+.dock .dock-container .dock-item span {padding-left: 2px; text-align:center;}
+.dock .dock-container .dock-item img { border: 0; width:50px;height:50px;}
+
+.head-right{height:85px; float:right; padding-right:10px;}
+.head-right li{height:65px; width:51px; float:left; margin:5px 0 0 5px;}
+.head-right li a{ display:block; float:left; color:#FFFFFF;  background-repeat: no-repeat; width:51px; height:65px; outline: none;}
+.head-right li a:hover{color:#F3D801;}
+
+ul li a span{
+    float: left;
+    height: 25px;
+    padding-top: 47px;
+    text-align: center;
+    width: 51px;
+}

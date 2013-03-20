@@ -1,0 +1,72 @@
+<notempty name="Think.get.haveHeader">
+	<include file="DxPublic:header" />
+</notempty>
+
+<link href="__PUBLIC__/public/jquery-upload-file/css/jquery.fileupload-ui.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="__PUBLIC__/public/jquery-upload-file/blueimp/css/bootstrap-image-gallery.min.css">
+
+<style>
+.progress,.table{
+	margin-bottom: 0px;
+}
+.table th, .table td {
+	padding: 2px;
+}
+</style>
+
+<empty name="modelInfo.css">
+	<link href="__PUBLIC__/basic/css/data_list_noborder.css" rel="stylesheet" type="text/css" />
+<else />
+	<link href="__PUBLIC__/basic/css/{$modelInfo.css}.css" rel="stylesheet" type="text/css" />
+</empty>
+
+
+<script type="text/javascript" src="__PUBLIC__/public/jquery-upload-file/blueimp/js/load-image.min.js"></script>
+<script type="text/javascript" src="__PUBLIC__/public/jquery-upload-file/blueimp/js/tmpl.min.js"></script>
+<script type="text/javascript" src="__ROOT__/min/f=
+__PUBLIC__/basic/js/dataope_ext.js,
+__PUBLIC__/project/js/dataope_ext.js,
+__PUBLIC__/public/validate/js/jquery.validationEngine.js,
+__PUBLIC__/public/validate/js/languages/jquery.validationEngine-zh_CN.js,
+__PUBLIC__/basic/js/validate.js,
+__PUBLIC__/public/jquery-upload-file/js/vendor/jquery.ui.widget.js,
+__PUBLIC__/public/jquery-upload-file/js/jquery.iframe-transport.js,
+__PUBLIC__/public/jquery-upload-file/js/jquery.fileupload.js,
+__PUBLIC__/public/jquery-upload-file/js/jquery.fileupload-fp.js,
+__PUBLIC__/public/jquery-upload-file/js/jquery.fileupload-ui.js,
+__PUBLIC__/public/json2.js
+"></script>
+
+<script type="text/javascript">
+<!--
+(function($){
+	$(function(){
+	    $("#itemAddForm").validationEngine();
+	});
+})(jQuery);
+//-->
+</script>
+<form id="itemAddForm">
+	<literal>
+	<notempty name="pkId.0">
+	<input name="{$pkId[0]}" value='{$pkId[1]}' style='display:none' type='hidden' class="pk"/>
+	</notempty>
+	</literal>
+    <table class="itemAddTable" cellspacing="1" cellpadding="1">
+		<?php
+		foreach($listFields as $name=>$field){
+            $fieldInput="";
+            printf("<tr class=\"itemAddTr\">\n");
+            printf("<td align='right' class='itemAddTd'><span class='itemAddField'><b>%s</b></span>:</td>\n",$field["title"]);
+            printf("<td>%s</td>\n",getFieldInput($field,$valid));
+            echo "</tr>\n\n";
+        } 
+		?>
+    </table>
+</form>
+
+<include file="DxPublic:upload_file_tmpl" />
+
+<notempty name="Think.get.haveHeader">
+	<include file="DxPublic:footer" />
+</notempty>
