@@ -10,6 +10,26 @@ class DxExtCommonAction extends Action {
 		parent::__construct();
 		if(empty($this->model)) $this->model  = D($this->getModelName());
 		else $this->theModelName	= $this->model->name;
+		
+		//如果有自定义的public  header文件，则使用，如果没有，则使用DxInfo提高提供的模板文件。
+		if(!S("TplHeader")){
+		    $headerFile    = DxFunction::getTplFilePath("Public:header");
+		    if(file_exists($headerFile)){
+		        S("TplHeader",$headerFile);
+		    }else{
+		        S("TplHeader",C("DX_INFO_PATH")."/DxTpl/header.html");
+		    }
+		}
+		if(!S("TplFooter")){
+		    $footerFile    = DxFunction::getTplFilePath("Public:footer");
+		    if(file_exists($footerFile)){
+		        S("TplFooter",$footerFile);
+		    }else{
+		        S("TplFooter",C("DX_INFO_PATH")."/DxTpl/footer.html");
+		    }
+		}
+		$this->assign("TplHeader",S("TplHeader"));
+		$this->assign("TplFooter",S("TplFooter"));
 	}
 	
 	private	$cacheActionList	= array();	//系统action的缓存，对应menu表

@@ -1,12 +1,30 @@
 <?php
 class DxFunction{
+    /**
+     * 通过Model:Action格式获取tpl文件的绝对路径，代码来自ThinkTemplate
+     */
+    function getTplFilePath($templateName){
+        $path   =  explode(':',$templateName);
+        $action = array_pop($path);
+        $module = !empty($path)?array_pop($path):MODULE_NAME;
+        if(!empty($path) && THEME_NAME) {// 设置模板主题
+            $path = dirname(THEME_PATH).'/'.array_pop($path).'/';
+        }else{
+            $path = THEME_PATH;
+        }
+        $templateName  =  $path.$module.C('TMPL_FILE_DEPR').$action.$this->config['template_suffix'];
+        return $templateName;
+    }
+    
 	/**
 	 * 获取一个当前日期
 	 * */
 	function getMySqlNow(){
 		return date("Y-m-d H:i:s");
 	}
-	/**此方法用于过滤html属性值.
+	
+	/**
+	 * 此方法用于过滤html属性值.
 	 * @param String $val 需要过滤的的值
 	 * @return String 处理过的文本内容.
 	 */
@@ -14,11 +32,17 @@ class DxFunction{
 	    $val=htmlentities($val, ENT_QUOTES,"UTF-8");
 	    return $val;
 	}
-	/**filter array null value*/
+	
+	/**
+	 * filter array null value
+	 */
 	function filter_notnull($v){
 	    return($v!==NULL);
 	}
-	/**safe merge array*/
+	
+	/**
+	 * safe merge array
+	 */
 	function safe_merge($x){
 	    $args=func_get_args();
 	    $ret=array();
@@ -30,6 +54,7 @@ class DxFunction{
 	    }
 	    return $ret;
 	}
+	
 	/**
 	 * 格式化html数据为可显示数据
 	 * */
