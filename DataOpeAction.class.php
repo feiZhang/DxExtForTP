@@ -15,8 +15,7 @@ class DataOpeAction extends DxExtCommonAction{
 		if(empty($model)) die("model为空!");
 		$enablePage	= $model->getModelInfo("enablePage");
 		if($enablePage!==false) $enablePage	= true;
-		
-		vendor("GridServerHandler");
+		require_once (C("DX_INFO_PATH")."/vendor/GridServerHandler.php");
         $gridHandler 	= new GridServerHandler();
         if($enablePage){
 			$start 			= intval($gridHandler->pageInfo["startRowNum"])-1;
@@ -191,16 +190,7 @@ class DataOpeAction extends DxExtCommonAction{
 		
 		$tempFile	= TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
 		if(!$this->cacheTpl || C('APP_DEBUG') || !file_exists($tempFile)){
-			$modelTpl	= THEME_PATH.$this->theModelName.'/'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
-			if(file_exists($modelTpl)){
-				$tempT	= $this->fetch($modelTpl);
-			}else{
-				$customTplFile	= THEME_PATH.'Public/data_list'.C('TMPL_TEMPLATE_SUFFIX');
-				if(!file_exists($customTplFile))
-					$tempT	= $this->fetch("DxPublic:data_list");
-				else
-					$tempT	= $this->fetch($customTplFile);
-			}
+			$tempT	= $this->fetch("Public:data_list");
 			file_put_contents($tempFile, $tempT);
 		}
 		$this->display($tempFile);

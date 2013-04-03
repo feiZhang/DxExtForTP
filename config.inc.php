@@ -4,6 +4,7 @@ if (!defined('THINK_PATH')) exit();
 $TplHeader    = "dd";
 return array(
     'DX_INFO_PATH'          => dirname(__FILE__),
+    'DX_PUBLIC'             => "/DxInfo/DxPublic",
     
     //设置公共模板路径,属于TP的配置内容,一般情况下，不需要覆盖修改的内容。
     'TMPL_ACTION_ERROR'		=> dirname(__FILE__)."/DxTpl/success.html",
@@ -37,7 +38,7 @@ return array(
     'DP_NOT_CHECK_ACTION'	=> array("Public"=>1,"DataSync"=>1),	//不进行数据权限控制的Action
     'DELETE_TAGS'		=> array("delete_status"=>"1"),
 
-    'NOT_AUTH_ACTION'		=> array("Public"=>1),		//无需权限认证的Action
+    'NOT_AUTH_ACTION'		=> array("Public"=>1,"Web"=>1),		//无需权限认证的Action
     'REQUIST_AUTH_ACTION'	=> array(),					//必须权限认证的Action
     'LOGIN_USER_NICK_NAME'	=> "name",		//用户昵称字段名
     'LOGIN_MD5'				=> false,		//是否md5加密密码

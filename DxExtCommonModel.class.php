@@ -13,7 +13,7 @@ class DxExtCommonModel extends Model {
 	const HIDE_FIELD_ADD		= 2;      //增加数据时是否隐藏
 	const HIDE_FIELD_EDIT		= 4;      //修改数据时是否隐藏
 	const HIDE_FIELD_DATA		= 8;      //列表时，是否不输出此字段数据
-	const HIDE_FIELD_EXPORT		= 16;		//是否不到处
+	const HIDE_FIELD_EXPORT		= 16;		//是否不导出
 
 	const DP_TYPE_ENABLE		= 1;	//开启数据权限控制
 	const DP_TYPE_PUBLIC		= 2;	//开启公共数据权限，此字段判定，某个数据是否是公共数据。
@@ -49,8 +49,8 @@ class DxExtCommonModel extends Model {
 	 pk:是否主键
 	 width:列宽度，和查询框的宽度
 	 valChange:数据转换，[固定转换\关联表转换]，固定值转换时是一个数组(索引价格k)，比如：
-	 "valChange"=>array("1"=>"客户",'4'=>'超级管理员'),
-	 "valChange"=>array("model"=>"user","type"=>"basic_data_type") 注意:这里对应的model必须设置modelInfo的dictTable值才有效，，这种格式是从数据库获取数据，最终得到和上面一样的数据格式，，在使用多维数组时才启用type属性,type多维度时，使用逗号隔开
+	     "valChange"=>array("1"=>"客户",'4'=>'超级管理员'),
+	     "valChange"=>array("model"=>"user","type"=>"basic_data_type") 注意:这里对应的model必须设置modelInfo的dictTable值才有效，，这种格式是从数据库获取数据，最终得到和上面一样的数据格式，，在使用多维数组时才启用type属性,type多维度时，使用逗号隔开
 	 frozen:是否锁定列
 	 -此功能移除--serach:是否为查询条件，样例：array("enum"=>array("1","2"),"width"=>"200")
 	 renderer:数据转换，此处为js代码  var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){ var valChange=%s;return valChange[value];}
@@ -255,7 +255,9 @@ class DxExtCommonModel extends Model {
 		if(!isset($field["name"])) $field["name"]	= $key;
 		//将字典表，转换为valChange数据
 		if(isset($field["valChange"]["model"])){
+		    dump($field);
 			$m		= D($field["valChange"]["model"]);
+			dump($m);
 			$tValC	= $m->getCacheDictTableData();
 			if(!empty($field["valChange"]["type"])){
 				$tType	= explode(",",$field["valChange"]["type"]);

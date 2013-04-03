@@ -34,8 +34,8 @@ class DxExtCommonAction extends Action {
 	
 	private	$cacheActionList	= array();	//系统action的缓存，对应menu表
 	function _initialize() {
-		$this->cacheActionList	= DxFunction::getModuleActionForMe();
-		//dump($this->cacheActionList["myAction"]);
+		//$this->cacheActionList	= DxFunction::getModuleActionForMe();
+		//dump($this->cacheActionList["myAction"]);die();
 		$log_id =	$this->writeActionLog();
 
 		if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
@@ -170,16 +170,55 @@ class DxExtCommonAction extends Action {
 	
 	/**
 	 * 重写Display函数，在本目录找不到模板时，自动到Dx目录去取公共模板。
+	 * 0.文件的绝对路径
+	 * 1.默认tpl路径
+	 * 2.按照Model名称的tpl路径
+	 * 3.项目的DxPublic目录，（需要重写公共的模板）
+	 * 4.DxInfo的模板路径
 	 * */
+	protected function fetch($templateFile='',$content='',$prefix=''){
+	    $templateFile    = $this->checkTplFile($templateFile);
+	    //die($templateFile);
+	    $content    = parent::fetch($templateFile,$content,$prefix);
+	    return str_replace("__DXPUBLIC__", C("DX_PUBLIC"), $content);
+	}
     protected function display($templateFile='',$charset='',$contentType='') {
-    	if($templateFile!="" || file_exists(THEME_PATH.MODULE_NAME.'/'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX'))){
-    		parent::display($templateFile,$charset,$contentType);
-    	}else{
-    		$tplFile	= sprintf("%s/DxTpl/%s%s",dirname(__FILE__),ACTION_NAME,C('TMPL_TEMPLATE_SUFFIX'));
-    		parent::display($tplFile);
-    	}
+        $templateFile    = $this->checkTplFile($templateFile);
+        return parent::display($templateFile,$charset,$contentType);
     }
-	
+    protected function checkTplFile($templateFile){
+        if(file_exists($templateFile)){
+            return $templateFile;
+        }
+        
+        if(''==$templateFile) {
+            // 如果模板文件名为空 按照默认规则定位
+            $templateFile = C('TEMPLATE_NAME');
+        }elseif(false === strpos($templateFile,C('TMPL_TEMPLATE_SUFFIX'))){
+            // 解析规则为 模板主题:模块:操作 不支持 跨项目和跨分组调用
+            $path   =  explode(':',$templateFile);
+            $action = array_pop($path);
+            $module = !empty($path)?array_pop($path):MODULE_NAME;
+            if(!empty($path)) {// 设置模板主题
+                $path = dirname(THEME_PATH).'/'.array_pop($path).'/';
+            }else{
+                $path = THEME_PATH;
+            }
+            $templateFile  =  $path.$module.C('TMPL_FILE_DEPR').$action.C('TMPL_TEMPLATE_SUFFIX');
+        }
+        
+        if(empty($action)) $action    = ACTION_NAME;
+        if(file_exists($templateFile)){
+            return $templateFile;
+        }else if(file_exists(THEME_PATH.$this->theModelName.'/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
+            return THEME_PATH.$this->theModelName.'/'.$action.C('TMPL_TEMPLATE_SUFFIX');
+        }else if(file_exists(THEME_PATH.'DxPublic/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
+            return THEME_PATH.'DxPublic/'.$action.C('TMPL_TEMPLATE_SUFFIX');
+        }else{
+            $tplFile	= sprintf("%s/DxTpl/%s%s",dirname(__FILE__),$action,C('TMPL_TEMPLATE_SUFFIX'));
+            return $tplFile;
+        }
+    }	
 	/**
 	 +----------------------------------------------------------
 	 * 根据表单生成查询条件
