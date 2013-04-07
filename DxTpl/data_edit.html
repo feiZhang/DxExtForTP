@@ -1,5 +1,5 @@
 <notempty name="Think.get.haveHeader">
-	<include file="DxPublic:header" />
+	<include file="Public:header" />
 </notempty>
 
 <link href="__DXPUBLIC__/jquery-upload-file/css/jquery.fileupload-ui.css" rel="stylesheet" type="text/css" />
@@ -58,15 +58,15 @@ __PUBLIC__/public/json2.js
             $fieldInput="";
             printf("<tr class=\"itemAddTr\">\n");
             printf("<td align='right' class='itemAddTd'><span class='itemAddField'><b>%s</b></span>:</td>\n",$field["title"]);
-            printf("<td>%s</td>\n",getFieldInput($field,$valid));
+            printf("<td>%s</td>\n",DxFunction::getFieldInput($field,$valid));
             echo "</tr>\n\n";
         } 
 		?>
     </table>
 </form>
 
-<include file="DxPublic:upload_file_tmpl" />
+<include file="Public:upload_file_tmpl" />
 
 <notempty name="Think.get.haveHeader">
-	<include file="DxPublic:footer" />
+	<include file="Public:footer" />
 </notempty>

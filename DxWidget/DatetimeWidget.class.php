@@ -38,7 +38,7 @@ class DatetimeWidget extends DxWidget {
         );
     public function render($data) {
         
-        $val=  safe_merge($this->default, $data);
+        $val=  array_merge($this->default, $data);
         //设置显示宽度
         if($val['width']>0){
             $val['cwidth']="width: {$val['width']}px;";

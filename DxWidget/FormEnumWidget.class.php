@@ -37,7 +37,7 @@ class FormEnumWidget extends DxWidget {
         'cwidth'=>'',
         );
     public function render($data) {
-        $val=  safe_merge($this->default, $data);
+        $val=  array_merge($this->default, $data);
         $val['value']=  htmlentities($val['value'],ENT_QUOTES,"UTF-8");
         if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
             $val['value']=  htmlentities($val['default'],ENT_QUOTES,"UTF-8");

@@ -1,8 +1,8 @@
-<include file="$TplHeader" />
+<include file="Public:header" />
 
 <link href="__ROOT__/min/g=dataListCss" rel="stylesheet" type="text/css" />
 
-<div class="inx_center menumargin">
+<div>
 	<input id="modelInfo_editTitle" value="{$modelInfo.editTitle}" type="hidden" />
     <table id="gridHeader" style="display:none">{$modelInfo['gridHeader']}</table>
     <notempty name="modelInfo.modelTitle">
@@ -72,4 +72,4 @@ $(function(){
 </script>
 
 
-<include file="$TplFooter" />
+<include file="Public:footer" />
