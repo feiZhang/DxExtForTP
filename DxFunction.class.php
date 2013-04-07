@@ -254,6 +254,8 @@ class DxFunction{
 	
 	/**
 	 * 获取登录账号的权限列表。并缓存之。
+	 * 1.所有菜单列表
+	 * 2.登录账号有权限访问的菜单列表
 	 * 系统会出现，Module、Action相同，但是args不相同的的菜单。
 	 * @param	$ignore		是否忽略缓存，在登录时，要强制获取新的权限信息，所以需要忽略之
 	 * */
@@ -262,6 +264,7 @@ class DxFunction{
 		$menuM	= null;
 		if(empty($allAction)){
 			$menuM			= D('Menu');
+			if($menuM instanceof Model) return array();    //如果没有自定义Menu的Model，则表示没有启用此功能。
 			$allAction		= array();
 			$action_list	= $menuM->getAllAction();
 			foreach($action_list as $l){
@@ -272,7 +275,7 @@ class DxFunction{
 		}else{
 			$allAction	= json_decode($allAction,true);
 		}
-			
+		
 		$my_id			= session(C('USER_AUTH_KEY'));
 		if(intval($my_id)<1) return array("allAction"=>$allAction);
 	

@@ -34,24 +34,27 @@ class DxExtCommonAction extends Action {
 	
 	private	$cacheActionList	= array();	//系统action的缓存，对应menu表
 	function _initialize() {
-		//$this->cacheActionList	= DxFunction::getModuleActionForMe();
-		//dump($this->cacheActionList["myAction"]);die();
-		$log_id =	$this->writeActionLog();
-
-		if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
-			if(0 == intval(session(C("USER_AUTH_KEY")))) {
-				$this->redirect('Public/login');
-			}
-			//判断用户是否有当前动作操作权限
-			$privilege = $this->check_action_privilege();
-			if (!$privilege) {  //无权限
-				if($log_id){
-					$this->updateActionLog($log_id);
-				}
-				if(C('LOG_RECORD')) Log::save();
-				die("您无权访问此页面!");
-			}
-		}
+	    $log_id =	$this->writeActionLog();
+	    
+	    if(C("DISABLE_ACTION_AUTH_CHECK")!==true){
+    		$this->cacheActionList	= DxFunction::getModuleActionForMe();
+    		//dump($this->cacheActionList["myAction"]);die();
+    
+    		if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
+    			if(0 == intval(session(C("USER_AUTH_KEY")))) {
+    				$this->redirect('Public/login');
+    			}
+    			//判断用户是否有当前动作操作权限
+    			$privilege = $this->check_action_privilege();
+    			if (!$privilege) {  //无权限
+    				if($log_id){
+    					$this->updateActionLog($log_id);
+    				}
+    				if(C('LOG_RECORD')) Log::save();
+    				die("您无权访问此页面!");
+    			}
+    		}
+	    }
 
 		//自定义皮肤
 		if (cookie('RESTHOME_SKIN_ROOT')) {
