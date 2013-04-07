@@ -29,8 +29,10 @@
 				 msg 	 = strHtml2;
 			//	 document.documentElement.innerHTML=strHtml2+document.documentElement.innerHTML; 
 	     }
-	//     $.dialog({title:'提示',content:msg,esc:true,lock:true});
-	 	//showDialog('提示',msg);
+	     if(msg!=""){
+	    	  $.dialog({title:'提示',content:msg,esc:true,lock:true});
+	  	 }
+	   //showDialog('提示',msg);
 	     //*****如下空白位置适合调用统一功能:*********	     
 		 LODOP.SET_LICENSES("郑州大象通信信息技术有限公司","864567677838688778794958093190","","");
 
