@@ -12,7 +12,7 @@ return array(
     'TMPL_ACTION_SUCCESS'	=> dirname(__FILE__)."/DxTpl/success.html",
     'TOKEN_ON'				=> true, //表单令牌开启
     'TOKEN_NAME'            => "DxToken",
-    'DEFAULT_MODULE'		=> 'Older',
+    'DEFAULT_MODULE'		=> 'Home',
     'APP_AUTOLOAD_PATH'		=> "Com.DxInfo",
     'SESSION_AUTO_START'	=> true,
     

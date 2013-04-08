@@ -402,10 +402,7 @@ class DxFunction{
 	// 为了将所有的字段widget放到同一个目录下方便引入。。增加此函数
 	function W_FIELD($name, $data=array(), $return=false) {
 		$class = $name . 'Widget';
-		require_cache(C(DX_INFO_PATH).'/DxWidget/'. $class . '.class.php');
-		//require_cache(DxWidget::StringWidget);
-		//var_dump(C(DX_INFO_PATH));die();
-
+		require_cache(dirname(__FILE__) . '/DxWidget/' . $class . '.class.php');
 		if (!class_exists($class))
 			throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
 		$widget = Think::instance($class);
