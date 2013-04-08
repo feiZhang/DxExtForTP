@@ -42,7 +42,7 @@ class DataOpeAction extends DxExtCommonAction{
         	$data_change	= $model->getModelInfo("data_change");
         	if(is_array($data_change)){
         		foreach($data_change as $key=>$val){
-        			$val(&$data_list,$key);
+        			$val($data_list,$key);
         		}
         	}
         }
