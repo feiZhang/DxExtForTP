@@ -375,7 +375,7 @@ class DxFunction{
 	 * 根据字段定义生成字段的修改输入框，for  data_edit.html
 	 * 1.因为诸如，责任护理员等，每个用户不同内容的字典表存在，所以并不适合直接将file_enum输出成值。。公共字典变动等情况也影响这个功能。。所以，还是将字典表，输出为变量
 	 * */
-	function getFieldInput($field,$valid=array(),$field_content=false,$ignoreEditor=false){
+	 function getFieldInput($field,$valid=array(),$field_content=false,$ignoreEditor=false){
 		$field_name	= $field["name"];
 		if($field_content===false) $field_content	= "\$objectData['".$field_name."']";
 		if($ignoreEditor || empty($field["editor"])){
@@ -385,39 +385,39 @@ class DxFunction{
 					$fieldInput .= sprintf("<input name='%s' value=\"{\$objectData.%s|htmlentities=###,ENT_QUOTES,'UTF-8'}\" type='hidden' />",$field_name,$field_name);
 					break;
 				case "enum":
-	                $fieldInput = sprintf('{:W_FIELD("FormEnum", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddRadio", "value"=>$objectData["%1$s"], "set"=>$listFields["%1$s"]["field_enum"]))}', $field_name);
+	                $fieldInput = sprintf('{:DxFunction::W_FIELD("FormEnum", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddRadio", "value"=>$objectData["%1$s"], "set"=>$listFields["%1$s"]["field_enum"]))}', $field_name);
 					break;
 				case "set":
 					//多选,提交时转换成以,分隔(初始值也是同样形式)的字符串.
-	                $fieldInput = sprintf('{:W_FIELD("FormSelect", array("name"=>"%1$s", multiple=>true, "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddSelect", "value"=>$objectData["%1$s"], "set"=>$listFields["%1$s"]["field_enum"]))}', $field_name);
+	                $fieldInput = sprintf('{:DxFunction::W_FIELD("FormSelect", array("name"=>"%1$s", multiple=>true, "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddSelect", "value"=>$objectData["%1$s"], "set"=>$listFields["%1$s"]["field_enum"]))}', $field_name);
 					break;
 				case "select":
-	                $fieldInput = sprintf('{:W_FIELD("FormSelect", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddSelect", "value"=>$objectData["%1$s"], "set"=>$listFields["%1$s"]["field_enum"]))}', $field_name);
+	                $fieldInput = sprintf('{:DxFunction::W_FIELD("FormSelect", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddSelect", "value"=>$objectData["%1$s"], "set"=>$listFields["%1$s"]["field_enum"]))}', $field_name);
 					break;
 				case 'date':
-	                $fieldInput = sprintf('{:W_FIELD("Date", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddInput itemAddDate", "value"=>$objectData["%1$s"], "placeholder"=>$listFields["%1$s"]["placeholder"]))}', $field_name);
+	                $fieldInput = sprintf('{:DxFunction::W_FIELD("Date", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddInput itemAddDate", "value"=>$objectData["%1$s"], "placeholder"=>$listFields["%1$s"]["placeholder"]))}', $field_name);
 					break;
 				case 'y_m':
-	                $fieldInput = sprintf('{:W_FIELD("Date", array("name"=>"%1$s", format=>"yyyy-MM", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddInput itemAddDate", "value"=>$objectData["%1$s"], "placeholder"=>$listFields["%1$s"]["placeholder"]))}', $field_name);
+	                $fieldInput = sprintf('{:DxFunction::W_FIELD("Date", array("name"=>"%1$s", format=>"yyyy-MM", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddInput itemAddDate", "value"=>$objectData["%1$s"], "placeholder"=>$listFields["%1$s"]["placeholder"]))}', $field_name);
 					break;
 				case 'time':
-	                $fieldInput = sprintf('{:W_FIELD("Datetime", array("name"=>"%1$s", format=>"HH:mm:ss", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddInput itemAddTime", "value"=>$objectData["%1$s"], "placeholder"=>$listFields["%1$s"]["placeholder"]))}', $field_name);
+	                $fieldInput = sprintf('{:DxFunction::W_FIELD("Datetime", array("name"=>"%1$s", format=>"HH:mm:ss", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddInput itemAddTime", "value"=>$objectData["%1$s"], "placeholder"=>$listFields["%1$s"]["placeholder"]))}', $field_name);
 					break;
 				case 'datetime':
-	                $fieldInput = sprintf('{:W_FIELD("Datetime", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddInput itemAddDateTime", "value"=>$objectData["%1$s"], "placeholder"=>$listFields["%1$s"]["placeholder"]))}', $field_name);
+	                $fieldInput = sprintf('{:DxFunction::W_FIELD("Datetime", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddInput itemAddDateTime", "value"=>$objectData["%1$s"], "placeholder"=>$listFields["%1$s"]["placeholder"]))}', $field_name);
 					break;
 				case "canton":
-					$fieldInput = sprintf('{:W_FIELD("Canton", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "validclass"=>$valid["%1$s"], "value"=>$objectData["%1$s"], "placeholder"=>$listFields["%1$s"]["placeholder"]))}', $field_name);
+					$fieldInput = sprintf('{:DxFunction::W_FIELD("Canton", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "validclass"=>$valid["%1$s"], "value"=>$objectData["%1$s"], "placeholder"=>$listFields["%1$s"]["placeholder"]))}', $field_name);
 					break;
 				case "uploadFile":
-	                $fieldInput = sprintf('{:W_FIELD("UploadFile", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "validclass"=>$valid["%1$s"], "value"=>$objectData["%1$s"], "upload"=>$listFields["%1$s"]["upload"]))}', $field_name);
+	                $fieldInput = sprintf('{:DxFunction::W_FIELD("UploadFile", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "validclass"=>$valid["%1$s"], "value"=>$objectData["%1$s"], "upload"=>$listFields["%1$s"]["upload"]))}', $field_name);
 					break;
 				case "cutPhoto":
-					$fieldInput = sprintf('{:W_FIELD("CutPhoto", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "validclass"=>$valid["%1$s"], "value"=>$objectData["%1$s"]))}', $field_name);
+					$fieldInput = sprintf('{:DxFunction::W_FIELD("CutPhoto", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "validclass"=>$valid["%1$s"], "value"=>$objectData["%1$s"]))}', $field_name);
 					break;
 				case 'string':
 				default:
-	                $fieldInput = sprintf('{:W_FIELD("String", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddText", "value"=>$objectData["%1$s"], "placeholder"=>$listFields["%1$s"]["placeholder"]))}', $field_name);
+	                $fieldInput = sprintf('{:DxFunction::W_FIELD("String", array("name"=>"%1$s", "readOnly"=>$listFields["%1$s"]["readOnly"], "allowdefault"=>empty($pkId[1]), "default"=>$listFields["%1$s"]["default"], "width"=>$listFields["%1$s"]["width"], "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddText", "value"=>$objectData["%1$s"], "placeholder"=>$listFields["%1$s"]["placeholder"]))}', $field_name);
 					break;
 			}
 		}else{
@@ -429,7 +429,9 @@ class DxFunction{
 	// 为了将所有的字段widget放到同一个目录下方便引入。。增加此函数
 	function W_FIELD($name, $data=array(), $return=false) {
 		$class = $name . 'Widget';
-		require_cache(LIB_PATH . 'Widget/DxDataOpe/' . $class . '.class.php');
+		require_cache(C(DX_INFO_PATH).'/DxWidget/'. $class . '.class.php');
+		//require_cache(DxWidget::StringWidget);
+		//var_dump(C(DX_INFO_PATH));die();
 		if (!class_exists($class))
 			throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
 		$widget = Think::instance($class);

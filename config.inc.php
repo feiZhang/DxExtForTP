@@ -10,7 +10,7 @@ return array(
     'TMPL_ACTION_ERROR'		=> dirname(__FILE__)."/DxTpl/success.html",
     'TMPL_ACTION_SUCCESS'	=> dirname(__FILE__)."/DxTpl/success.html",
     'TOKEN_ON'				=> true, //关闭表单令牌
-    'DEFAULT_MODULE'		=> 'Home',
+    'DEFAULT_MODULE'		=> 'Older',
     'APP_AUTOLOAD_PATH'		=> "Com.DxInfo",
     'SESSION_AUTO_START'	=> true,
     
