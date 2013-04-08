@@ -405,6 +405,7 @@ class DxFunction{
 		require_cache(C(DX_INFO_PATH).'/DxWidget/'. $class . '.class.php');
 		//require_cache(DxWidget::StringWidget);
 		//var_dump(C(DX_INFO_PATH));die();
+
 		if (!class_exists($class))
 			throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
 		$widget = Think::instance($class);
