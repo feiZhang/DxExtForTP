@@ -37,7 +37,7 @@ class UploadFileWidget extends DxWidget {
         //是否这只读字段
         );
     public function render($data) {
-        $val=  safe_merge($this->default, $data);
+        $val=  array_merge($this->default, $data);
         //默认id与name相同
         if(empty($val['id'])){
             $val['id']=  uniqid(escapeHtmlValue($val['name']));

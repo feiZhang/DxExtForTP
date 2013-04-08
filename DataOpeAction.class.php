@@ -198,7 +198,7 @@ class DataOpeAction extends DxExtCommonAction{
     
     /* 追加数据 **/
 	public function add(){
-// 		print_r($_REQUEST);die();
+ 		//print_r($_REQUEST);die("99");
 		$model  = $this->model;
 		// dump($model);die();
 		if(empty($model)) die();
@@ -224,19 +224,10 @@ class DataOpeAction extends DxExtCommonAction{
         $this->assign('valid', $model->getValidate(Model::MODEL_INSERT));
 		$this->assign('objectData', array_merge($vo,$_REQUEST));
 
-		$tempFile	= TEMP_PATH.$this->theModelName.'_'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
-		if(C('APP_DEBUG') || !file_exists($tempFile)){
-			$modelTpl	= THEME_PATH.$this->theModelName.'/'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
-			if(file_exists($modelTpl)){
-				$tempT	= $this->fetch($modelTpl);
-			}else{
-				$customTplFile	= THEME_PATH.'Public/data_edit'.C('TMPL_TEMPLATE_SUFFIX');
-				if(!file_exists($customTplFile))
-					$tempT	= $this->fetch("DxPublic:data_edit");
-				else
-					$tempT	= $this->fetch($customTplFile);
-			}
-			file_put_contents($tempFile, $tempT);
+		$tempFile	= TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
+		if(!$this->cacheTpl || C('APP_DEBUG') || !file_exists($tempFile)){
+		    $tempT	= $this->fetch("Public:data_edit");
+		    file_put_contents($tempFile, $tempT);
 		}
 		$this->display($tempFile);
 	}

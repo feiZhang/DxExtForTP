@@ -255,9 +255,7 @@ class DxExtCommonModel extends Model {
 		if(!isset($field["name"])) $field["name"]	= $key;
 		//将字典表，转换为valChange数据
 		if(isset($field["valChange"]["model"])){
-		    dump($field);
 			$m		= D($field["valChange"]["model"]);
-			dump($m);
 			$tValC	= $m->getCacheDictTableData();
 			if(!empty($field["valChange"]["type"])){
 				$tType	= explode(",",$field["valChange"]["type"]);

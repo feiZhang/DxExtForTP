@@ -6,10 +6,10 @@
             $.validationEngineLanguage.allRules = {
                 "required": { // Add your regex rules here, you can take telephone as an example
                     "regex": "none",
-                    "alertText": "* 此处不可为空",
+                    "alertText": "* 此处不可空白",
                     "alertTextCheckboxMultiple": "* 请选择一个项目",
-                    "alertTextCheckboxe": "* 您必须钩选一项",
-                    "alertTextDateRange": "* 日期范围不可为空"
+                    "alertTextCheckboxe": "* 您必须钩选此栏",
+                    "alertTextDateRange": "* 日期范围不可空白"
                 },
                 "requiredInFunction": { 
                     "func": function(field, rules, i, options){
@@ -118,6 +118,44 @@
                     "regex": /^[0-9a-zA-Z]+$/,
                     "alertText": "* 不接受特殊字符"
                 },
+                // --- CUSTOM RULES -- Those are specific to the demos, they can be removed or changed to your likings
+                "ajaxUserCall": {
+                    "url": "ajaxValidateFieldUser",
+                    // you may want to pass extra data on the ajax call
+                    "extraData": "name=eric",
+                    "alertText": "* 此名称已被其他人使用",
+                    "alertTextLoad": "* 正在确认名称是否有其他人使用，请稍等。"
+                },
+				"ajaxUserCallPhp": {
+                    "url": "phpajax/ajaxValidateFieldUser.php",
+                    // you may want to pass extra data on the ajax call
+                    "extraData": "name=eric",
+                    // if you provide an "alertTextOk", it will show as a green prompt when the field validates
+                    "alertTextOk": "* 此帐号名称可以使用",
+                    "alertText": "* 此名称已被其他人使用",
+                    "alertTextLoad": "* 正在确认帐号名称是否有其他人使用，请稍等。"
+                },
+                "ajaxNameCall": {
+                    // remote json service location
+                    "url": "ajaxValidateFieldName",
+                    // error
+                    "alertText": "* 此名称可以使用",
+                    // if you provide an "alertTextOk", it will show as a green prompt when the field validates
+                    "alertTextOk": "* 此名称已被其他人使用",
+                    // speaks by itself
+                    "alertTextLoad": "* 正在确认名称是否有其他人使用，请稍等。"
+                },
+				 "ajaxNameCallPhp": {
+	                    // remote json service location
+	                    "url": "phpajax/ajaxValidateFieldName.php",
+	                    // error
+	                    "alertText": "* 此名称已被其他人使用",
+	                    // speaks by itself
+	                    "alertTextLoad": "* 正在确认名称是否有其他人使用，请稍等。"
+	                },
+                "validate2fields": {
+                    "alertText": "* 请输入 HELLO"
+                },
 	            //tls warning:homegrown not fielded 
                 "dateFormat":{
                     "regex": /^\d{4}[\/\-](0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])$|^(?:(?:(?:0?[13578]|1[02])(\/|-)31)|(?:(?:0?[1,3-9]|1[0-2])(\/|-)(?:29|30)))(\/|-)(?:[1-9]\d\d\d|\d[1-9]\d\d|\d\d[1-9]\d|\d\d\d[1-9])$|^(?:(?:0?[1-9]|1[0-2])(\/|-)(?:0?[1-9]|1\d|2[0-8]))(\/|-)(?:[1-9]\d\d\d|\d[1-9]\d\d|\d\d[1-9]\d|\d\d\d[1-9])$|^(0?2(\/|-)29)(\/|-)(?:(?:0[48]00|[13579][26]00|[2468][048]00)|(?:\d\d)?(?:0[48]|[2468][048]|[13579][26]))$/,
@@ -130,23 +168,7 @@
                     "alertText2": "可接受的格式： ",
                     "alertText3": "mm/dd/yyyy hh:mm:ss AM|PM 或 ", 
                     "alertText4": "yyyy-mm-dd hh:mm:ss AM|PM"
-	            },
-                "idcardNo":{
-                	"regex":/(^[1-9]\d{7}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{3})|(^[1-9]\d{5}[1-9]\d{3}((0\d)|(1[0-2]))(([0|1|2]\d)|3[0-1])\d{4})$/,
-                	"alertText": "* 无效的身份证号码"
-                },
-                "mailCode":{
-                	"regex":/^[1-9]\d{5}(?!\d){1}$/,
-                	"alertText":'* 无效的邮政编码'
-                },
-                "Chinese":{
-                	"regex":/^[\u4E00-\u9FFF]+$/,
-                	"alertText":"* 必须输入中文"
-                },
-                "notSpecialchar":{
-                	"regex":/^[a-zA-z0-9\u4E00-\u9FA5]*$/,
-	                "alertText":"不能包含标点符号或者空格"	
-                }
+	            }
             };
             
         }

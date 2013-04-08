@@ -38,7 +38,7 @@ class FormCheckWidget extends DxWidget{
         'cwidth'=>'',
         );
     public function render($data) {
-        $val=  safe_merge($this->default, $data);
+        $val=  array_merge($this->default, $data);
         $val['id']=  uniqid($val['name']."_");
         if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
             $val['value']=  escapeHtmlValue($val['default']);
