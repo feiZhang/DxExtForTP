@@ -39,12 +39,9 @@ class StringWidget extends DxWidget {
         'readOnly'=>false
         );
     public function render($data) {
-<<<<<<< HEAD
         $val=  DxFunction::safe_merge($this->default, $data);
-=======
         //dump($this->default);dump($data);die();
         $val    = array_merge($this->default, $data);
->>>>>>> origin
         $longText=false;
         if($val['width']>0){
             if($val['width']>1000){
