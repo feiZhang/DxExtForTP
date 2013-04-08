@@ -39,7 +39,12 @@ class StringWidget extends DxWidget {
         'readOnly'=>false
         );
     public function render($data) {
+<<<<<<< HEAD
         $val=  DxFunction::safe_merge($this->default, $data);
+=======
+        //dump($this->default);dump($data);die();
+        $val    = array_merge($this->default, $data);
+>>>>>>> origin
         $longText=false;
         if($val['width']>0){
             if($val['width']>1000){
@@ -55,7 +60,6 @@ class StringWidget extends DxWidget {
             $val['value']=  htmlentities($val['default'],ENT_QUOTES,"UTF-8");
         }
         $val['placeholder']=  htmlentities($val['placeholder'],ENT_QUOTES,"UTF-8");
-
         if($longText){
             $ret=$this->renderFile("textarea", $val);
         }else{

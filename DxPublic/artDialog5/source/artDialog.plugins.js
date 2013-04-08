@@ -39,8 +39,11 @@ $.confirm = $.dialog.confirm = function (content, ok, cancel) {
         id: 'Confirm',
         fixed: true,
         lock: true,
+        title:"提示",
         content: content,
         ok: ok,
+        okValue:"确定",
+        cancelValue:"取消",
         cancel: cancel
     });
 };

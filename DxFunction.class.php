@@ -1,20 +1,5 @@
 <?php
 class DxFunction{
-    /**
-     * 通过Model:Action格式获取tpl文件的绝对路径，代码来自ThinkTemplate
-     */
-    function getTplFilePath($templateName){
-        $path   =  explode(':',$templateName);
-        $action = array_pop($path);
-        $module = !empty($path)?array_pop($path):MODULE_NAME;
-        if(!empty($path) && THEME_NAME) {// 设置模板主题
-            $path = dirname(THEME_PATH).'/'.array_pop($path).'/';
-        }else{
-            $path = THEME_PATH;
-        }
-        $templateName  =  $path.$module.C('TMPL_FILE_DEPR').$action.$this->config['template_suffix'];
-        return $templateName;
-    }
     
 	/**
 	 * 获取一个当前日期
@@ -38,21 +23,6 @@ class DxFunction{
 	 */
 	function filter_notnull($v){
 	    return($v!==NULL);
-	}
-	
-	/**
-	 * safe merge array
-	 */
-	function safe_merge($x){
-	    $args=func_get_args();
-	    $ret=array();
-	    foreach($args as $v){
-	        if(is_array($v)){
-	            $m=array_filter($v, "filter_notnull");
-	            $ret=  array_merge($ret, $m);
-	        }
-	    }
-	    return $ret;
 	}
 	
 	/**
@@ -254,6 +224,8 @@ class DxFunction{
 	
 	/**
 	 * 获取登录账号的权限列表。并缓存之。
+	 * 1.所有菜单列表
+	 * 2.登录账号有权限访问的菜单列表
 	 * 系统会出现，Module、Action相同，但是args不相同的的菜单。
 	 * @param	$ignore		是否忽略缓存，在登录时，要强制获取新的权限信息，所以需要忽略之
 	 * */
@@ -262,6 +234,7 @@ class DxFunction{
 		$menuM	= null;
 		if(empty($allAction)){
 			$menuM			= D('Menu');
+			if($menuM instanceof Model) return array();    //如果没有自定义Menu的Model，则表示没有启用此功能。
 			$allAction		= array();
 			$action_list	= $menuM->getAllAction();
 			foreach($action_list as $l){
@@ -272,7 +245,7 @@ class DxFunction{
 		}else{
 			$allAction	= json_decode($allAction,true);
 		}
-			
+		
 		$my_id			= session(C('USER_AUTH_KEY'));
 		if(intval($my_id)<1) return array("allAction"=>$allAction);
 	
@@ -429,9 +402,13 @@ class DxFunction{
 	// 为了将所有的字段widget放到同一个目录下方便引入。。增加此函数
 	function W_FIELD($name, $data=array(), $return=false) {
 		$class = $name . 'Widget';
+<<<<<<< HEAD
 		require_cache(C(DX_INFO_PATH).'/DxWidget/'. $class . '.class.php');
 		//require_cache(DxWidget::StringWidget);
 		//var_dump(C(DX_INFO_PATH));die();
+=======
+		require_cache(dirname(__FILE__) . '/DxWidget/' . $class . '.class.php');
+>>>>>>> origin
 		if (!class_exists($class))
 			throw_exception(L('_CLASS_NOT_EXIST_') . ':' . $class);
 		$widget = Think::instance($class);

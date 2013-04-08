@@ -10,48 +10,31 @@ class DxExtCommonAction extends Action {
 		parent::__construct();
 		if(empty($this->model)) $this->model  = D($this->getModelName());
 		else $this->theModelName	= $this->model->name;
-		
-		//如果有自定义的public  header文件，则使用，如果没有，则使用DxInfo提高提供的模板文件。
-		if(!S("TplHeader")){
-		    $headerFile    = DxFunction::getTplFilePath("Public:header");
-		    if(file_exists($headerFile)){
-		        S("TplHeader",$headerFile);
-		    }else{
-		        S("TplHeader",C("DX_INFO_PATH")."/DxTpl/header.html");
-		    }
-		}
-		if(!S("TplFooter")){
-		    $footerFile    = DxFunction::getTplFilePath("Public:footer");
-		    if(file_exists($footerFile)){
-		        S("TplFooter",$footerFile);
-		    }else{
-		        S("TplFooter",C("DX_INFO_PATH")."/DxTpl/footer.html");
-		    }
-		}
-		$this->assign("TplHeader",S("TplHeader"));
-		$this->assign("TplFooter",S("TplFooter"));
 	}
 	
 	private	$cacheActionList	= array();	//系统action的缓存，对应menu表
 	function _initialize() {
-		//$this->cacheActionList	= DxFunction::getModuleActionForMe();
-		//dump($this->cacheActionList["myAction"]);die();
-		$log_id =	$this->writeActionLog();
-
-		if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
-			if(0 == intval(session(C("USER_AUTH_KEY")))) {
-				$this->redirect('Public/login');
-			}
-			//判断用户是否有当前动作操作权限
-			$privilege = $this->check_action_privilege();
-			if (!$privilege) {  //无权限
-				if($log_id){
-					$this->updateActionLog($log_id);
-				}
-				if(C('LOG_RECORD')) Log::save();
-				die("您无权访问此页面!");
-			}
-		}
+	    $log_id =	$this->writeActionLog();
+	    
+	    if(C("DISABLE_ACTION_AUTH_CHECK")!==true){
+    		$this->cacheActionList	= DxFunction::getModuleActionForMe();
+    		//dump($this->cacheActionList["myAction"]);die();
+    
+    		if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
+    			if(0 == intval(session(C("USER_AUTH_KEY")))) {
+    				$this->redirect('Public/login');
+    			}
+    			//判断用户是否有当前动作操作权限
+    			$privilege = $this->check_action_privilege();
+    			if (!$privilege) {  //无权限
+    				if($log_id){
+    					$this->updateActionLog($log_id);
+    				}
+    				if(C('LOG_RECORD')) Log::save();
+    				die("您无权访问此页面!");
+    			}
+    		}
+	    }
 
 		//自定义皮肤
 		if (cookie('RESTHOME_SKIN_ROOT')) {
@@ -178,7 +161,9 @@ class DxExtCommonAction extends Action {
 	 * */
 	protected function fetch($templateFile='',$content='',$prefix=''){
 	    $templateFile    = $this->checkTplFile($templateFile);
-	    //die($templateFile);
+	    //处理include标签，，支持加载DxInfo中的模板文件
+	    $content    = file_get_contents($templateFile);
+	    $content    = $this->praseIncludeForDxInfo($content);
 	    $content    = parent::fetch($templateFile,$content,$prefix);
 	    return str_replace("__DXPUBLIC__", C("DX_PUBLIC"), $content);
 	}
@@ -209,16 +194,38 @@ class DxExtCommonAction extends Action {
         
         if(empty($action)) $action    = ACTION_NAME;
         if(file_exists($templateFile)){
-            return $templateFile;
+            $tplFile    = $templateFile;
         }else if(file_exists(THEME_PATH.$this->theModelName.'/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
-            return THEME_PATH.$this->theModelName.'/'.$action.C('TMPL_TEMPLATE_SUFFIX');
+            $tplFile    = THEME_PATH.$this->theModelName.'/'.$action.C('TMPL_TEMPLATE_SUFFIX');
         }else if(file_exists(THEME_PATH.'DxPublic/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
-            return THEME_PATH.'DxPublic/'.$action.C('TMPL_TEMPLATE_SUFFIX');
+            $tplFile    = THEME_PATH.'DxPublic/'.$action.C('TMPL_TEMPLATE_SUFFIX');
         }else{
             $tplFile	= sprintf("%s/DxTpl/%s%s",dirname(__FILE__),$action,C('TMPL_TEMPLATE_SUFFIX'));
-            return $tplFile;
         }
+        return $tplFile;
     }	
+    
+    /**
+     * 解析模板文件中include标签，支持 include DxInfo中的模板文件。
+     */
+    protected function praseIncludeForDxInfo($content){
+        $find       = preg_match_all('/<include\s(.+?)\s*?\/>/is',$content,$matches);
+        if($find) {
+            for($i=0;$i<$find;$i++) {
+                $xml        =   '<tpl><tag '.$matches[1][$i].' /></tpl>';
+                $xml        =   simplexml_load_string($xml);
+                if(!$xml)
+                    throw_exception(L('_XML_TAG_ERROR_'));
+                $xml        =   (array)($xml->tag->attributes());
+                $array      =   array_change_key_case($xml['@attributes']);
+                $file       =   $array['file'];
+                unset($array['file']);
+                $content    =   str_replace($matches[0][$i],file_get_contents($this->checkTplFile($file)),$content);
+            }
+            return $this->praseIncludeForDxInfo($content);
+        }
+        return $content;
+    }
 	/**
 	 +----------------------------------------------------------
 	 * 根据表单生成查询条件

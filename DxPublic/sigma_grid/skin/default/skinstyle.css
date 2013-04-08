@@ -361,12 +361,16 @@ td.gt-cell-updated {
 }
 
 
-.gt-page-input {
+input[type="text"].gt-page-input {
 	border-color: #558899;
+	height:auto;
+	padding:0;
 }
 
 .gt-pagesize-select {
 	border-color: #558899;
+	height:auto;
+	padding:0;
 }
 
 

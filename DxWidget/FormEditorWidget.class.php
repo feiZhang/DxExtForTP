@@ -24,7 +24,7 @@ class FormEditorWidget extends DxWidget{
         'readOnly'=>false
         );
     public function render($data) {
-        $val=  safe_merge($this->default, $data);
+        $val=  array_merge($this->default, $data);
         if($val['width']>0){
             $val['cwidth']="width: {$val['width']}px;";
         }

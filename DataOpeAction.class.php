@@ -15,7 +15,7 @@ class DataOpeAction extends DxExtCommonAction{
 		if(empty($model)) die("model为空!");
 		$enablePage	= $model->getModelInfo("enablePage");
 		if($enablePage!==false) $enablePage	= true;
-		require_once (C("DX_INFO_PATH")."/vendor/GridServerHandler.php");
+		require_once (C("DX_INFO_PATH")."/Vendor/GridServerHandler.php");
         $gridHandler 	= new GridServerHandler();
         if($enablePage){
 			$start 			= intval($gridHandler->pageInfo["startRowNum"])-1;
@@ -42,7 +42,7 @@ class DataOpeAction extends DxExtCommonAction{
         	$data_change	= $model->getModelInfo("data_change");
         	if(is_array($data_change)){
         		foreach($data_change as $key=>$val){
-        			$val(&$data_list,$key);
+        			$val($data_list,$key);
         		}
         	}
         }
@@ -198,7 +198,7 @@ class DataOpeAction extends DxExtCommonAction{
     
     /* 追加数据 **/
 	public function add(){
-// 		print_r($_REQUEST);die();
+ 		//print_r($_REQUEST);die("99");
 		$model  = $this->model;
 		// dump($model);die();
 		if(empty($model)) die();
@@ -224,19 +224,10 @@ class DataOpeAction extends DxExtCommonAction{
         $this->assign('valid', $model->getValidate(Model::MODEL_INSERT));
 		$this->assign('objectData', array_merge($vo,$_REQUEST));
 
-		$tempFile	= TEMP_PATH.$this->theModelName.'_'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
-		if(C('APP_DEBUG') || !file_exists($tempFile)){
-			$modelTpl	= THEME_PATH.$this->theModelName.'/'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
-			if(file_exists($modelTpl)){
-				$tempT	= $this->fetch($modelTpl);
-			}else{
-				$customTplFile	= THEME_PATH.'Public/data_edit'.C('TMPL_TEMPLATE_SUFFIX');
-				if(!file_exists($customTplFile))
-					$tempT	= $this->fetch("DxPublic:data_edit");
-				else
-					$tempT	= $this->fetch($customTplFile);
-			}
-			file_put_contents($tempFile, $tempT);
+		$tempFile	= TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
+		if(!$this->cacheTpl || C('APP_DEBUG') || !file_exists($tempFile)){
+		    $tempT	= $this->fetch("Public:data_edit");
+		    file_put_contents($tempFile, $tempT);
 		}
 		$this->display($tempFile);
 	}

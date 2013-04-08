@@ -3,6 +3,7 @@
 if (!defined('THINK_PATH')) exit();
 $TplHeader    = "dd";
 return array(
+    'DISABLE_ACTION_AUTH_CHECK'    => false,
     'DX_INFO_PATH'          => dirname(__FILE__),
     'DX_PUBLIC'             => "/DxInfo/DxPublic",
     

@@ -118,6 +118,44 @@
                     "regex": /^[0-9a-zA-Z]+$/,
                     "alertText": "* 不接受特殊字元"
                 },
+                // --- CUSTOM RULES -- Those are specific to the demos, they can be removed or changed to your likings
+                "ajaxUserCall": {
+                    "url": "ajaxValidateFieldUser",
+                    // you may want to pass extra data on the ajax call
+                    "extraData": "name=eric",
+                    "alertText": "* 此名稱已經被其他人使用",
+                    "alertTextLoad": "* 正在確認名稱是否有其他人使用，請稍等。"
+                },
+				"ajaxUserCallPhp": {
+                    "url": "phpajax/ajaxValidateFieldUser.php",
+                    // you may want to pass extra data on the ajax call
+                    "extraData": "name=eric",
+                    // if you provide an "alertTextOk", it will show as a green prompt when the field validates
+                    "alertTextOk": "* 此帳號名稱可以使用",
+                    "alertText": "* 此帳號名稱已經被其他人使用",
+                    "alertTextLoad": "* 正在確認帳號名稱是否有其他人使用，請稍等。"
+                },
+                "ajaxNameCall": {
+                    // remote json service location
+                    "url": "ajaxValidateFieldName",
+                    // error
+                    "alertText": "* 此名稱可以使用",
+                    // if you provide an "alertTextOk", it will show as a green prompt when the field validates
+                    "alertTextOk": "* 此名稱已經被其他人使用",
+                    // speaks by itself
+                    "alertTextLoad": "* 正在確認名稱是否有其他人使用，請稍等。"
+                },
+				 "ajaxNameCallPhp": {
+	                    // remote json service location
+	                    "url": "phpajax/ajaxValidateFieldName.php",
+	                    // error
+	                    "alertText": "* 此名稱已經被其他人使用",
+	                    // speaks by itself
+	                    "alertTextLoad": "* 正在確認名稱是否有其他人使用，請稍等。"
+	                },
+                "validate2fields": {
+                    "alertText": "* 請輸入 HELLO"
+                },
 	            //tls warning:homegrown not fielded 
                 "dateFormat":{
                     "regex": /^\d{4}[\/\-](0?[1-9]|1[012])[\/\-](0?[1-9]|[12][0-9]|3[01])$|^(?:(?:(?:0?[13578]|1[02])(\/|-)31)|(?:(?:0?[1,3-9]|1[0-2])(\/|-)(?:29|30)))(\/|-)(?:[1-9]\d\d\d|\d[1-9]\d\d|\d\d[1-9]\d|\d\d\d[1-9])$|^(?:(?:0?[1-9]|1[0-2])(\/|-)(?:0?[1-9]|1\d|2[0-8]))(\/|-)(?:[1-9]\d\d\d|\d[1-9]\d\d|\d\d[1-9]\d|\d\d\d[1-9])$|^(0?2(\/|-)29)(\/|-)(?:(?:0[48]00|[13579][26]00|[2468][048]00)|(?:\d\d)?(?:0[48]|[2468][048]|[13579][26]))$/,

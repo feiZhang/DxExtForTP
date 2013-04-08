@@ -25,12 +25,12 @@ class CantonWidget extends DxWidget {
         //是否这只读字段
         );
     public function render($data) {
-    	$field			= safe_merge($data["field"],$data);
+    	$field			= array_merge($data["field"],$data);
     	$rootCantonId	= $field["canton"]["rootCantonId"];
     	if(intval($rootCantonId)<1) $rootCantonId	= C("SYS_ROOTCANTONID");
     	if(intval($rootCantonId)<1) $rootCantonId	= 3520;
     	 
-        $val=  safe_merge($this->default, array("rootCantonId"=>$rootCantonId,
+        $val=  array_merge($this->default, array("rootCantonId"=>$rootCantonId,
         											"name"=>$field["name"],
         											"value"=>$data["value"],
         											"validclass"=>$data["validclass"]
