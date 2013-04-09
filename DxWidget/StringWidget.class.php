@@ -39,7 +39,7 @@ class StringWidget extends DxWidget {
         'readOnly'=>false
         );
     public function render($data) {
-        $val    = array_merge($this->default, $data);
+        $val    = array_merge($this->default,$data["fieldSet"],$data);
         $longText=false;
         if($val['width']>0){
             if($val['width']>1000){

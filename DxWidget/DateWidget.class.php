@@ -2,8 +2,8 @@
 
 /*
  * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+* and open the template in the editor.
+*/
 
 /**
  * Description of DatetimeWidget
@@ -15,15 +15,15 @@ class DateWidget extends DxWidget {
         //是否允许显示默认值
         "allowdefault"=>false,
         //默认值
-        "default"=>'', 
+        "default"=>'',
         //日期格式
         "format"=>'yyyy-MM-dd',
         //默认值
         "value"=>'',
         //mode==current && value==''时显示当前时间
         'mode'=>'',
-        "id"=>'', 
-        "name"=>'', 
+        "id"=>'',
+        "name"=>'',
         //占位符,酷吧
         'placeholder'=>'',
         //最大值
@@ -40,10 +40,9 @@ class DateWidget extends DxWidget {
         'custom_class'=>'',
         //是否这只读字段
         'readOnly'=>false
-        );
+    );
     public function render($data) {
-        
-        $val=  array_merge($this->default, $data);
+        $val=  array_merge($this->default, $data["fieldSet"],$data);
         if($val['width']>0){
             $val['cwidth']="width: {$val['width']}px;";
         }
@@ -64,10 +63,6 @@ class DateWidget extends DxWidget {
             }
             $str=  json_encode($attr);
             $val['focus']=  escapeHtmlValue("WdatePicker($str)") ;
-        }
-        //默认id与name相同
-        if(empty($val['id'])){
-            $val['id']=$val['name'];
         }
         $val['value']= escapeHtmlValue($val['value']);
         if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){

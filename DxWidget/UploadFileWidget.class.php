@@ -37,11 +37,7 @@ class UploadFileWidget extends DxWidget {
         //是否这只读字段
         );
     public function render($data) {
-        $val=  array_merge($this->default, $data);
-        //默认id与name相同
-        if(empty($val['id'])){
-            $val['id']=  uniqid(escapeHtmlValue($val['name']));
-        }
+        $val=  array_merge($this->default,$data["fieldSet"], $data);
         
         if(empty($val['value'])){
             $val['value']=  json_decode("{}");
@@ -72,7 +68,7 @@ class UploadFileWidget extends DxWidget {
             $val['option']=$option;
         }
         $val['uploadType'] = ($max==1)?"":'multiple';
-        $val['placeholder']= escapeHtmlValue($val['placeholder']);
+        $val['placeholder']= DxFunction::escapeHtmlValue($val['placeholder']);
         $ret=$this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);
     }

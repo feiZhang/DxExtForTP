@@ -19,7 +19,7 @@ class FormEnumWidget extends DxWidget {
         //当前值,当前值为空时显示
         "value"=>'',
         //显示列表,结构array('v'=>'label')
-        "set"=>array(),
+        "field_enum"=>array(),
         "name"=>'', 
         //占位符
         'placeholder'=>'',
@@ -37,13 +37,14 @@ class FormEnumWidget extends DxWidget {
         'cwidth'=>'',
         );
     public function render($data) {
-        $val=  array_merge($this->default, $data);
-        $val['value']=  htmlentities($val['value'],ENT_QUOTES,"UTF-8");
+        $val            = array_merge($this->default, $data["fieldSet"], $data);
+
         if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
-            $val['value']=  htmlentities($val['default'],ENT_QUOTES,"UTF-8");
-        }
-        $val['placeholder']=  htmlentities($val['placeholder'],ENT_QUOTES,"UTF-8");
-        $ret=$this->renderFile("render", $val);
+            $val['value']    = DxFunction::escapeHtmlValue($val['default']);
+        }else
+            $val['value']    = DxFunction::escapeHtmlValue($val['value']);
+        $val['placeholder']  = DxFunction::escapeHtmlValue($val['placeholder']);
+        $ret    = $this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);
     }
 }

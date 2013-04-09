@@ -157,7 +157,7 @@ function dataOpeDelete(id,msg){
  * */
 function getDataSearchUrl(){
 	var para	= new Object();
-    $("input.dataOpeSearch").each(function(){
+    $("input.dataOpeSearch,select.dataOpeSearch").each(function(){
         if($(this).val()=="") return;
         if($(this).attr("type")=="radio"){
             if($(this).attr("checked")=="checked"){

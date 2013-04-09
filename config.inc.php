@@ -1,7 +1,6 @@
 <?php
 //DXIPCC 核心配置文件
 if (!defined('THINK_PATH')) exit();
-$TplHeader    = "dd";
 return array(
     'DISABLE_ACTION_AUTH_CHECK'    => false,
     'DX_INFO_PATH'          => dirname(__FILE__),

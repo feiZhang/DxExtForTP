@@ -28,7 +28,7 @@ class DxExtCommonModel extends Model {
 	 * auto_type:对应MODEL的auto类型，INSERT UPDATE BOTH等
 	 * type取值：DP_TYPE_ENABLE-数据权限字段   DP_TYPE_PUBLIC-设定此字段是否为公共数据表示字段（如果此字段是公共数据判定字段，并且值=1，则此数据任何人可查看）	DP_TYPE_STATIC_AUTO-auto使用固定值填充（固定值设定到字段session_field中）
 	 * DP_NOT_CHECK_ACTION 格式： array("module_name"=>array("action_name"=>1,"action_name"=>1),"module_name"=>1);
-	 * DP_NOT_CHECK_MODEL 格式： array("model_name"=>1,"model_name"=>1);
+	 * DP_NOT_CHECK_MODEL 格式：  array("model_name"=>1,"model_name"=>1);
 	 * 数据权限功能得配置样例
 	 *  		'DP_POWER_FIELDS'       => array(
 	 *   				array('field_name'=>'create_dept','auto_type'=>1,'type'=>1,'session_field'=>'dept'),
@@ -39,25 +39,24 @@ class DxExtCommonModel extends Model {
 	/**
 	 * 附加功能:自动生成数据查询列表，对DataOpe提供基础数据
 	 listFields：字段的附加属性,数组类型，其key是字段的名称.
-	 field:key对应的字段内容，例如：DATE_FORMAT(subsidy_end_date,"%Y-%m") subsidy_end_date
-	 type:字段类型，分为：string[字符]、int、float（sigma支持这3种）、time[时间]、date[日期]、y_m(只显示年份和月份)、datetime[日期时间]、enum[枚举,单选框]、select[枚举,下拉框]、set[集合]、uploadFile[文件上传]、canton[区域]、cutPhoto[剪切头像]
-	 	type用于3个地方：1.grid生成时，sigma支持 string int float（排序结果不同）   2.查询框根据类型生成不同的格式(input输入框、时间选择框、下拉选择框、单选框)   3.数据新增和修改时，生成不同的样式（input输入框、时间选择框、下拉选择框、单选框）
-	 	uploadFile的附属参数:"upload"=>array("filetype"=>".gif、.jpeg、.jpg、.png、.pdf、.doc、.xls、.mp4、.mov","maxNum"=>0,"buttonValue"=>"文件上传","maxSize"=>1024*1024)),
-	 	uploadFile存储的数据不能直接显示，在model中配置 'data_change'=>array("file_name"=>"uploadFilesToGrid"), 指定字段进行内容转义
-	 title:中文说明
-	 hide:是否隐藏，此值根据位运算，获得隐藏的范围。。见常量 HIDE_FIELD，，如果在多个位置不显示，等于各个值的和。比如：列表新增都不显示则为3
-	 pk:是否主键
-	 width:列宽度，和查询框的宽度
-	 valChange:数据转换，[固定转换\关联表转换]，固定值转换时是一个数组(索引价格k)，比如：
-	     "valChange"=>array("1"=>"客户",'4'=>'超级管理员'),
-	     "valChange"=>array("model"=>"user","type"=>"basic_data_type") 注意:这里对应的model必须设置modelInfo的dictTable值才有效，，这种格式是从数据库获取数据，最终得到和上面一样的数据格式，，在使用多维数组时才启用type属性,type多维度时，使用逗号隔开
-	 frozen:是否锁定列
-	 -此功能移除--serach:是否为查询条件，样例：array("enum"=>array("1","2"),"width"=>"200")
-	 renderer:数据转换，此处为js代码  var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){ var valChange=%s;return valChange[value];}
-	 formFiled:此字段一般为某id字段对应的 名称。。在数据增加修改时，自动复制值。
-	 readOnly:字段数据为只读....一种情况：字典表的维护，添加时需要类型显示为不能改，但是又需要将类型值追加到数据中，则再model中重新定义save方法，如果是新增，则将type字段readOnly改为false,注：readOnly的字段，还是会从前端post过来，但是在后端会被忽略掉
-	 grouped:字段是否进行分组合并显示
-	 editor:数据添加修改时的html输入。例子:
+    	 type:字段类型，分为：string[字符]、int、float（sigma支持这3种）、time[时间]、date[日期]、y_m(只显示年份和月份)、datetime[日期时间]、enum[枚举,单选框]、select[枚举,下拉框]、set[集合]、uploadFile[文件上传]、canton[区域]、cutPhoto[剪切头像]
+    	 	type用于3个地方：1.grid生成时，sigma支持 string int float（排序结果不同）   2.查询框根据类型生成不同的格式(input输入框、时间选择框、下拉选择框、单选框)   3.数据新增和修改时，生成不同的样式（input输入框、时间选择框、下拉选择框、单选框）
+    	 	uploadFile的附属参数:"upload"=>array("filetype"=>".gif、.jpeg、.jpg、.png、.pdf、.doc、.xls、.mp4、.mov","maxNum"=>0,"buttonValue"=>"文件上传","maxSize"=>1024*1024)),
+    	 	uploadFile存储的数据不能直接显示，在model中配置 'data_change'=>array("file_name"=>"uploadFilesToGrid"), 指定字段进行内容转义
+    	 title:中文说明
+    	 hide:是否隐藏，此值根据位运算，获得隐藏的范围。。见常量 HIDE_FIELD，，如果在多个位置不显示，等于各个值的和。比如：列表新增都不显示则为3
+    	 pk:是否主键
+    	 width:列宽度，和查询框的宽度
+    	 valChange:数据转换，[固定转换\关联表转换]，固定值转换时是一个数组(索引价格k)，比如：
+    	     "valChange"=>array("1"=>"客户",'4'=>'超级管理员'),
+    	     "valChange"=>array("model"=>"user","type"=>"basic_data_type") 注意:这里对应的model必须设置modelInfo的dictTable值才有效，，这种格式是从数据库获取数据，最终得到和上面一样的数据格式，，在使用多维数组时才启用type属性,type多维度时，使用逗号隔开
+    	 下面是对应的sigmaGrid的特性配置
+        	 frozen:是否锁定列
+        	 grouped:字段是否进行分组合并显示
+        	 renderer:数据转换，此处为js代码  var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){ var valChange=%s;return valChange[value];}
+    	 特殊功能：
+    	     field:key对应的字段内容，例如：DATE_FORMAT(subsidy_end_date,"%Y-%m") subsidy_end_date        解决带函数字段问题。
+    	     editor:数据添加修改时，自定义输入框。例子（实现selectselect功能）:
 				 "editor"=>"<div id='selectCanton'></div><input type='hidden' id='canton_fdn' name='canton_fdn' value='' /><input type='hidden' id='canton_id' name='canton_id' value='' />
 							 <script type='text/javascript'>
 							 (function($){
@@ -68,50 +67,42 @@ class DxExtCommonModel extends Model {
 							 })(jQuery);
 							 </script>
 							 ",
-     default:默认值(String|Array),
-     		字符串:直接做为默认值.
-     		数组:最少两个元素,
-     				第一个元素表示值的类型,
-		 			为func时,第二个值为函数名,之后的数据为函数的参数.如array('func', 'test', 'p1', 'p2'),则调用test('p1', 'p2');
-     		为防止数据出现混乱,默认值在readonly及编辑时不生效.
-	  
-	 --下面的暂时无用
-	 html:字段自定义的html写法
-	 parentValue:新增时是否要将父记录的数据传入
-	 isTitle:数据的主要显示字段，主要用户tree时，对应的显示字段， bool
-	  
+	     未实现或部分实现功能
+	         formFiled:此字段一般为某id字段对应的 名称。。在数据增加修改时，自动复制值。
+	         readOnly:字段数据为只读....一种情况：字典表的维护，添加时需要类型显示为不能改，但是又需要将类型值追加到数据中，则再model中重新定义save方法，如果是新增，则将type字段readOnly改为false,注：readOnly的字段，还是会从前端post过来，但是在后端会被忽略掉
+             default:默认值(String|Array),    字符串:直接做为默认值. 为防止数据出现混乱,默认值在readonly及编辑时不生效.
+                                             数组:最少两个元素,
+                                 				第一个元素表示值的类型,
+                            		 			为func时,第二个值为函数名,之后的数据为函数的参数.如array('func', 'test', 'p1', 'p2'),则调用test('p1', 'p2');
 	 modelInfo:
-	 title:中文说明
-	 addTitle:新增按钮的中文说明,默认为：新增+title内容
-	 editTitle:修改的中文说明，默认为：修改+title内容
-	 order:默认的数据排序
-	 readOnly:本Model是否不需要新增数据
-	 hasCheckBox:数据列表是否有checkbox
-	 otherManageAction:本model除新增外的其他操作
-	 searchHTML:操作框的html信息，一般为搜索框和查询按钮,,搜索框支持的特性：
+    	 title:中文说明    
+    	 addTitle:新增按钮的中文说明,默认为：新增+title内容
+	     editTitle:修改的中文说明，默认为：修改+title内容
+	     readOnly:本Model是否不需要新增数据
+	     otherManageAction:本model除新增外的其他操作
+	     searchHTML:操作框的html信息，一般为搜索框和查询按钮,,搜索框支持的特性：
 	 			1.id对应model数据字段 
 	 			2.class="dataOpeSearch"表示是查询条件
 	 			3.class="likeLeft likeRight"表示模糊查询的左相似或右相似
 	 			4.支持radio类型input
 	 			5.查询按钮执行js函数触发查询 dataOpeSearch(是否使用条件)
-	 			6.支持model字段生成输入框，例如：区域选择框。{$editFields.canton_fdn|getFieldInput=###,array(),0,true}  直报、实地检查应用
-	 			例子:
-	 			登录名:<input id='login_username' size='10' class='likeLeft likeRight dataOpeSearch' value='' />
-				真实姓名:<input id='name' size='10' class='dataOpeSearch likeLeft' value='' />
+	 			6.支持model字段生成输入框，例如：区域选择框。{$editFields.canton_fdn|DxFunction::getFieldInput=###,array(),0,true}  直报、实地检查应用
+	 	        例子:
+                姓名:<input id='name' class='likeLeft likeRight dataOpeSearch' value='' />
+                性别:{:DxFunction::W_FIELD(\"FormEnum\", array(\"fieldSet\"=>\$listFields['sex']))}
 				<input onclick='javascript:dataOpeSearch(true);' type='button' class='d-button d-state-highlight' value='查询' id='item_query_items' />
 				<input onclick='javascript:dataOpeSearch(false);' type='button' class='d-button d-state-highlight' value='全部数据' id='item_query_all' />
 				<input onclick='javascript:dataOpeExport(false);' type='button' class='d-button d-state-highlight' value='导出' id='item_export' />
 	 dictTable:字典表值字段,格式1. dictTable="title"（生成以主键为key，值字段数据为值的 数组) 格式2:dictTable="keyField,keyField,..,valueField");(其中keyField是作为数据关联的字段)   根据这个配置，程序自动将字典表转换为valChange的普通模式，这些数组会被缓存到Runtime得Data目录
 	 dictType:字典表的类型，可以是 "mySelf" 和 公共(默认)。。。公共的字典缓存是大家共享的，比如：老人类型，，私有的缓存是各自单独存放，比如:职工信息,每个养老院添加老人选择护理员时，只选自己的职工
 	 toString:提供给toString方法，整合数据的个是，   toString=array("%s %s 生于%s",array("real_name","sex","birthday"))  0：数据格式 1：对应的字段名
-	 css:目前提供：data_list_noborder（默认）、data_list 两种
-	 enablePage:grid是否提供分页。
 	 helpInfo:帮助提示信息
-	 gridHeader:自定义grid表头,,不要写table标签，只写TR标签即可。系统会自动追加Table标签。
 	 data_change:数据在后台就进行数据字典转换，尽量少用，valChange是将数据转换的工作交给js，减少后台php的执行时间，但是某些特殊转换无法使用valChange完成，则可以使用data_change，在后台获取到数据后，调用函数对数据进行转换，这样会耗费大量的php执行，离子：补贴状态转换 'data_change'=>array("aysn_state"=>"subsidyStateChange"),
-	
-	 ---暂时无用
-	 rowAction:列表后面的操作
+	 sigmaGrid功能配置项：
+    	 enablePage:grid是否提供分页。
+    	 gridHeader:自定义grid表头,,不要写table标签，只写TR标签即可。系统会自动追加Table标签。
+         order:默认的数据排序
+	     hasCheckBox:数据列表是否有checkbox
 	**/
 
 	/**
@@ -138,12 +129,13 @@ class DxExtCommonModel extends Model {
 	
 	/**
 	 * 附加功能:操作日志，系统自动记录操作日志到表operation_log中，表格式固定
+	 * 附加功能:数据变动日志，系统自动记录数据变动日志到表DataChangeLog中，表格式固定，目前问题：时间不长，表就较大了。
 	 * */
 
 	protected $listFields  	= array();  //模型字段的附加信息
 	protected $modelInfo   	= array();  //模型的附加信息。
 	private $cacheDictDatas	= array();	//缓存的字典表数据
-	private $cacheListFields	= array();	//缓存Model的listFileds数据，经过转换的结果
+	private $cacheListFields= array();	//缓存Model的listFileds数据，经过转换的结果
 	//数据权限相关
 	public $skipDataPowerCheck	= false;	//关闭数据权限域控制。
 
@@ -275,6 +267,7 @@ class DxExtCommonModel extends Model {
 					//枚举类型的内部序号是从1开始。
 					$field["field_enum"]	= explode(",","0,".str_replace(array("'","(",")"),array("","",""), substr($tField[0]["COLUMN_TYPE"],5)));
 					unset($field["field_enum"][0]);
+					$field["field_enum"]    = array_combine($field["field_enum"],$field["field_enum"]);
 				}
 			}
 		}
