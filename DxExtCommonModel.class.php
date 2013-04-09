@@ -98,17 +98,11 @@ class DxExtCommonModel extends Model {
 	 toString:提供给toString方法，整合数据的个是，   toString=array("%s %s 生于%s",array("real_name","sex","birthday"))  0：数据格式 1：对应的字段名
 	 helpInfo:帮助提示信息
 	 data_change:数据在后台就进行数据字典转换，尽量少用，valChange是将数据转换的工作交给js，减少后台php的执行时间，但是某些特殊转换无法使用valChange完成，则可以使用data_change，在后台获取到数据后，调用函数对数据进行转换，这样会耗费大量的php执行，离子：补贴状态转换 'data_change'=>array("aysn_state"=>"subsidyStateChange"),
-<<<<<<< HEAD
-	
-	 ---暂时无用
-	 rowAction:列表后面的操作Model是否不需要新增数据
-=======
 	 sigmaGrid功能配置项：
     	 enablePage:grid是否提供分页。
     	 gridHeader:自定义grid表头,,不要写table标签，只写TR标签即可。系统会自动追加Table标签。
          order:默认的数据排序
 	     hasCheckBox:数据列表是否有checkbox
->>>>>>> origin
 	**/
 
 	/**
