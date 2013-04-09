@@ -40,17 +40,17 @@ class CutPhotoWidget extends DxWidget {
         $val=  array_merge($this->default, $data);
         //默认id与name相同
         if(empty($val['id'])){
-            $val['id']=  uniqid(escapeHtmlValue($val['name']));
+            $val['id']=  uniqid(DxFunction::escapeHtmlValue($val['name']));
         }
         if(empty($val['new_photo_id'])){
-            $val['new_photo_id']=  uniqid(escapeHtmlValue("newphoto_"));
+            $val['new_photo_id']=  uniqid(DxFunction::escapeHtmlValue("newphoto_"));
         }
         
-        $val['value']= escapeHtmlValue($val['value']);
+        $val['value']= DxFunction::escapeHtmlValue($val['value']);
         if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
-            $val['value']=  escapeHtmlValue($val['default']);
+            $val['value']=  DxFunction::escapeHtmlValue($val['default']);
         }
-        $val['placeholder']= escapeHtmlValue($val['placeholder']);
+        $val['placeholder']= DxFunction::escapeHtmlValue($val['placeholder']);
         $ret=$this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);
     }

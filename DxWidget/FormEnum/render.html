@@ -1,6 +1,6 @@
 <!--<eq name="readOnly" value="false">数据readonly模式-->
 <label class="radio inline">
-{$set[$value]|escapeHtmlValue}
+{$set[$value]|DxFunction::escapeHtmlValue}
 <input type="hidden" name="{$name}" value="{$value}" class="{$class} {$validclass} {$custom_class}">
 </label>
 <!--<else/>-->
@@ -8,12 +8,12 @@
 <!--<eq name="key" value="$value">-->
 <label class="radio inline">
 <input type="radio" name="{$name}" value="{$key}" checked class="{$class} {$validclass} {$custom_class}">
-{$vo|escapeHtmlValue}
+{$vo|DxFunction::escapeHtmlValue}
 </label>
 <!--<else/>-->
 <label class="radio inline">
 <input type="radio" name="{$name}" value="{$key}" class="{$class} {$validclass} {$custom_class}">
-{$vo|escapeHtmlValue}
+{$vo|DxFunction::escapeHtmlValue}
 </label>
 <!--</eq>-->
 <!--</volist>-->

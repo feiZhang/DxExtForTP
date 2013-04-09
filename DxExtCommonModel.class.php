@@ -111,7 +111,7 @@ class DxExtCommonModel extends Model {
 	 data_change:数据在后台就进行数据字典转换，尽量少用，valChange是将数据转换的工作交给js，减少后台php的执行时间，但是某些特殊转换无法使用valChange完成，则可以使用data_change，在后台获取到数据后，调用函数对数据进行转换，这样会耗费大量的php执行，离子：补贴状态转换 'data_change'=>array("aysn_state"=>"subsidyStateChange"),
 	
 	 ---暂时无用
-	 rowAction:列表后面的操作
+	 rowAction:列表后面的操作Model是否不需要新增数据
 	**/
 
 	/**

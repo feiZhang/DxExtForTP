@@ -37,12 +37,12 @@ class CantonWidget extends DxWidget {
         											));
         //默认id与name相同
         if(empty($val['id'])){
-            $val['id']=  uniqid(escapeHtmlValue($val['name']));
+            $val['id']=  uniqid(DxFunction::escapeHtmlValue($val['name']));
         }
         
-        $val['value']= escapeHtmlValue($val['value']);
+        $val['value']= DxFunction::escapeHtmlValue($val['value']);
         if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
-            $val['value']=  escapeHtmlValue($val['default']);
+            $val['value']=  DxFunction::escapeHtmlValue($val['default']);
         }
         $ret=$this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);

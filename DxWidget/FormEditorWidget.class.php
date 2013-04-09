@@ -32,8 +32,8 @@ class FormEditorWidget extends DxWidget{
             $val['cheight']="height: {$val['height']}px;";
         }
         $val['id']=  uniqid($val['name']."_");
-        $val['value']= escapeHtmlValue($val['value']);
-        $val['placeholder']=  escapeHtmlValue($val['placeholder']);
+        $val['value']= DxFunction::escapeHtmlValue($val['value']);
+        $val['placeholder']= DxFunction::escapeHtmlValue($val['placeholder']);
         $ret=$this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);
     }

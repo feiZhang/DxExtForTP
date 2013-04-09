@@ -40,7 +40,7 @@ class UploadFileWidget extends DxWidget {
         $val=  array_merge($this->default, $data);
         //默认id与name相同
         if(empty($val['id'])){
-            $val['id']=  uniqid(escapeHtmlValue($val['name']));
+            $val['id']=  uniqid(DxFunction::escapeHtmlValue($val['name']));
         }
         
         if(empty($val['value'])){
@@ -72,7 +72,7 @@ class UploadFileWidget extends DxWidget {
             $val['option']=$option;
         }
         $val['uploadType'] = ($max==1)?"":'multiple';
-        $val['placeholder']= escapeHtmlValue($val['placeholder']);
+        $val['placeholder']= DxFunction::escapeHtmlValue($val['placeholder']);
         $ret=$this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);
     }

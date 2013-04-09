@@ -41,18 +41,18 @@ class FormCheckWidget extends DxWidget{
         $val=  array_merge($this->default, $data);
         $val['id']=  uniqid($val['name']."_");
         if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
-            $val['value']=  escapeHtmlValue($val['default']);
+            $val['value']=  DxFunction::escapeHtmlValue($val['default']);
         }
         if(is_string($val['value'])){
             $val['value']=empty($val['value'])?array():explode(",", $val['value']);
         }
         if(is_array($val['value'])){
-            array_walk($val['value'], "escapeHtmlValue");
+            array_walk($val['value'], "DxFunction::escapeHtmlValue");
         }
         $val['stringResult']=  implode(",", $val['value']);
         //$val['value']=  escapeHtmlValue($val['value']);
-        $val['placeholder']=  escapeHtmlValue($val['placeholder']);
-        array_walk($val['set'], "escapeHtmlValue");
+        $val['placeholder']=  DxFunction::escapeHtmlValue($val['placeholder']);
+        array_walk($val['set'], "DxFunction::escapeHtmlValue");
         $ret=$this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);
     }

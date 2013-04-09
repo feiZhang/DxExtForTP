@@ -63,17 +63,17 @@ class DateWidget extends DxWidget {
                 $attr['minDate']=$val['minvalue'];
             }
             $str=  json_encode($attr);
-            $val['focus']=  escapeHtmlValue("WdatePicker($str)") ;
+            $val['focus']=  DxFunction::escapeHtmlValue("WdatePicker($str)") ;
         }
         //默认id与name相同
         if(empty($val['id'])){
             $val['id']=$val['name'];
         }
-        $val['value']= escapeHtmlValue($val['value']);
+        $val['value']= DxFunction::escapeHtmlValue($val['value']);
         if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
             $val['value']=  htmlentities($val['default'],ENT_QUOTES,"UTF-8");
         }
-        $val['placeholder']= escapeHtmlValue($val['placeholder']);
+        $val['placeholder']= DxFunction::escapeHtmlValue($val['placeholder']);
         $ret=$this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);
     }

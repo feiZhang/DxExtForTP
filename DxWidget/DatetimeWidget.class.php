@@ -57,13 +57,13 @@ class DatetimeWidget extends DxWidget {
                 $attr['minDate']=$val['minvalue'];
             }
             $str=  json_encode($attr);
-            $val['focus']= escapeHtmlValue("WdatePicker($str)") ;
+            $val['focus']= DxFunction::escapeHtmlValue("WdatePicker($str)") ;
         }
-        $val['value']=  escapeHtmlValue($val['value']);
+        $val['value']= DxFunction::escapeHtmlValue($val['value']);
         if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
-            $val['value']=  escapeHtmlValue($val['default']);
+            $val['value']=  DxFunction::escapeHtmlValue($val['default']);
         }
-        $val['placeholder']=  escapeHtmlValue($val['placeholder']);
+        $val['placeholder']= DxFunction::escapeHtmlValue($val['placeholder']);
         
         $ret=$this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);

@@ -15,7 +15,7 @@ class DataOpeAction extends DxExtCommonAction{
 		if(empty($model)) die("model为空!");
 		$enablePage	= $model->getModelInfo("enablePage");
 		if($enablePage!==false) $enablePage	= true;
-		require_once (C("DX_INFO_PATH")."/vendor/GridServerHandler.php");
+		require_once (C("DX_INFO_PATH")."/Vendor/GridServerHandler.php");
         $gridHandler 	= new GridServerHandler();
         if($enablePage){
 			$start 			= intval($gridHandler->pageInfo["startRowNum"])-1;
