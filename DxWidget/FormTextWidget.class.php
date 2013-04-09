@@ -30,8 +30,7 @@ class FormTextWidget extends DxWidget{
         'readOnly'=>false
         );
     public function render($data) {
-        $val=  array_merge($this->default, $data);
-        $val['id']=  uniqid($val['name']."_");
+        $val        =  array_merge($this->default, $data["fieldSet"],$data);
         if($val['width']>0){
             $val['cwidth']="width:".$val['width']."px;";
         }
@@ -41,5 +40,3 @@ class FormTextWidget extends DxWidget{
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);
     }
 }
-
-?>

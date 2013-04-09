@@ -10,7 +10,8 @@ class DataOpeAction extends DxExtCommonAction{
 	        
 	/* 数据列表 for Grid **/
 	public function get_datalist(){
- 		//print_r($_REQUEST);die();
+	    fb::group("get_datalist");
+ 	    fb::log($_REQUEST,"Request");
 		$model	= $this->model;
 		if(empty($model)) die("model为空!");
 		$enablePage	= $model->getModelInfo("enablePage");
@@ -25,6 +26,7 @@ class DataOpeAction extends DxExtCommonAction{
         if($start<0) $start = 0;
 		
 		$where			= array_merge($this->defaultWhere,$this->_search());
+		fb::log($where,"Where");
 		if(isset($_REQUEST['export']) && !empty($_REQUEST['export'])){
             $data_list  = $model->where($where)->field($model->getListFieldString())->order($model->getModelInfo("order"))->select();
             $this->export($data_list, trim($_REQUEST['export']));
@@ -34,7 +36,8 @@ class DataOpeAction extends DxExtCommonAction{
         	}else
             	$data_list  = $model->where($where)->field($model->getListFieldString())->order($model->getModelInfo("order"))->select();
         }
-        //dump($model->getLastSql());
+        fb::Log($model);
+        fb::Log($model->getLastSql());
         //无数据时data_list = null,此时返回的数据，grid不会更新rows，这导致，再删除最后一条数据时，grid无法删除前端的最后一样。
         if(empty($data_list)){
         	$data_list	= array();
@@ -50,8 +53,9 @@ class DataOpeAction extends DxExtCommonAction{
 		$data_count  	= $enablePage?$model->where($where)->count():sizeof($data_list);
 		$gridHandler->setData($data_list);
 		$gridHandler->setTotalRowNum($data_count);
-// 		print_r($gridHandler->pageInfo);
+        fb::log($gridHandler->pageInfo);
 		$gridHandler->printLoadResponseText();
+		fb::groupEnd();
 	}
     
     /**处理数据导出.
@@ -147,7 +151,7 @@ class DataOpeAction extends DxExtCommonAction{
     /* 显示页面内容 **/
 	public function index(){
 		$model  = $this->model;
-		//dump($model);dump($this->_searchToString());dump($_REQUEST);die();
+		fb::log($_REQUEST,"Request");
 		if(empty($model)) die();
 
 		//支持通过url传递过来的ModelTitle

@@ -1,17 +1,16 @@
 <?php
 //DXIPCC 核心配置文件
 if (!defined('THINK_PATH')) exit();
-$TplHeader    = "dd";
 return array(
     'DISABLE_ACTION_AUTH_CHECK'    => false,
     'DX_INFO_PATH'          => dirname(__FILE__),
-    'DX_PUBLIC'             => "/DxInfo/DxPublic",
+    'DX_PUBLIC'             => "/DxInfo/DxWebRoot",
     
     //设置公共模板路径,属于TP的配置内容,一般情况下，不需要覆盖修改的内容。
     'TMPL_ACTION_ERROR'		=> dirname(__FILE__)."/DxTpl/success.html",
     'TMPL_ACTION_SUCCESS'	=> dirname(__FILE__)."/DxTpl/success.html",
-    'TOKEN_ON'				=> true, //关闭表单令牌
-    'TOKEN_NAME'            =>'DxToken',
+    'TOKEN_ON'				=> true, //表单令牌开启
+    'TOKEN_NAME'            => "DxToken",
     'DEFAULT_MODULE'		=> 'Home',
     'APP_AUTOLOAD_PATH'		=> "Com.DxInfo",
     'SESSION_AUTO_START'	=> true,

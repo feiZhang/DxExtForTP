@@ -12,7 +12,7 @@ class FormSelectWidget extends DxWidget {
         //默认值
         "default"=>'', 
         "value"=>'',
-        "set"=>array(),
+        "field_enum"=>array(),
         "name"=>'', 
         'placeholder'=>'请选择',
         //是否显示为多选
@@ -29,7 +29,7 @@ class FormSelectWidget extends DxWidget {
         'cwidth'=>'',
         );
     public function render($data) {
-        $val=  array_merge($this->default, $data);
+        $val=  array_merge($this->default, $data["fieldSet"], $data);
         $val['id']=  uniqid($val['name']."_");
         $val['value']=  htmlentities($val['value'],ENT_QUOTES,"UTF-8");
         if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){

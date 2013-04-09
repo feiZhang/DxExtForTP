@@ -25,7 +25,7 @@ class CantonWidget extends DxWidget {
         //是否这只读字段
         );
     public function render($data) {
-    	$field			= array_merge($data["field"],$data);
+    	$field			= array_merge($this->default,$data["feildSet"],$data);
     	$rootCantonId	= $field["canton"]["rootCantonId"];
     	if(intval($rootCantonId)<1) $rootCantonId	= C("SYS_ROOTCANTONID");
     	if(intval($rootCantonId)<1) $rootCantonId	= 3520;
@@ -36,13 +36,9 @@ class CantonWidget extends DxWidget {
         											"validclass"=>$data["validclass"]
         											));
         //默认id与name相同
-        if(empty($val['id'])){
-            $val['id']=  uniqid(DxFunction::escapeHtmlValue($val['name']));
-        }
-        
         $val['value']= DxFunction::escapeHtmlValue($val['value']);
         if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
-            $val['value']=  DxFunction::escapeHtmlValue($val['default']);
+            $val['value']    = DxFunction::escapeHtmlValue($val['default']);
         }
         $ret=$this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);
