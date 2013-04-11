@@ -234,12 +234,12 @@ class DxFunction{
 		$menuM	= null;
 		if(empty($allAction)){
 			$menuM			= D('Menu');
-			if($menuM instanceof Model) return array();    //如果没有自定义Menu的Model，则表示没有启用此功能。
+			//if($menuM instanceof Model) return array();    //如果没有自定义Menu的Model，则表示没有启用此功能。
 			$allAction		= array();
 			$action_list	= $menuM->getAllAction();
 			foreach($action_list as $l){
 				if(!empty($l["module_name"]) && !empty($l["action_name"]))
-					$allAction[$l["module_name"]][$l["action_name"]][$l["id"]]	= array("args"=>$l["args"],"menu_name"=>$l["menu_name"]);
+					$allAction[$l["module_name"]][$l["action_name"]][$l[$menuM->getPk()]]	= array("args"=>$l["args"],"menu_name"=>$l["menu_name"]);
 			}
 			S("Cache_module_action_ALL",json_encode($allAction));
 		}else{
@@ -260,7 +260,7 @@ class DxFunction{
 		$myAction		= array();
 		foreach($action_list as $l){
 			if(!empty($l["module_name"]) && !empty($l["action_name"]))
-				$myAction[$l["module_name"]][$l["action_name"]][$l["id"]]	= array("args"=>$l["args"],"menu_name"=>$l["menu_name"]);
+				$myAction[$l["module_name"]][$l["action_name"]][$l[$menuM->getPk()]]	= array("args"=>$l["args"],"menu_name"=>$l["menu_name"]);
 		}
 	
 		S("Cache_module_action_".$my_id,json_encode($myAction),3600);

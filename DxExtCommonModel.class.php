@@ -1097,5 +1097,112 @@ class DxExtCommonModel extends Model {
 		}
 		return $ret;
 	}
+	/**
+	 * 根据创建文件名称
+	 * 属性：
+	 * default:字段默认值
+	 * pk     ：true 该字段为主键，递增。
+	 * type   : 字段的类型，包括：（int,varchar,canton,upload,date,datetime,y-m,y)
+	 * size   : 字段的长度。
+	 */
+	public function fnCreateTable(){
+	    $thModel = new Model();
+	    $tszTableName        = parse_name($this->name);
+	    //组织字符串
+	    //$tszCreateTableSql    = sprintf('create table if not exists  %s (',$tszTableName);
+	    $thFieldList        = $this->listFields;
+	    foreach ($thFieldList as $key=>$thFieldInfo){
+	        $tszFieldName        = $key;
+	        $thTableFieldInfo    =  $this->fnTableFieldInfo($tszFieldName);
+	        if(!empty($thTableFieldInfo)){
+	            $tszSize = sprintf('(%s)',$thTableFieldInfo['size']);
+	            $thFieldSql[$tszFieldName]        = sprintf('`%s` %s %s comment "%s"',$tszFieldName,$thTableFieldInfo['type'],empty($thTableFieldInfo['size'])?"":$tszSize,$thTableFieldInfo['comment']);
+	            if(!empty($thFieldInfo['default'])){
+	                $thFieldSql[$tszFieldName]    = sprintf('%s default "%s"',$thFieldSql[$tszFieldName],$thFieldInfo['default']);
+	            }
+	            if($thFieldInfo['pk']){
+	                $thFieldSql[$tszFieldName]    = sprintf('%s AUTO_INCREMENT,PRIMARY KEY (`%s`)',$thFieldSql[$tszFieldName],$tszFieldName);
+	            }
+	        }
+	    }
+	    $tszCreateTableSql    = sprintf('create table if not exists  %s ( %s)ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT="%s"',$tszTableName,implode($thFieldSql, ','),$this->modelInfo['title']);
+	    $thModel->query($tszCreateTableSql);
+	    // dump($thModel->getLastSql());
+	}
+	/**
+	 * @param string $field_name 类型
+	 */
+	public function fnTableFieldInfo($field_name){
+	    $tszFieldName        = $field_name;
+	    if(empty($tszFieldName)||!is_string($tszFieldName)){
+	        return false;
+	    }else{
+	        if($thFieldInfo    = $this->listFields[$tszFieldName]){
+	            if(empty($thFieldInfo['type'])){
+	                $thFieldInfo['type']    = 'string';
+	            }elseif ($thFieldInfo['type']=='float' && empty($thFieldInfo['size'])){
+	                $thFieldInfo['size']    = "9,2";
+	            }
+	            if($thFieldInfo['pk']){
+	                $thFieldInfo['type']    ='int';
+	            }
+	            //默认情况下按照
+	            switch ($thFieldInfo['type']) {
+	                case 'canton':
+	                    $tszType     = 'varchar';
+	                    $tiTsize     = '45';
+	                    break;
+	                case 'date' :
+	                case 'y_m' :
+	                case 'datetime':
+	                    $tszType     = 'datetime';
+	                    break;
+	                case 'uploadFile':
+	                    $tszType     = 'varchar';
+	                    $tiTsize     = 1000;
+	                    break;
+	                case 'y':
+	                    $tszType     = 'year';
+	                    break;
+	                case 'int':
+	                    $tszType     = 'int';
+	                    $tiTsize     = ($thFieldInfo['size'])?$thFieldInfo['size']:11;
+	                    break;
+	                case 'select':
+	                    $tszType     = 'int';
+	                    $tiTsize     = 4;
+	                    break;
+	                case 'enum' :
+	                case 'select':
+	                    $valChange   = $thFieldInfo['valChange'];
+	                    //如果值根据Model转换，或者转换的值中含有中文字符，那么不作为枚举型存在，否则用枚举性处理
+	                    if(array_key_exists('model',$valChange)||!preg_match("/^[A-Za-z0-9]+$/",implode('', $valChange))){
+	                        $tszType ='int';
+	                        $tiTsize = ($thFieldInfo['size'])?$thFieldInfo['size']:3;
+	                    }
+	                    else {
+	                        $tszType = sprintf("enum('%s')",implode('\',\'', array_values($thFieldInfo['valChange'])));
+	                    }
+	                    break;
+	                case 'string' :
+	                case 'varchar':
+	                case 'password':
+	                case "cutPhoto":
+	                    $tszType    = 'varchar';
+	                    $tiTsize    = ($thFieldInfo['size'])?$thFieldInfo['size']:245;
+	                    break;
+	                default:
+	                    $tszType    = $thFieldInfo['type'];//dump($thFieldInfo);dump(($thFieldInfo['size']));
+	                    $tiTsize    = $thFieldInfo['size'];
+	                    break;
+	            }
+	            $thFieldInfo['type'] = $tszType;
+	            $thFieldInfo['size'] = $tiTsize;
+	            $thFieldInfo['comment'] = $thFieldInfo['title'];
+	            return $thFieldInfo;
+	        }
+	        else return false;
+	    }
+	}
 }
 ?>
