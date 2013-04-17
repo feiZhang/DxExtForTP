@@ -1127,7 +1127,7 @@ class DxExtCommonModel extends Model {
 	    }
 	    $tszCreateTableSql    = sprintf('create table if not exists  %s ( %s)ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT="%s"',$tszTableName,implode($thFieldSql, ','),$this->modelInfo['title']);
 	    $thModel->query($tszCreateTableSql);
-	    // dump($thModel->getLastSql());
+	     dump($thModel->getLastSql());
 	}
 	/**
 	 * @param string $field_name 类型
@@ -1176,7 +1176,7 @@ class DxExtCommonModel extends Model {
 	                case 'select':
 	                    $valChange   = $thFieldInfo['valChange'];
 	                    //如果值根据Model转换，或者转换的值中含有中文字符，那么不作为枚举型存在，否则用枚举性处理
-	                    if(array_key_exists('model',$valChange)||!preg_match("/^[A-Za-z0-9]+$/",implode('', $valChange))){
+	                    if(array_key_exists('model',$valChange)||preg_match("/([\x81-\xfe][\x40-\xfe])/",implode('', $valChange))){
 	                        $tszType ='int';
 	                        $tiTsize = ($thFieldInfo['size'])?$thFieldInfo['size']:3;
 	                    }
