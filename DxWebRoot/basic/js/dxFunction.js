@@ -50,10 +50,10 @@ function showDealDialog() {
 	            theThis.content(msg_options.ingmsg);
 	            theThis.button();
 	            $.post(msg_options.url,msg_options.data,function(data){
-	            	if(typeof afterfunction=="function"){
+	            	if(typeof msg_options.afterfunction == "function"){
 	            		msg_options.afterfunction(data);
 	            	}else{
-	            		if(typeof default_options.aftermsg == "string"&& default_options.aftermsg!=""){
+	            		if(typeof msg_options.aftermsg == "string"&& default_options.aftermsg!=""){
 	            			theThis.content(default_options.aftermsg);
 	            		}else{
 	            			theThis.content(data.info);
