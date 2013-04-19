@@ -972,10 +972,10 @@ class DxExtCommonModel extends Model {
 		// 判断验证条件,根据验证条件，附加第一层次验证;; noempty 和 existed 是不存在的前台规则，前台只要不是 required 则空值不验证
 		switch($cond) {
 			case Model::MUST_VALIDATE:   	// 必须验证 不管表单是否有设置该字段
-			case Model::EXISTS_VAILIDATE:	//存在字段就验证
+			case Model::EXISTS_VALIDATE:	//存在字段就验证
 				$ret[]='required';
 				break;
-			case Model::VALUE_VAILIDATE:    // 值不为空的时候才验证
+			case Model::VALUE_VALIDATE:    // 值不为空的时候才验证
 				$ret[]='noempty';
 				break;
 			default:    // 默认表单存在该字段就验证
