@@ -1,6 +1,11 @@
 <?php
 /**
  * Version：2.0
+ * 功能描述：
+ * 1.自动以Model名称,,通过设置  属性 theModelName 来处理，一般在Action中操作
+ * 2.Action操作权限验证
+ * 3.记录Action的操作日志
+ * 4.多次编译模板文件。
  * */
 class DxExtCommonAction extends Action {
 	protected $model			= null;
