@@ -1,7 +1,10 @@
 <?php
 /**
  * Version：2.0
- * 直接从index传递过来的过滤条件，直接存放到session，省的需要在页面来回传递。
+ * 1.关闭模板的多次编译缓存。设置属性 cacheTpl = false; 
+ * 2.数据的增删改查
+ * 3.数据状态变更。
+ * 4.数据唯一性验证
  * */
 class DataOpeAction extends DxExtCommonAction{
 	protected $defaultWhere		= array();
@@ -252,15 +255,24 @@ class DataOpeAction extends DxExtCommonAction{
 	
 	
 	
-	/* 各list页面状态改变 */
+	/**
+	 * 快速改变某个数据某个字段的值，比如，修改数据状态。
+	 * @v    要改变的数据值
+	 * @id   要改变的数据id，可以使用逗号隔开，一次修改多个
+	 * @f    要修改的字段名称
+	 */
 	public function change_status()
 	{
+	    $fieldName  = "status"; 
+	    if(!empty($_REQUEST["f"])){
+	        $fieldName    = $_REQUEST["f"];
+	    }
 		$m  		= $this->model;
 		$pk			= $m -> getPk();
 		$id			= $_REQUEST["id"];
 		if (!empty($m) && isset($id)){
 			$where	= array ($pk => array ('in', explode ( ',', $id ) ) );
-			if($m -> where($where) -> setField('status',$_REQUEST["status"]))
+			if($m -> where($where) -> setField($fieldName,$_REQUEST["v"]))
 				$this -> ajaxReturn("","状态修改成功!",1);
 			else
 				$this -> ajaxReturn("","状态修改失败!请重试!",0);

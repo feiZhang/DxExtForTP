@@ -3,9 +3,7 @@
  * Version：2.0
  * 目的：构建基础的Model模块，提供公共功能代码
  * 功能：
- * 		1.grid数据列表
- * 		2.数据权限自动过滤数据
- * 		3.根据TP的数据字段验证，生成前段的 FormValidator 代码
+ * 1.通过设置 model 的 trueTableName 属性，支持表关联的Model    $this->trueTableName    = "(SELECT a.*,b.name,c.title FROM older a LEFT JOIN employee b ON a.id=b.older_id LEFT ...) older"
  * */
 class DxExtCommonModel extends Model {
 
@@ -247,7 +245,10 @@ class DxExtCommonModel extends Model {
 		if(!isset($field["name"])) $field["name"]	= $key;
 		//将字典表，转换为valChange数据
 		if(isset($field["valChange"]["model"])){
-			$m		= D($field["valChange"]["model"]);
+		    if($this->name==$field["valChange"]["model"])
+                $m    = $this;
+		    else
+			    $m    = D($field["valChange"]["model"]);
 			$tValC	= $m->getCacheDictTableData();
 			if(!empty($field["valChange"]["type"])){
 				$tType	= explode(",",$field["valChange"]["type"]);

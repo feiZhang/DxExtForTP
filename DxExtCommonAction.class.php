@@ -1,6 +1,11 @@
 <?php
 /**
  * Version：2.0
+ * 功能描述：
+ * 1.自动以Model名称,,通过设置  属性 theModelName 来处理，一般在Action中操作
+ * 2.Action操作权限验证
+ * 3.记录Action的操作日志
+ * 4.多次编译模板文件。
  * */
 class DxExtCommonAction extends Action {
 	protected $model			= null;
@@ -151,81 +156,6 @@ class DxExtCommonAction extends Action {
 		$model->where(array('id'=>$log_id))->save();
 	}
 	
-	/**
-	 * 重写Display函数，在本目录找不到模板时，自动到Dx目录去取公共模板。
-	 * 0.文件的绝对路径
-	 * 1.默认tpl路径
-	 * 2.按照Model名称的tpl路径
-	 * 3.项目的DxPublic目录，（需要重写公共的模板）
-	 * 4.DxInfo的模板路径
-	 * */
-	protected function fetch($templateFile='',$content='',$prefix=''){
-	    $templateFile    = $this->checkTplFile($templateFile);
-	    //处理include标签，，支持加载DxInfo中的模板文件
-	    $content    = file_get_contents($templateFile);
-	    $content    = $this->praseIncludeForDxInfo($content);
-	    $content    = parent::fetch($templateFile,$content,$prefix);
-	    return str_replace("__DXPUBLIC__", C("DX_PUBLIC"), $content);
-	}
-    protected function display($templateFile='',$charset='',$contentType='') {
-        $templateFile    = $this->checkTplFile($templateFile);
-        return parent::display($templateFile,$charset,$contentType);
-    }
-    protected function checkTplFile($templateFile){
-        if(file_exists($templateFile)){
-            return $templateFile;
-        }
-        
-        if(''==$templateFile) {
-            // 如果模板文件名为空 按照默认规则定位
-            $templateFile = C('TEMPLATE_NAME');
-        }elseif(false === strpos($templateFile,C('TMPL_TEMPLATE_SUFFIX'))){
-            // 解析规则为 模板主题:模块:操作 不支持 跨项目和跨分组调用
-            $path   =  explode(':',$templateFile);
-            $action = array_pop($path);
-            $module = !empty($path)?array_pop($path):MODULE_NAME;
-            if(!empty($path)) {// 设置模板主题
-                $path = dirname(THEME_PATH).'/'.array_pop($path).'/';
-            }else{
-                $path = THEME_PATH;
-            }
-            $templateFile  =  $path.$module.C('TMPL_FILE_DEPR').$action.C('TMPL_TEMPLATE_SUFFIX');
-        }
-        
-        if(empty($action)) $action    = ACTION_NAME;
-        if(file_exists($templateFile)){
-            $tplFile    = $templateFile;
-        }else if(file_exists(THEME_PATH.$this->theModelName.'/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
-            $tplFile    = THEME_PATH.$this->theModelName.'/'.$action.C('TMPL_TEMPLATE_SUFFIX');
-        }else if(file_exists(THEME_PATH.'DxPublic/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
-            $tplFile    = THEME_PATH.'DxPublic/'.$action.C('TMPL_TEMPLATE_SUFFIX');
-        }else{
-            $tplFile	= sprintf("%s/DxTpl/%s%s",dirname(__FILE__),$action,C('TMPL_TEMPLATE_SUFFIX'));
-        }
-        return $tplFile;
-    }	
-    
-    /**
-     * 解析模板文件中include标签，支持 include DxInfo中的模板文件。
-     */
-    protected function praseIncludeForDxInfo($content){
-        $find       = preg_match_all('/<include\s(.+?)\s*?\/>/is',$content,$matches);
-        if($find) {
-            for($i=0;$i<$find;$i++) {
-                $xml        =   '<tpl><tag '.$matches[1][$i].' /></tpl>';
-                $xml        =   simplexml_load_string($xml);
-                if(!$xml)
-                    throw_exception(L('_XML_TAG_ERROR_'));
-                $xml        =   (array)($xml->tag->attributes());
-                $array      =   array_change_key_case($xml['@attributes']);
-                $file       =   $array['file'];
-                unset($array['file']);
-                $content    =   str_replace($matches[0][$i],file_get_contents($this->checkTplFile($file)),$content);
-            }
-            return $this->praseIncludeForDxInfo($content);
-        }
-        return $content;
-    }
 	/**
 	 +----------------------------------------------------------
 	 * 根据表单生成查询条件

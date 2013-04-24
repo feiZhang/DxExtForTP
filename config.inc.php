@@ -22,6 +22,21 @@ return array(
             "/(\w+)\/edit\/(\d+)/"=>":1/add?id=:2",
             "/(\w+)\/delete\/(\d+)/"=>":1/delete?id=:2",
     ),
+    
+    'tags' =>  array(
+        "view_template"     => array(
+            "DxParseTemplate", // 自动定位模板文件
+            'LocationTemplate', // 自动定位模板文件
+            "_overlay"          => true,
+        ),
+        'view_parse'        =>  array(
+            'DxParseTemplate', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
+            'ParseTemplate', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
+            "_overlay"          => true,
+        ),
+    ),
+    
+    
         
     'DEFAULT_THEME'			=> '',
 
