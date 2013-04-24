@@ -1127,7 +1127,6 @@ class DxExtCommonModel extends Model {
 	    }
 	    $tszCreateTableSql    = sprintf('create table if not exists  %s ( %s)ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT="%s"',$tszTableName,implode($thFieldSql, ','),$this->modelInfo['title']);
 	    $thModel->query($tszCreateTableSql);
-	     dump($thModel->getLastSql());
 	}
 	/**
 	 * @param string $field_name 类型
