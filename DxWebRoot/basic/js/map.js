@@ -1,9 +1,11 @@
 /**
  * @author malijie_2007@126.com 
  * @vserion 0.1
+ * 
  * 利用百度地图提供的api完成一下功能
  * 1、能够在地图上进行多点标注
  * 2、能够对地图上标注点进行说明。
+ * @author hanmeiyan 修改 2013-04-26
  */
 
 (function($){
@@ -22,6 +24,7 @@
 	 */
 	$.Map = function(city, aimData, mapContainer){
 		var _this = this;
+		
 		//地图默认容器
 		if (undefined != arguments[2]) {
 			$.Map.infoFomat = arguments[2];
@@ -33,7 +36,9 @@
 		//实例化地图类
 		var map = new BMap.Map(mapContainer);
 		map.centerAndZoom(city, 12);
+		//向地图增加地图平移缩放控件
 		map.addControl(new BMap.NavigationControl());
+		// 启动鼠标滚轮操作
 		map.enableScrollWheelZoom(); 
 		
 		
@@ -43,8 +48,10 @@
 		 * @param int isSetCenter 是否设置标注点为地图中心 0不设置，1设置 默认为0
 		 */
 		_this.chooseDeal = function(aimData) {
+		//	console.log(aimData);
 			var isSetCenter = (2 == arguments.length && 1 == arguments[1]) ? 1 : 0;  
 			if (undefined != aimData.lng && "" != aimData.lng && undefined != aimData.lat && "" != aimData.lat) {
+				//则根据经纬度来制定图标
 				var p = new BMap.Point(aimData.lng, aimData.lat);
 				var m = $.Map.setMarker(map, p, aimData, isSetCenter);
 				$.Map.setMarkerListener(m);
@@ -60,15 +67,21 @@
 		} else {
 			_this.chooseDeal(aimData);
 		}
-		
-		
+		_this.openAimData	= function(addr_id){
+			var marker = $.Map.allPoints[addr_id];
+			if(typeof marker == "object")
+				$.Map.setInfoBox(marker).open(marker);
+			else{
+				alert('无法定位准确位置');
+			}
+		}
 	}
 	
 	/**
 	 * 定义地图类全局静态变量
 	 */
 	$.Map.infoFomat = {title:'简要',width:290, height:160}; //设置消息框的大小及标题
-	
+	$.Map.allPoints = {};
 	
 	/**
 	 * 显示消息框
@@ -76,22 +89,24 @@
 	 * @param json   aimData 被标注的信息体
 	 * @returns object  返回百度SearchInfoWindow实例
 	 */
-	$.Map.setInfoBox = function(map, aimData){
+	$.Map.setInfoBox = function(marker){
 		var title = $.Map.infoFomat.title;
-		if (undefined != aimData.name && "" != aimData.name) {
-			title = aimData.name;
+		if (undefined != marker.aimData.name && "" != marker.aimData.name) {
+			title = marker.aimData.name;
 		}
-		return new BMapLib.SearchInfoWindow(map, aimData.html, {
-		       title  : title,      //标题
-		       width  : $.Map.infoFomat.width,      //宽度
-		       height : $.Map.infoFomat.height,     //高度
-		       panel  : "panel",               //检索结果面板
-		       enableAutoPan : true,           //自动平移
-		       searchTypes   :[]
-		});
+		if(typeof marker.window =='undefined'){
+			marker.window =  new BMapLib.SearchInfoWindow(marker.map, marker.aimData.html, {
+			       title  : title,      //标题
+			       width  : $.Map.infoFomat.width,      //宽度
+			       height : $.Map.infoFomat.height,     //高度
+			       panel  : "panel",               //检索结果面板
+			       enableAutoPan : true,           //自动平移
+			       searchTypes   :[]
+			});
+		}
+		return marker.window;
 		
 	}
-	
 	/**
 	 * 根据坐标创建marker
 	 * @param object map 地图实例
@@ -101,15 +116,15 @@
 	 * @return object  marker对象
 	 */
 	$.Map.setMarker = function (map, p, aimData) {
-		var marker = new BMap.Marker(p);
-	    map.addOverlay(marker);
+		var marker = new BMap.Marker(p);//创建图标
+	    map.addOverlay(marker);//将标注添加到地图中
 	    marker.aimData = aimData;
-	    var info = new BMap.InfoWindow(aimData.name);
-	    info.disableCloseOnClick();
-	    marker.openInfoWindow(info);
+	    //默认不打开信息框
+	   
+	    
 	    if (4 == arguments.length && 1 == arguments[3]) {
 	    	marker.map.setCenter(marker.getPosition());
-	    }	    
+	    }	 
 	    return marker;
 	}
 	
@@ -120,10 +135,17 @@
 	$.Map.setMarkerListener = function(marker) {
 		marker.addEventListener("click", function(e){
 			//this.map.setCenter(this.getPosition());
-			$.Map.setInfoBox(this.map, this.aimData).open(this);
+			//按照position位置
+			$.Map.setInfoBox(this).open(this);
 		});
 	}
-	
+	/**
+	 * 设置地图坐标
+	 */
+	$.Map.setPoint = function(id,marker){
+		$.Map.allPoints[id] = marker;
+		return $.Map.allPoints;
+	}
 	/**
 	 * 根据地址获取坐标
 	 * @param object   map          地图对象
@@ -139,7 +161,10 @@
 			if (point) {
 				var m = $.Map.setMarker(map, point, aimData, isSetCenter);
 				$.Map.setMarkerListener(m);
-		  	}
+			}else{
+				var m =  false;
+			}
+			$.Map.setPoint(aimData.addr_id,m);
 		}, city);
 	}
 	
