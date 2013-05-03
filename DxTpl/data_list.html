@@ -1,5 +1,8 @@
-<include file="Public:header" />
-
+<eq name="Think.CONFIG.HAS_HEADER" value='true'>
+	<include file="Public:header_home"/>
+	<else/>
+	<include file="Public:header" />
+</eq>
 <link href="__ROOT__/min/g=dataListCss" rel="stylesheet" type="text/css" />
 <script src="__DXPUBLIC__/public/DatePicker/WdatePicker.js" type="text/javascript"></script>
 <div>
