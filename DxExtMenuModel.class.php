@@ -33,7 +33,7 @@ class DxExtMenuModel extends  DxExtCommonModel{
         $data	= $this->where(array("is_desktop"=>"1",'id'=>array('in',D("Role")->getMenuID())))->order("order_no asc")->select();
         return $data;
     }
-    public function getMenuID($ModuleName,$ActionName){
+    public function getMenuID( $ModuleName,$ActionName){
         return $this->where(array('module_name'=>$ModuleName,'action_name'=>$ActionName))->getField($this->getPk());
     }
 }
