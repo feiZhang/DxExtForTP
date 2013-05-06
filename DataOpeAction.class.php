@@ -293,7 +293,7 @@ class DataOpeAction extends DxExtCommonAction{
     			$deleteState	= true;
     		}
     	}
-    	
+    	fb::log($model->getLastSql(),'deleteSql');
         if($deleteState) $this->ajaxReturn(0,"删除".session(MODULE_NAME."_modelTitle")."成功!",1,"JSON");
         else $this->ajaxReturn(0,"删除".session(MODULE_NAME."_modelTitle")."失败!",0,"JSON");
     }

@@ -50,10 +50,11 @@ function showDealDialog() {
 	            theThis.content(msg_options.ingmsg);
 	            theThis.button();
 	            $.post(msg_options.url,msg_options.data,function(data){
-	            	if(typeof afterfunction=="function"){
+	            	if(typeof msg_options.afterfunction == "function"){
+	            		theThis.close();
 	            		msg_options.afterfunction(data);
 	            	}else{
-	            		if(typeof default_options.aftermsg == "string"&& default_options.aftermsg!=""){
+	            		if(typeof msg_options.aftermsg == "string"&& default_options.aftermsg!=""){
 	            			theThis.content(default_options.aftermsg);
 	            		}else{
 	            			theThis.content(data.info);
@@ -78,4 +79,21 @@ function showDealDialog() {
 	        cancelValue:"取消"
 	    }
 	$.dialog(dialog_options);
+}
+
+//表单序列化为对象
+$.fn.serializeObject = function() {
+    var o = {};
+    var a = this.serializeArray();
+    $.each(a, function() {
+        if (o[this.name]) {
+            if (!o[this.name].push) {
+                o[this.name] = [ o[this.name] ];
+            }
+            o[this.name].push(this.value || '');
+        } else {
+            o[this.name] = this.value || '';
+        }
+    });
+    return o;
 }

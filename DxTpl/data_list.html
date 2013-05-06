@@ -1,7 +1,10 @@
-<include file="Public:header" />
-
+<eq name="Think.CONFIG.HAS_HEADER" value='true'>
+	<include file="Public:header_home"/>
+	<else/>
+	<include file="Public:header" />
+</eq>
 <link href="__ROOT__/min/g=dataListCss" rel="stylesheet" type="text/css" />
-<script src="__DXPUBLIC__/DatePicker/WdatePicker.js" type="text/javascript"></script>
+<script src="__DXPUBLIC__/public/DatePicker/WdatePicker.js" type="text/javascript"></script>
 <div>
 	<input id="modelInfo_editTitle" value="{$modelInfo.editTitle}" type="hidden" />
     <table id="gridHeader" style="display:none">{$modelInfo['gridHeader']}</table>
@@ -54,7 +57,7 @@
  -->
  
 <script type="text/javascript" src="__ROOT__/min/g=dataListJs"></script>
-<script type="text/javascript" src="__PUBLIC__/js/dataope_ext.js"></script>
+<script type="text/javascript" src="__DXPUBLIC__/basic/js/DataOpe.js"></script>
 
 <script>
 var dxGrid  = null;
