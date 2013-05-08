@@ -192,10 +192,7 @@ class DataOpeAction extends DxExtCommonAction{
 		    $customTplFile	= THEME_PATH.'Public/'.$tplType.C('TMPL_TEMPLATE_SUFFIX');
 		    if(!file_exists($customTplFile)){
 		        $tempT	= $this->fetch("data_list");
-		    }else {
-		        $tempT    =  $this->fetch($customTplFile);
-		    }
-			
+		   
 			file_put_contents($tempFile, $tempT);
 		}
 		$this->display($tempFile);
