@@ -870,7 +870,6 @@ class DxExtCommonModel extends Model {
 
 		// 数据自动验证
 		if(!$this->autoValidation($data,$type)) return false;
-
 		// 表单令牌验证
 		if(C('TOKEN_ON') && !$this->autoCheckToken($data)) {
 			$this->error = L('_TOKEN_ERROR_');

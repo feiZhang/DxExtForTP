@@ -1,6 +1,6 @@
 body {
-	background-image: url(about:blank);
-	background-attachment: fixed; /*必要，防抖动*/
+	/*background-image: url(about:blank);
+	background-attachment: fixed; 必要，防抖动*/
 }
 
 .jqi_btn li {

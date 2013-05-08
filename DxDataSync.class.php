@@ -77,7 +77,7 @@ class DxDataSync{
 		$t				= array();
 		$t[$standerModelName]	= $data;
 		$putData		= array("sourceNodeName"=>$this->myNodeName,'dataType'=>$data_type,"data"=>$t);
-		dump($this->myNodeName);dump($data_type);dump($t);
+//		dump($this->myNodeName);dump($data_type);dump($t);
 		foreach ($dataNode as $dataN){
 			$this->getMessageEngine()->put($dataN,json_encode($putData));
 		}
