@@ -37,7 +37,8 @@ class DataOpeAction extends DxExtCommonAction{
             	$data_list  = $model->where($where)->field($fieldsStr)->limit( $start.",".$pageSize )->order($model->getModelInfo("order"))->select();
         	}else
             	$data_list  = $model->where($where)->field($fieldsStr)->order($model->getModelInfo("order"))->select();
-        } //无数据时data_list = null,此时返回的数据，grid不会更新rows，这导致，再删除最后一条数据时，grid无法删除前端的最后一样。
+        }
+         //无数据时data_list = null,此时返回的数据，grid不会更新rows，这导致，再删除最后一条数据时，grid无法删除前端的最后一样。
         if(empty($data_list)){
         	$data_list	= array();
         }else{
@@ -190,11 +191,8 @@ class DataOpeAction extends DxExtCommonAction{
 		
 		$tempFile	= TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
 		if(!$this->cacheTpl || C('APP_DEBUG') || !file_exists($tempFile)){
-		    $customTplFile	= THEME_PATH.'Public/'.$tplType.C('TMPL_TEMPLATE_SUFFIX');
-		    if(!file_exists($customTplFile)){
-		        $tempT	= $this->fetch("data_list");
-    		    file_put_contents($tempFile, $tempT);
-		    }
+		     $tempT	= $this->fetch("data_list");
+    		 file_put_contents($tempFile, $tempT);
 		}
 		$this->display($tempFile);
 	}
