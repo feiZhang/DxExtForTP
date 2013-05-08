@@ -129,6 +129,7 @@ class DataOpeAction extends DxExtCommonAction{
 				$pkId 	= $_REQUEST[$m->getPk()];
 			}else{
 				$v      = $m->add();
+//				$pkId	= $m->getLastInsID();//当有后置操作时可能取不到值。
 				$pkId	= $v;
 			}
 			if($v === false){
@@ -192,8 +193,8 @@ class DataOpeAction extends DxExtCommonAction{
 		    $customTplFile	= THEME_PATH.'Public/'.$tplType.C('TMPL_TEMPLATE_SUFFIX');
 		    if(!file_exists($customTplFile)){
 		        $tempT	= $this->fetch("data_list");
-		   
-			file_put_contents($tempFile, $tempT);
+    		    file_put_contents($tempFile, $tempT);
+		    }
 		}
 		$this->display($tempFile);
 	}
