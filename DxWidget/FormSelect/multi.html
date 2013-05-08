@@ -1,6 +1,6 @@
 <!--<eq name="readOnly" value="false">数据readonly模式-->
 <label>
-    <!--<volist name="field_enum" id="vo" key="k">-->
+    <!--<volist name="valChange" id="vo" key="k">-->
         <!--<if condition="in_array($key, $val)">符合条件的记录-->
         <span class="SelectedItem">{$vo|DxFunction::escapeHtmlValue}</span>
         <!--</if>-->
@@ -10,7 +10,7 @@
 <!--<else/>-->
 <select multiple name="{$name}" id="{$name}" size='{$size}' class="{$class} {$validclass} {$custom_class}" onchange="_dataope_onSetChange(this)">
     <!-- 多选是不需要提示了.<option value="">{$placeholder}</option>-->
-    <!--<volist name="field_enum" id="vo" key="k">-->
+    <!--<volist name="valChange" id="vo" key="k">-->
         <!--<if condition="in_array($key, $val)">符合条件的记录-->
         <option value="{$key}" selected>{$vo|DxFunction::escapeHtmlValue}</option>
         <!--<else/>-->

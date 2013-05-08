@@ -51,9 +51,11 @@ class DxExtPublicAction extends DxExtCommonAction {
 		if($rv["state"]){
 			$main_url	= session("main_url");
 			if(!empty($main_url))
-				$this->assign("jumpUrl",$main_url);
-			else
-				$this->assign("jumpUrl",U("Home/index"));
+				$this->assign("jumpUrl",__APP__.$main_url);
+			else{
+				$gotoUrl	= U("Home/index");
+				$this->assign("jumpUrl",$gotoUrl);
+			}
 			$this->success($rv["msg"]);
 		}else{
 			$this->assign("jumpUrl",U("Public/login"));

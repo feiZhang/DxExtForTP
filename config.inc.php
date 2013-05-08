@@ -59,5 +59,7 @@ return array(
     'LOGIN_USER_NICK_NAME'	=> "name",		//用户昵称字段名
     'LOGIN_MD5'				=> false,		//是否md5加密密码
     'USER_AUTH_KEY'         => 'login_user_id',
+    //文件上传的临时路径
+    'TEMP_FILE_PATH'        => RUNTIME_PATH."TMP_IMG",
 );
 ?>

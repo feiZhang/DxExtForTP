@@ -12,7 +12,7 @@ var cantonDataNoTree	= new Array();
      }); 
      */
     /**
-     * data {[parent_id:1,id:1,title:"郑州",val:""],[parent_id:1,id:1,title:"郑州",val:""]} json格式的数据信息..
+     * data {[parent_id:1,canton_id:1,title:"郑州",val:""],[parent_id:1,canton_id:1,title:"郑州",val:""]} json格式的数据信息..
      * containerDomId 		显示被加到目标dom元素的id
      * defaultKey 			默认选择的数据 可以是数组
      * rootKey 				树的根ID
@@ -30,7 +30,7 @@ var cantonDataNoTree	= new Array();
 	            	        	cantonData[data[i].parent_id] = new Array();
 	            	        }
 	            	        cantonData[data[i].parent_id].push(data[i]);
-	            	        cantonDataNoTree[data[i].id]	= data[i];
+	            	        cantonDataNoTree[data[i].canton_id]	= data[i];
 	            	    };
 	            	    
         			},dataType:'json',async:false});
@@ -70,6 +70,7 @@ var cantonDataNoTree	= new Array();
             
             if(rootKey!=undefined){
             	if (rootKey!=undefined){
+                    rootKey     = parseInt(rootKey);
             		if(showRootKey==true){
             			var t	= new Array();
             			t.push(cantonDataNoTree[rootKey]);
@@ -95,9 +96,9 @@ var cantonDataNoTree	= new Array();
                 for(i=0;i<dataLength; i++) {
                     if (undefined != data[i]) {
                     	if (undefined != data[i].val) {
-                    		strHtml += "<option key=\"" + data[i].id + "\" value=\""+ data[i].val +"\">" + data[i].title + "</option>";
+                    		strHtml += "<option key=\"" + data[i].canton_id + "\" value=\""+ data[i].val +"\">" + data[i].title + "</option>";
                     	}else{
-                    		strHtml += "<option key=\"" + data[i].id + "\" value=\""+ data[i].id +"\">" + data[i].title + "</option>";
+                    		strHtml += "<option key=\"" + data[i].canton_id + "\" value=\""+ data[i].canton_id +"\">" + data[i].title + "</option>";
                     	}
                     }
                 }
@@ -111,7 +112,7 @@ var cantonDataNoTree	= new Array();
             	if(defaultKey.constructor == String){
             		//fdn格式转换为数组格式
     				defaultKey = defaultKey.split(".");
-    				defaultKey.pop();
+                    if(defaultKey[defaultKey.length-1]=="") defaultKey.pop();
     				$(defaultKey).each(function(i,v){
     					defaultKey[i]	= v;
     				});

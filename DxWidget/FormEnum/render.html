@@ -1,10 +1,10 @@
 <!--<eq name="readOnly" value="false">数据readonly模式-->
 <label class="radio inline">
-{$field_enum[$value]|DxFunction::escapeHtmlValue}
+{$valChange[$value]|DxFunction::escapeHtmlValue}
 <input type="hidden" name="{$name}" id="{$name}" value="{$value}" class="{$class} {$validclass} {$custom_class}">
 </label>
 <!--<else/>-->
-<!--<volist name="field_enum" id="vo" key="k">-->
+<!--<volist name="valChange" id="vo" key="k">-->
 	<!--<eq name="key" value="$value">-->
 		<label class="radio inline">
 		<input type="radio" name="{$name}" id="{$name}" value="{$key}" checked class="{$class} {$validclass} {$custom_class}">

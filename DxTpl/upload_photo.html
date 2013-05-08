@@ -1,0 +1,100 @@
+<link rel="stylesheet" href="__DXPUBLIC__/public/jquery-Jcrop/css/jquery.Jcrop.min.css" type="text/css" />
+<script src="__DXPUBLIC__/public/jquery-Jcrop/js/jquery.Jcrop.min.js"></script>
+<ul>
+	<li>1.点击"浏览"按钮，选择本地老人头像图片，图片格式必须是:jpg,jpeg,gif,png，最大2MB</li>
+	<li>2.图片上传完成后，出现在下面的剪裁区域，按住鼠标左键，在图片上拖动，选择合适的头像选取，类似与Windows窗口改变大小</li>
+	<li>3.点击"确认裁剪并提交"，完成头像上传操作</li>
+</ul>
+<form id="form_upload_file" action="__APP__/Basic/upload_file" method="POST" enctype="multipart/form-data">
+	<table width='100%'>
+	<tr>
+		<th width='80'>图片文件：</th>		
+		<td>
+			<div id="orig_photo">
+				<div class="showUploadMsg">
+					
+				</div>
+				<div style="width: 0%;display:none" class="pos_progress"></div>
+				<input type="file" name="files[]">
+				<div id="selectXY" style="z-index:-1;position: absolute;display:none"></div>
+			</div>
+		</td>
+	</tr>
+	</table>
+    <div id="NewPortrait">
+		<img src="__DXPUBLIC__/basic/images/no_src_pic.jpg" id="uploaded_photo" />
+    </div>
+    <div id='btn_saves' style='display:none;'>
+        <input type='button' value='保存选中区域' id='btn_save_region' class='BUTTON SUBMIT'/>
+    </div>
+</form>
+<script>
+<!--
+(function($){
+	$(function(){
+		var jcrop_api;
+		$('#uploaded_photo').Jcrop({
+			onChange: updatePreview,
+			onSelect: updatePreview,
+			boxHeight:400,
+			minSize:[100,120],
+			aspectRatio: 5/6
+		},function(){
+		  jcrop_api = this;
+		});
+		
+		function updatePreview(c)
+		{
+		    $('#selectXY').css({
+		      width: c.w,
+		      height: c.h,
+		      marginLeft: c.x,
+		      marginTop: c.y
+		    });
+		};
+		
+
+		$("#orig_photo").fileupload({
+			url:"__APP__/Basic/upload_file",
+			dataType : 'json',
+			autoUpload : true,
+			fileInput:$("#orig_photo").find("input[type='file']"),
+			singleFileUploads : true,
+			acceptFileTypes : ".gif、.jpeg、.jpg、.png",
+			done : function(e, data) {
+				var _this	= this;
+				$.each(data.result, function(index, file) {
+					jcrop_api.setImage("__APP__/" + file.url);
+					jcrop_api.setSelect([100,100,250,300]);
+					$("#selectXY").text(file.file_path);
+				});
+				$(this).find(".pos_progress").hide();
+			},
+			progressall : function(e, data) {
+				$(this).find(".pos_progress").show();
+				var progress = parseInt(data.loaded / data.total * 100, 10);
+				$(this).find(".pos_progress").css('width', progress + '%');
+			},
+			add : function (e, data) {
+				var fileType	= /(\.|\/)(gif|jpe?g|png)$/i;
+				var error		= false;
+				var _this		= this;
+				$.each(data.files,function(index,file){
+					if(file.size>3*1024*1024){
+						$(_this).find(".showUploadMsg").html("文件过大,请确定上传的文件不大于3M!");
+						error	= true;
+						return;
+					}
+					if(!(fileType.test(file.name.toLowerCase()))){
+						$(_this).find(".showUploadMsg").html("文件格式不符合要求,系统只接受jpg、jpeg、png、gif格式文件!");
+						error	= true;
+						return;
+					}
+				});
+				if(!error) data.submit();
+			},
+		});
+	});
+})(jQuery);
+-->
+</script>

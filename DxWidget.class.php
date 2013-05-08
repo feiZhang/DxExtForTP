@@ -12,6 +12,7 @@ class DxWidget extends Widget {
 			if(!file_exists_case($templateFile))
 				throw_exception(L('_TEMPLATE_NOT_EXIST_').'['.$templateFile.']');
 		}
-		return parent::renderFile($templateFile,$var);
+		$content    = parent::renderFile($templateFile,$var);
+        return str_replace("__DXPUBLIC__", C("DX_PUBLIC"), $content);
 	}
 }

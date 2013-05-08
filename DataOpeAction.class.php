@@ -61,7 +61,8 @@ class DataOpeAction extends DxExtCommonAction{
 		fb::groupEnd();
 	}
     
-    /**处理数据导出.
+    /**
+     * 处理数据导出.
      * @param $data array 要导出的数据记录集
      * @param $type string 导出数据类型.默认为xls
      * @param $fields_list array 要导出的的数据的属性.默认使用model->getExportFields().<br/>
@@ -151,6 +152,21 @@ class DataOpeAction extends DxExtCommonAction{
 		}
 	}
 		
+    protected function dxDisplay($templateFile){
+		$tempFile	= TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
+		if(!$this->cacheTpl || C('APP_DEBUG') || !file_exists($tempFile)){
+            if(C("TOKEN_ON")){
+                //多次编译会导致生成多个TOKEN
+                C("TOKEN_ON",false);
+                $tempT	= $this->fetch($templateFile);
+                C("TOKEN_ON",true);
+            }else
+                $tempT	= $this->fetch($templateFile);
+			file_put_contents($tempFile, $tempT);
+		}
+		$this->display($tempFile);
+
+    }
     /* 显示页面内容 **/
 	public function index(){
 		$model  = $this->model;
@@ -194,14 +210,8 @@ class DataOpeAction extends DxExtCommonAction{
 		foreach($_REQUEST as $key=>$val){
 			$this->assign($key,str_replace("%","",$val));
 		}
-		
-		$tempFile	= TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
-		if(!$this->cacheTpl || C('APP_DEBUG') || !file_exists($tempFile)){
-			$tempT	= $this->fetch("Public:data_list");
-			file_put_contents($tempFile, $tempT);
-		}
-		$this->display($tempFile);
-	}
+        $this->dxDisplay("data_list");
+    }
     
     /* 追加数据 **/
 	public function add(){
@@ -228,32 +238,18 @@ class DataOpeAction extends DxExtCommonAction{
 				$this->error('要修改的数据不存在!请确认操作是否正确!');
 			}
 		}
-        $this->assign('valid', $model->getValidate(Model::MODEL_INSERT));
+		$this->assign('valid', $model->getValidate(Model::MODEL_INSERT));
 		$this->assign('objectData', array_merge($vo,$_REQUEST));
 
-		$tempFile	= TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
-		if(!$this->cacheTpl || C('APP_DEBUG') || !file_exists($tempFile)){
-		    $tempT	= $this->fetch("Public:data_edit");
-		    file_put_contents($tempFile, $tempT);
-		}
-		$this->display($tempFile);
+        $this->dxDisplay("Public:data_edit");
 	}
     
 	/**
 	 * 数据展示页面
 	 * */
     public function view(){
-    	if(file_exists(THEME_PATH.MODULE_NAME.'/'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX')))
-    		$this->display();
-    	else{
-    		$tempT	= $this->fetch("DxPublic:data_view");
-			$tempFile	= TEMP_PATH.'/'.MODULE_NAME.'_'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
-			file_put_contents($tempFile, $tempT);
-			$this->display($tempFile);
-    	}
+        $this->dxDisplay("Public:data_view");
     }
-	
-	
 	
 	/**
 	 * 快速改变某个数据某个字段的值，比如，修改数据状态。
@@ -272,11 +268,13 @@ class DataOpeAction extends DxExtCommonAction{
 		$id			= $_REQUEST["id"];
 		if (!empty($m) && isset($id)){
 			$where	= array ($pk => array ('in', explode ( ',', $id ) ) );
-			if($m -> where($where) -> setField($fieldName,$_REQUEST["v"]))
+            $data[$fieldName]   = trim($_REQUEST["v"]);
+            $data   = array_merge($_REQUEST,$data);
+			if($m -> where($where) -> save($data))
 				$this -> ajaxReturn("","状态修改成功!",1);
 			else
 				$this -> ajaxReturn("","状态修改失败!请重试!",0);
-		}else $this -> ajaxReturn("","非法请求!请重试!",0);
+		}else $this -> ajaxReturn("","非法请求!请j试!",0);
 	}
     
     /** 通过ajax提交删除请求 **/

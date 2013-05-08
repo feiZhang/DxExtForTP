@@ -136,6 +136,7 @@ class DxExtCommonModel extends Model {
 	private $cacheListFields= array();	//缓存Model的listFileds数据，经过转换的结果
 	//数据权限相关
 	public $skipDataPowerCheck	= false;	//关闭数据权限域控制。
+    protected $viewTableName= "";
 
 	/* 将所有的数据库字段，全初始化为数据列表字段，默认使用数据库字段名 */
 	function initListFields(){
@@ -167,17 +168,10 @@ class DxExtCommonModel extends Model {
 		return implode(",",$r);
 	}
 
-	//用表明初始化 modelInfo信息
-	function initModelInfo(){
-		if(sizeof($this->getModelInfo())>0) return;
-		// 	    $this->getModelInfo("title")   = $this->getTableName();
-	}
-
 	function __construct($name='',$connection='') {
 		parent::__construct($name,$connection);
 
 		$this->initListFields();
-		$this->initModelInfo();
 
 		//自动填充默认字段create_time 和 update
 		$myFields	= $this->getDbFields();
@@ -220,6 +214,7 @@ class DxExtCommonModel extends Model {
 	 * 重新整理listFields数据，将原始的listFields转换为运行时状态。比如：valChange的转换。
 	 * **/
 	public function getListFields($reNew=false,$original=false){
+        Log::write($this->name."->getListFields",LOG::INFO);
 		if($original) return $this->listFields;
 		if($reNew || C("APP_DEBUG")){
 			$this->setCacheListFields();
@@ -240,9 +235,11 @@ class DxExtCommonModel extends Model {
 		}
 		F('_fields/'.$this->name."_listFields",$this->listFields);
 		$this->cacheListFields	= $this->listFields;
-	}
+    }
 	private function getOneListField($key,$field){
 		if(!isset($field["name"])) $field["name"]	= $key;
+        if($field["type"]=="canton" && !isset($field["valChange"]))
+            $field["valChange"] = array("model"=>"Canton");
 		//将字典表，转换为valChange数据
 		if(isset($field["valChange"]["model"])){
 		    if($this->name==$field["valChange"]["model"])
@@ -258,27 +255,21 @@ class DxExtCommonModel extends Model {
 			$field["valChange"]	= $tValC;
 		}
 		//规整数据的enum字段，默认使用valChange替换，没有valChange字段，则从数据库获取enum的字段定义数据
-		if(empty($field["field_enum"]) && array_key_exists("type", $field) && ($field["type"]=="enum" || $field["type"]=="set" || $field["type"]=="select")){
-			if(isset($field["valChange"])){
-				$field["field_enum"]	= $field["valChange"];
-			}else{
+		if(empty($field["valChange"]) && array_key_exists("type", $field) && ($field["type"]=="enum" || $field["type"]=="set" || $field["type"]=="select")){
 				$sql	= sprintf("SELECT COLUMN_TYPE FROM information_schema.`COLUMNS` WHERE DATA_TYPE in ('set','enum') AND `TABLE_SCHEMA`='%s' AND `TABLE_NAME`='%s' AND COLUMN_NAME='%s'",C("DB_NAME"),$this->trueTableName,$field["name"]);
 				$tField	= $this->query($sql);
 				if(!empty($tField)){
 					//枚举类型的内部序号是从1开始。
-					$field["field_enum"]	= explode(",","0,".str_replace(array("'","(",")"),array("","",""), substr($tField[0]["COLUMN_TYPE"],5)));
-					unset($field["field_enum"][0]);
-					$field["field_enum"]    = array_combine($field["field_enum"],$field["field_enum"]);
+					$field["valChange"]	= explode(",","0,".str_replace(array("'","(",")"),array("","",""), substr($tField[0]["COLUMN_TYPE"],5)));
+					unset($field["valChange"][0]);
+					$field["valChange"]    = array_combine($field["valChange"],$field["valChange"]);
 				}
-			}
 		}
 		
 		if(isset($field["default"])){
 			//设置默认值
-			$val= "";$d	= $field['default'];
-			if(is_string($d)){
-				$val=$d;
-			}elseif(is_array($d)){
+			$d	= $field['default'];
+			if(is_array($d)){
 				if(count($d)>=2){
 					switch($d[0]){
 						case "func":
@@ -288,14 +279,14 @@ class DxExtCommonModel extends Model {
 								//移除前两个元素
 								array_shift($param_arr);
 								array_shift($param_arr);
-								$val=call_user_func_array($func, $param_arr);
+								$field["default"]=call_user_func_array($func, $param_arr);
 							}
 							break;
 					}
 				}
-			}
+			}else
+                $field['default']=$d;
 			//重置默认值
-			$field['default']=$val;
 		}
 		return $field;
 	}
@@ -401,6 +392,9 @@ class DxExtCommonModel extends Model {
 		/**
 		 * 增加数据权限域管理的功能。
 		 * */
+        if(!empty($this->viewTableName)){
+            $options["table"]   = $this->viewTableName; 
+        }
 		if(APP_DEBUG) Log::write(var_export($options,true).MODULE_NAME."|".ACTION_NAME."__options",Log::INFO);
 		if($this->skipDataPowerCheck || DxFunction::checkInNotArray(C('DP_NOT_CHECK_MODEL'),array(),$this->name)) return;
 
@@ -487,7 +481,7 @@ class DxExtCommonModel extends Model {
 		$options["where"]		= $this->addOptionsWhere($options["where"],$tempOptionsWhere,"AND");
 		//dump($dataPowerFieldW);dump($options["where"]);
 		
- 		if(APP_DEBUG) Log::write(var_export($dataPowerFieldDelete,true).MODULE_NAME."|".ACTION_NAME."dataPowerFieldDelete",Log::INFO);
+ 		if(APP_DEBUG) Log::write(var_export($dataPowerFieldDelete,true).$this->name."|".MODULE_NAME."|".ACTION_NAME."dataPowerFieldDelete",Log::INFO);
  		if(APP_DEBUG) Log::write(var_export($dataPowerFieldW,true).MODULE_NAME."|".ACTION_NAME."dataPowerFieldW",Log::INFO);
  		if(APP_DEBUG) Log::write(var_export($dataPowerFieldPublic,true).MODULE_NAME."|".ACTION_NAME."dataPowerFieldPublic",Log::INFO);
 	}
@@ -525,11 +519,11 @@ class DxExtCommonModel extends Model {
 	}
 	/**
 	 * 设置缓存，公共的字典缓存是大家共享的，比如：老人类型，，私有的缓存是各自单独存放，比如职工信息
+     * 再调用字典表的时候一定要注意，不要调用到getListFields方法，否则如果两个Model相互 valChange 引用，则会导致镶嵌引用，死循环。
 	 * */
 	protected function setCacheDictTableData(){
 		if($this->getModelInfo("dictType")=="mySelf") $userId	= intval(session(C("USER_AUTH_KEY")));
 		else $userId	= 0;
-		
 		$dictConfig	= $this->getModelInfo("dictTable");
 
 		if(!empty($dictConfig)) {
@@ -653,7 +647,7 @@ class DxExtCommonModel extends Model {
 
 	//首先根据自定义字段获取主键，然后再获取数据库的主键
 	public function getPk() {
-		foreach($this->getListFields() as $key => $field){
+		foreach($this->listFields as $key => $field){
 			if(!empty($field["pk"])) return empty($field["name"])?$key:$field["name"];
 		}
 		return parent::getPk();

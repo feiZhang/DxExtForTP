@@ -1,12 +1,12 @@
 <!--<eq name="readOnly" value="false">数据readonly模式-->
 <label>
-    {$field_enum[$value]}
+    {$valChange[$value]}
     <input type="hidden" name="{$name}" id="{$name}" class="{$class} {$validclass} {$custom_class}" value="{$value|DxFunction::escapeHtmlValue}">
 </label>
 <!--<else/>-->
 <select name="{$name}" id="{$name}" class="{$class} {$validclass} {$custom_class}">
     <option value="">{$placeholder}</option>
-    <!--<volist name="field_enum" id="vo" key="k">-->
+    <!--<volist name="valChange" id="vo" key="k">-->
         <!--<eq name="key" value="$value">-->
         <option value="{$key}" selected=>{$vo|DxFunction::escapeHtmlValue}</option>
         <!--<else/>-->

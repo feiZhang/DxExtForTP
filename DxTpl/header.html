@@ -15,8 +15,13 @@
 		-->
 		</script>
 
+    <eq name="Think.config.APP_DEBUG" value="true">
+	<link href="__ROOT__/min/g=headerCss&debug=1" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="__ROOT__/min/g=headerJs&debug=1"></script>
+    <else/>
 	<link href="__ROOT__/min/g=headerCss" rel="stylesheet" type="text/css" />
 	<script type="text/javascript" src="__ROOT__/min/g=headerJs"></script>
+    </eq>   
 
 </head>
 

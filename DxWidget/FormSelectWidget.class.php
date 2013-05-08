@@ -12,7 +12,7 @@ class FormSelectWidget extends DxWidget {
         //默认值
         "default"=>'', 
         "value"=>'',
-        "field_enum"=>array(),
+        "valChange"=>array(),
         "name"=>'', 
         'placeholder'=>'请选择',
         //是否显示为多选

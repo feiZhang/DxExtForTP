@@ -13,13 +13,13 @@
 class FormEnumWidget extends DxWidget {
     private $default=array(
         //是否允许显示默认值
-        "allowdefault"=>false,
+        "allowdefault"=>true,
         //默认值
         "default"=>'',
         //当前值,当前值为空时显示
         "value"=>'',
         //显示列表,结构array('v'=>'label')
-        "field_enum"=>array(),
+        "valChange"=>array(),
         "name"=>'', 
         //占位符
         'placeholder'=>'',
@@ -39,7 +39,8 @@ class FormEnumWidget extends DxWidget {
     public function render($data) {
         $val            = array_merge($this->default, $data["fieldSet"], $data);
 
-        if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
+        //if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
+        if(empty($val['value']) && !empty($val['default'])){
             $val['value']    = DxFunction::escapeHtmlValue($val['default']);
         }else
             $val['value']    = DxFunction::escapeHtmlValue($val['value']);

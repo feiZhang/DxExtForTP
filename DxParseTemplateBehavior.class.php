@@ -53,8 +53,8 @@ class DxParseTemplateBehavior extends Behavior {
         if(empty($action)) $action    = ACTION_NAME;
         if(file_exists($templateFile)){
             $tplFile    = $templateFile;
-        }else if(file_exists(THEME_PATH.$this->theModelName.'/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
-            $tplFile    = THEME_PATH.$this->theModelName.'/'.$action.C('TMPL_TEMPLATE_SUFFIX');
+        }else if(file_exists(THEME_PATH.MODULE_NAME.'/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
+            $tplFile    = THEME_PATH.MODULE_NAME.'/'.$action.C('TMPL_TEMPLATE_SUFFIX');
         }else if(file_exists(THEME_PATH.'DxPublic/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
             $tplFile    = THEME_PATH.'DxPublic/'.$action.C('TMPL_TEMPLATE_SUFFIX');
         }else{
