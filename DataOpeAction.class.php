@@ -13,9 +13,7 @@ class DataOpeAction extends DxExtCommonAction{
 	        
 	/* 数据列表 for Grid **/
 	public function get_datalist(){
-	    fb::group("get_datalist");
- 	    fb::log($_REQUEST,"Request");
-		$model	= $this->model;
+	  	$model	= $this->model;
 		if(empty($model)) die("model为空!");
 		$enablePage	= $model->getModelInfo("enablePage");
 		if($enablePage!==false) $enablePage	= true;
@@ -29,19 +27,18 @@ class DataOpeAction extends DxExtCommonAction{
         if($start<0) $start = 0;
 		
 		$where			= array_merge($this->defaultWhere,$this->_search());
-		fb::log($where,"Where");
+		//使用Model连贯操作时，每一个连贯操作，都会往Model对象中复制，如果嵌套使用Model的连贯操作，会覆盖掉原来已经存在的值，导致bug。
+		$fieldsStr = $model->getListFieldString();
 		if(isset($_REQUEST['export']) && !empty($_REQUEST['export'])){
-            $data_list  = $model->where($where)->field($model->getListFieldString())->order($model->getModelInfo("order"))->select();
+            $data_list  = $model->where($where)->field($fieldsStr)->order($model->getModelInfo("order"))->select();
             $this->export($data_list, trim($_REQUEST['export']));
         }else{
         	if($enablePage){
-            	$data_list  = $model->where($where)->field($model->getListFieldString())->limit( $start.",".$pageSize )->order($model->getModelInfo("order"))->select();
+            	$data_list  = $model->where($where)->field($fieldsStr)->limit( $start.",".$pageSize )->order($model->getModelInfo("order"))->select();
         	}else
-            	$data_list  = $model->where($where)->field($model->getListFieldString())->order($model->getModelInfo("order"))->select();
+            	$data_list  = $model->where($where)->field($fieldsStr)->order($model->getModelInfo("order"))->select();
         }
-        fb::Log($model);
-        fb::Log($model->getLastSql());
-        //无数据时data_list = null,此时返回的数据，grid不会更新rows，这导致，再删除最后一条数据时，grid无法删除前端的最后一样。
+         //无数据时data_list = null,此时返回的数据，grid不会更新rows，这导致，再删除最后一条数据时，grid无法删除前端的最后一样。
         if(empty($data_list)){
         	$data_list	= array();
         }else{
@@ -56,9 +53,7 @@ class DataOpeAction extends DxExtCommonAction{
 		$data_count  	= $enablePage?$model->where($where)->count():sizeof($data_list);
 		$gridHandler->setData($data_list);
 		$gridHandler->setTotalRowNum($data_count);
-        fb::log($gridHandler->pageInfo);
-		$gridHandler->printLoadResponseText();
-		fb::groupEnd();
+        $gridHandler->printLoadResponseText();
 	}
     
     /**
@@ -110,7 +105,7 @@ class DataOpeAction extends DxExtCommonAction{
             exit();
         }
     }
-	
+
 	
 	/* 保存数据 **/
 	public function save(){
@@ -136,17 +131,16 @@ class DataOpeAction extends DxExtCommonAction{
 				$pkId 	= $_REQUEST[$m->getPk()];
 			}else{
 				$v      = $m->add();
-				//dump($m->getLastSql());
-				$pkId	= $m->getLastInsID();
+//				$pkId	= $m->getLastInsID();//当有后置操作时可能取不到值。
+				$pkId	= $v;
 			}
-			
 			if($v === false){
 				$this->ajaxReturn($m->getDbError(),session(MODULE_NAME."_modelTitle")."数据操作失败，请与管理员联系!".$m->getError(),0);
 			}else{
 				$returnD    = array("id"=>$pkId,"rows"=>$v);
 				$this->ajaxReturn($returnD,session(MODULE_NAME."_modelTitle")."数据操作成功!",1);
 			}
-		}else{
+		}else{fb::log($m);
 			$msg	= $m->getError();
 			$this->ajaxReturn($m->getError(),"创建数据出现错误!请检查必填项是否填写完整!($msg)",0);
 		}
@@ -170,7 +164,7 @@ class DataOpeAction extends DxExtCommonAction{
     /* 显示页面内容 **/
 	public function index(){
 		$model  = $this->model;
-		fb::log($_REQUEST,"Request");
+	
 		if(empty($model)) die();
 
 		//支持通过url传递过来的ModelTitle
@@ -291,8 +285,8 @@ class DataOpeAction extends DxExtCommonAction{
     			$deleteState	= true;
     		}
     	}
-    	fb::log($model->getLastSql(),'deleteSql');
-        if($deleteState) $this->ajaxReturn(0,"删除".session(MODULE_NAME."_modelTitle")."成功!",1,"JSON");
+
+    	if($deleteState) $this->ajaxReturn(0,"删除".session(MODULE_NAME."_modelTitle")."成功!",1,"JSON");
         else $this->ajaxReturn(0,"删除".session(MODULE_NAME."_modelTitle")."失败!",0,"JSON");
     }
 

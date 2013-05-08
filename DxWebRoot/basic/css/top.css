@@ -30,7 +30,7 @@
 
 .head-right{height:85px; float:right; padding-right:10px;}
 .head-right li{height:65px; width:51px; float:left; margin:5px 0 0 5px;}
-.head-right li a{ display:block; float:left; color:#FFFFFF;  background-repeat: no-repeat; width:51px; height:65px; outline: none;}
+.head-right li a{ display:block; font-size:14px;float:left; color:#FFFFFF;  background-repeat: no-repeat; width:51px; height:65px; outline: none;}
 .head-right li a:hover{color:#F3D801;}
 
 ul li a span{
