@@ -13,6 +13,12 @@ class DxExtCommonModel extends Model {
 	const HIDE_FIELD_DATA		= 8;      //列表时，是否不输出此字段数据
 	const HIDE_FIELD_EXPORT		= 16;		//是否不导出
 
+    const READONLY_FIELD_ADD    = 1;
+    const READONLY_FIELD_EDIT   = 2;
+
+    const DISPLAY_NONE_FIELD_ADD    = 1;
+    const DISPLAY_NONE_FIELD_EDIT   = 2;
+
 	const DP_TYPE_ENABLE		= 1;	//开启数据权限控制
 	const DP_TYPE_PUBLIC		= 2;	//开启公共数据权限，此字段判定，某个数据是否是公共数据。
 	const DP_TYPE_STATIC_AUTO	= 4;	//auto的静态设定
@@ -294,21 +300,26 @@ class DxExtCommonModel extends Model {
 		$this->listFields[$key]	= array_merge($this->listFields[$key],$v);
 		$this->setCacheListFields();
 	}
-	public function getEditFields($pkId=0){
-		//编辑数据的字段列表，编辑数据时，要隐藏某些字段
-		$f	= array();
-		foreach($this->getListFields() as $name=>$field){
-			if(!($field["hide"] & self::HIDE_FIELD_ADD) && $pkId==0){
-				if(!isset($field["name"])) $field["name"]	= $name;
-				$f[$field["name"]]	= $field;
-			}
-			if(!($field["hide"] & self::HIDE_FIELD_EDIT) && $pkId>0){
-				if(!isset($field["name"])) $field["name"]	= $name;
-				$f[$field["name"]]	= $field;
-			}
-		}
-		return $f;
-	}
+
+    public function getEditFields($pkId=0){
+        //编辑数据的字段列表，编辑数据时，要隐藏某些字段
+        $f  = array();
+        foreach($this->getListFields() as $name=>$field){
+            //修改和新增时隐藏可以分别定义      新增和修改时的readOnly可以分别定义
+            if(!($field["hide"] & self::HIDE_FIELD_ADD) && $pkId==0){
+                if(!isset($field["name"])) $field["name"]   = $name;
+                $f[$field["name"]]  = $field;
+                $f[$field["name"]]["readOnly"]  = (bool)($field["readOnly"] & self::READONLY_FIELD_ADD);
+                $f[$field["name"]]["display_none"]  = (bool)($field["display_none"] & self::DISPLAY_NONE_FIELD_ADD);
+            }else if(!($field["hide"] & self::HIDE_FIELD_EDIT) && $pkId>0){
+                if(!isset($field["name"])) $field["name"]   = $name;
+                $f[$field["name"]]  = $field;
+                $f[$field["name"]]["readOnly"]  = (bool)($field["readOnly"] & self::READONLY_FIELD_EDIT);
+                $f[$field["name"]]["display_none"]  = (bool)($field["display_none"] & self::DISPLAY_NONE_FIELD_EDIT);
+            }
+        }
+        return $f;
+    }
 
 	public function getModelInfo($key=""){
 		if(empty($key)){

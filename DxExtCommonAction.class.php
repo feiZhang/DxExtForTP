@@ -194,7 +194,7 @@ class DxExtCommonAction extends Action {
 				$fieldAdd	= "lt";
 			}
 			
-			if (in_array($key,$dbFields)) {
+			if (in_array($key,$dbFields,true)) {
 				if($fieldAdd == "egt" || $fieldAdd=="elt" || $fieldAdd == "gt" || $fieldAdd=="lt"){
 					if(array_key_exists($key, $map))
 						$map[$key]	= array($map[$key],array($fieldAdd,$val),"and");

@@ -39,7 +39,10 @@
 		<?php
 		foreach($listFields as $name=>$field){
             $fieldInput="";
-            printf("<tr class=\"itemAddTr\">\n");
+            if($field["display_none"])
+                printf("<tr class=\"itemAddTr\" style=\"display:none\">\n");
+            else
+                printf("<tr class=\"itemAddTr\">\n");
             printf("<td align='right' class='itemAddTd'><span class='itemAddField'><b>%s</b></span>:</td>\n",$field["title"]);
             printf("<td>%s</td>\n",DxFunction::getFieldInput($field, $valid));
             echo "</tr>\n\n";
