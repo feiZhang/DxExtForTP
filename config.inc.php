@@ -11,6 +11,7 @@ return array(
     'TMPL_ACTION_SUCCESS'	=> dirname(__FILE__)."/DxTpl/success.html",
     'TOKEN_ON'				=> true, //表单令牌开启
     'TOKEN_NAME'            => "DxToken",
+    'TOKEN_RESET'           => false,       //需要设置，否则ajax提交验证失败后，将导致系统重新生成令牌。
     'DEFAULT_MODULE'		=> 'Home',
     'APP_AUTOLOAD_PATH'		=> "Com.DxInfo",
     'SESSION_AUTO_START'	=> true,
