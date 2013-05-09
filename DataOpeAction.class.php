@@ -120,7 +120,10 @@ class DataOpeAction extends DxExtCommonAction{
 			}else if($val["type"]=="uploadFile" && (is_array($_REQUEST[$key]) || !empty($_REQUEST["old_".$key]))){
 				//如果数据传递过来的是数组，则进行数据整合为json格式，比如：多文件上传.
 				$_REQUEST[$key]	= $_POST[$key]	= $_GET[$key]	= $this->moveAndDelFile($key,$m->getModelName());
-			}
+            }else if($val["type"]=="set" && is_array($_REQUEST[$key])){
+                //如果字段是set和 mul select。则将数据整合为json
+				$_REQUEST[$key]	= $_POST[$key]	= $_GET[$key]	= json_encode($_REQUEST[$key]);
+            }
 		}
 		
 		if(!empty($m) && $m->create()){

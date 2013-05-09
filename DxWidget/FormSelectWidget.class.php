@@ -38,7 +38,7 @@ class FormSelectWidget extends DxWidget {
         $val['placeholder']=  htmlentities($val['placeholder'],ENT_QUOTES,"UTF-8");
         if($val['multiple']){
             $val['val']		= $val['value']===''?array():explode(",", $val['value']);
-            $val['size']	= count($val['set']);
+            $val['size']	= count($val['valChange']);
             if($val['size']>5) $val['size'] = 5;
             $ret=$this->renderFile("multi", $val);
         }else{

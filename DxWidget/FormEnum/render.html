@@ -6,13 +6,13 @@
 <!--<else/>-->
 <!--<volist name="valChange" id="vo" key="k">-->
 	<!--<eq name="key" value="$value">-->
-		<label class="radio inline">
-		<input type="radio" name="{$name}" id="{$name}" value="{$key}" checked class="{$class} {$validclass} {$custom_class}">
+		<label class="{$inputType} inline">
+            <input type="{$inputType}" name="{$name}" id="{$name}" value="{$key}" checked class="{$class} {$validclass} {$custom_class}">
 		{$vo|DxFunction::escapeHtmlValue}
 		</label>
 	<!--<else/>-->
-		<label class="radio inline">
-		<input type="radio" name="{$name}" id="{$name}" value="{$key}" class="{$class} {$validclass} {$custom_class}">
+		<label class="{$inputType} inline">
+		<input type="{$inputType}" name="{$name}" id="{$name}" value="{$key}" class="{$class} {$validclass} {$custom_class}">
 		{$vo|DxFunction::escapeHtmlValue}
 		</label>
 	<!--</eq>-->

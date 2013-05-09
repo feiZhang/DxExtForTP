@@ -358,7 +358,10 @@ class DxExtCommonModel extends Model {
 				if(!empty($field["renderer"])){
 					$gridField["renderer"]	= $field["renderer"];
 				}else if(!empty($field["valChange"]) && is_array($field["valChange"])){
-					$gridField["renderer"]	= sprintf("var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){ var valChangeDatas=%s;return valChangeDatas[value];}",json_encode($field["valChange"]));
+                    //set 存储的数据是json数据；
+                    if($field["type"]=="set") $valueToJson    = "if(value[0]=='['){value = eval(value);var r='';$(value).each(function(i,v){r+=valChangeDatas[v]+' ';});return r;}else{return value;}";
+                    else $valueToJson   = "return valChangeDatas[value];";
+					$gridField["renderer"]	= sprintf("var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){ var valChangeDatas=%s;%s}",json_encode($field["valChange"]),$valueToJson);
 				}
 				//数据转换
 				if(isset($field["renderer"])) $gridField["renderer"]	= $field["renderer"];

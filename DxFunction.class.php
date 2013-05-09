@@ -359,10 +359,9 @@ class DxFunction{
 					break;
 				case "enum":
 	                $fieldInput = sprintf('{:DxFunction::W_FIELD("FormEnum", array("name"=>"%1$s","allowdefault"=>empty($pkId[1]),"validclass"=>$valid["%1$s"],"custom_class"=>"itemAddRadio","value"=>$objectData["%1$s"],"fieldSet"=>$listFields["%1$s"]))}', $field_name);
-					break;
+                    break;  
 				case "set":
-					//多选,提交时转换成以,分隔(初始值也是同样形式)的字符串.
-	                $fieldInput = sprintf('{:DxFunction::W_FIELD("FormSelect", array("name"=>"%1$s", multiple=>true, "allowdefault"=>empty($pkId[1]), "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddSelect", "value"=>$objectData["%1$s"], "fieldSet"=>$listFields["%1$s"]))}', $field_name);
+	                $fieldInput = sprintf('{:DxFunction::W_FIELD("FormCheck", array("name"=>"%1$s","allowdefault"=>empty($pkId[1]),"validclass"=>$valid["%1$s"],"custom_class"=>"itemAddRadio","value"=>$objectData["%1$s"],"fieldSet"=>$listFields["%1$s"]))}', $field_name);
 					break;
 				case "select":
 	                $fieldInput = sprintf('{:DxFunction::W_FIELD("FormSelect", array("name"=>"%1$s", "allowdefault"=>empty($pkId[1]), "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddSelect", "value"=>$objectData["%1$s"], "fieldSet"=>$listFields["%1$s"]))}', $field_name);

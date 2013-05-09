@@ -14,15 +14,11 @@ class FormCheckWidget extends DxWidget{
     private $default=array(
         //默认值,使用,隔开,也可以使用array.
         "value"=>'',
-        //显示列表,结构array('v'=>'label')
-        "set"=>array(),
         //返回字符串
         "returnString"=>false,
         //返回数组时:
         //字段名称,不用添加[],自动添加
         "name"=>'', 
-        //占位符
-        'placeholder'=>'',
         //自定义css类
         'class'=>'',
         //表单验证使用的css类
@@ -38,21 +34,13 @@ class FormCheckWidget extends DxWidget{
         'cwidth'=>'',
         );
     public function render($data) {
-        $val=  array_merge($this->default, $data);
-        $val['id']=  uniqid($val['name']."_");
+        $val           = array_merge($this->default, $data["fieldSet"], $data);
         if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
-            $val['value']=  DxFunction::escapeHtmlValue($val['default']);
+            $val['value']   = $val['default'];
         }
         if(is_string($val['value'])){
-            $val['value']=empty($val['value'])?array():explode(",", $val['value']);
+            $val['value']   = empty($val['value'])?array():json_decode($val['value'],true);
         }
-        if(is_array($val['value'])){
-            array_walk($val['value'], "DxFunction::escapeHtmlValue");
-        }
-        $val['stringResult']=  implode(",", $val['value']);
-        //$val['value']=  escapeHtmlValue($val['value']);
-        $val['placeholder']=  DxFunction::escapeHtmlValue($val['placeholder']);
-        array_walk($val['set'], "DxFunction::escapeHtmlValue");
         $ret=$this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);
     }

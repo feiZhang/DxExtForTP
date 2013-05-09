@@ -45,6 +45,7 @@ class FormEnumWidget extends DxWidget {
         }else
             $val['value']    = DxFunction::escapeHtmlValue($val['value']);
         $val['placeholder']  = DxFunction::escapeHtmlValue($val['placeholder']);
+        $val["inputType"]    = $val["type"]=="set"?"checkbox":"radio";
         $ret    = $this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);
     }
