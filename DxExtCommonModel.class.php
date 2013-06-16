@@ -388,7 +388,7 @@ class DxExtCommonModel extends Model {
             if($field["valFormat"]=="json")
               $valueToJson    = "if(value[0]=='['){value = eval(value);var r='';$(value).each(function(i,v){r+=valChangeDatas[v]+' ';});return r;}else{return value;}";
             else
-              $valueToJson    = "var value = value.split(',');var r='';$(value).each(function(i,v){r+=valChangeDatas[v]+' ';});return r;";
+              $valueToJson    = "if(value=='') return '';var value = value.split(',');var r='';$(value).each(function(i,v){if(valChangeDatas[v]!=undefined) r+=valChangeDatas[v]+' ';});return r;";
           }
           else $valueToJson   = "return valChangeDatas[value];";
 					$gridField["renderer"]	= sprintf("var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){ var valChangeDatas=%s;%s}",json_encode($field["valChange"]),$valueToJson);
