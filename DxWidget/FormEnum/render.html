@@ -4,16 +4,19 @@
 <input type="hidden" name="{$name}" id="{$name}" value="{$value}" class="{$class} {$validclass} {$custom_class}">
 </label>
 <!--<else/>-->
+<!--<notempty name="textTo">-->
+<input type="hidden" name="{$textTo}" id="input#{$name}" value="{$value}" class="textTo {$class} {$validclass} {$custom_class}">
+<!--</notempty>-->
 <!--<volist name="valChange" id="vo" key="k">-->
 	<!--<eq name="key" value="$value">-->
 		<label class="{$inputType} inline">
-            <input type="{$inputType}" name="{$name}" id="{$name}" value="{$key}" checked class="{$class} {$validclass} {$custom_class}">
-		{$vo|DxFunction::escapeHtmlValue}
+      <input type="{$inputType}" name="{$name}" id="{$name}" text="{$vo|DxFunction::escapeHtmlValue}" value="{$key}" checked class="{$class} {$validclass} {$custom_class}">
+      {$vo|DxFunction::escapeHtmlValue}
 		</label>
 	<!--<else/>-->
 		<label class="{$inputType} inline">
-		<input type="{$inputType}" name="{$name}" id="{$name}" value="{$key}" class="{$class} {$validclass} {$custom_class}">
-		{$vo|DxFunction::escapeHtmlValue}
+      <input type="{$inputType}" name="{$name}" id="{$name}" text="{$vo|DxFunction::escapeHtmlValue}" value="{$key}" class="{$class} {$validclass} {$custom_class}">
+      {$vo|DxFunction::escapeHtmlValue}
 		</label>
 	<!--</eq>-->
 <!--</volist>-->

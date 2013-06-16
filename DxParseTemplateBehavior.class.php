@@ -16,8 +16,7 @@ class DxParseTemplateBehavior extends Behavior {
             $para["content"]    = $this->praseIncludeForDxInfo($para["content"]);
         }else{
             //是模板文件解析
-            if(!file_exists_case($para))
-                $para   = $this->checkTplFile($para);
+            if(!file_exists_case($para)) $para   = $this->checkTplFile($para);
         }
     }
 
@@ -33,7 +32,7 @@ class DxParseTemplateBehavior extends Behavior {
         if(file_exists($templateFile)){
             return $templateFile;
         }
-        
+
         if(''==$templateFile) {
             // 如果模板文件名为空 按照默认规则定位
             $templateFile = C('TEMPLATE_NAME');
@@ -55,8 +54,8 @@ class DxParseTemplateBehavior extends Behavior {
             $tplFile    = $templateFile;
         }else if(file_exists(THEME_PATH.MODULE_NAME.'/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
             $tplFile    = THEME_PATH.MODULE_NAME.'/'.$action.C('TMPL_TEMPLATE_SUFFIX');
-        }else if(file_exists(THEME_PATH.'DxPublic/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
-            $tplFile    = THEME_PATH.'DxPublic/'.$action.C('TMPL_TEMPLATE_SUFFIX');
+        }else if(file_exists(THEME_PATH.'Public/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
+            $tplFile    = THEME_PATH.'Public/'.$action.C('TMPL_TEMPLATE_SUFFIX');
         }else{
             $tplFile	= sprintf("%s/DxTpl/%s%s",dirname(__FILE__),$action,C('TMPL_TEMPLATE_SUFFIX'));
         }
@@ -74,17 +73,16 @@ class DxParseTemplateBehavior extends Behavior {
             for($i=0;$i<$find;$i++) {
                 $xml        =   '<tpl><tag '.$matches[1][$i].' /></tpl>';
                 $xml        =   simplexml_load_string($xml);
-                if(!$xml)
-                    throw_exception(L('_XML_TAG_ERROR_'));
+                if(!$xml) throw_exception(L('_XML_TAG_ERROR_'));
                 $xml        =   (array)($xml->tag->attributes());
                 $array      =   array_change_key_case($xml['@attributes']);
                 $file       =   $array['file'];
                 unset($array['file']);
-                $content    =   str_replace($matches[0][$i],file_get_contents($this->checkTplFile($file)),$content);
+                $includeContent   = file_get_contents($this->checkTplFile($file));
+                $content    =   str_replace($matches[0][$i],$includeContent,$content);
             }
             return $this->praseIncludeForDxInfo($content);
         }
         return $content;
     }
-    
 }

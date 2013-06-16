@@ -173,9 +173,9 @@ class DxExtCommonAction extends Action {
 	protected function _search($name = '') {
 		$model  = $this->model;
 		$map    = array ();
-		if(APP_DEBUG) Log::write(var_export($_REQUEST,true).MODULE_NAME."|".ACTION_NAME,Log::INFO);
 		//支持like、大于、小于
-        $dbFields   = array_keys($model->getListFields());
+    $dbFields   = array_keys($model->getListFields());
+		if(APP_DEBUG) Log::write(var_export($_REQUEST,true).var_export($dbFields,true).MODULE_NAME."|".ACTION_NAME,Log::INFO);
 		//$dbFields	= $model->getDbFields();
 		foreach($_REQUEST as $key=>$val){
 			if ($val!=0 && (empty($val) || str_replace("%","",$val)=="")) continue;

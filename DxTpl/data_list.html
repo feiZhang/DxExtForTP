@@ -1,50 +1,54 @@
 <eq name="Think.CONFIG.HAS_HEADER" value='true'>
-	<include file="Public:header_home"/>
-	<else/>
-	<include file="Public:header" />
+<include file="Public:header_titler_home"/>
+<else/>
+<include file="Public:header" />
+<include file="Public:menu" />
 </eq>
+
 <link href="__ROOT__/min/g=dataListCss" rel="stylesheet" type="text/css" />
 <script src="__DXPUBLIC__/public/DatePicker/WdatePicker.js" type="text/javascript"></script>
-<div>
+
+<div class="inx_center menumargin">
 	<input id="modelInfo_editTitle" value="{$modelInfo.editTitle}" type="hidden" />
-    <table id="gridHeader" style="display:none">{$modelInfo['gridHeader']}</table>
-    <notempty name="modelInfo.modelTitle">
-    <div id="header_title" class="cen_tit white">{$modelInfo.modelTitle}</div>
-    </notempty>
-    <div id="dataListCon" class="cen_pg">
-    <?php
-    if(!empty($modelInfo["searchHTML"]) || !empty($modelInfo["otherManageAction"]) || !$modelInfo["readOnly"]){
-    ?>
-		<form id="search">
-			<div id="data_add" style="min-height: 30px;">
-				<div id="opeButton" style="float:right;">
-					<?php if (!$modelInfo["readOnly"]) { ?>
-						<input class="d-button d-state-highlight" id='item_add' onclick="javascript:dataOpeAdd('{\\$InitSearchPara}','{$modelInfo['addTitle']}');" type="button" value="{$modelInfo['addTitle']}" />
-					<?php }
-                        if(!empty($modelInfo["otherManageAction"])){
-                            print($modelInfo["otherManageAction"]);
-                        }
-                    ?>
-				</div>
-				<div>
-					<div id='query_items' style="">
-				<?php
-		        if(!empty($modelInfo["searchHTML"])){
-                    print($modelInfo["searchHTML"]);
-                }
-                ?>
-					</div>
-				</div>
-			</div>
-		</form>
-    <?php
-    }
-    ?>
-		<div id="dataList"></div>
-		<div id="grid-help-info">
-			{$modelInfo["helpInfo"]}
-		</div>
-	</div>
+  <table id="gridHeader" style="display:none">{$modelInfo['gridHeader']}</table>
+  <notempty name="modelInfo.modelTitle">
+  <div id="header_title" class="navbar" style="margin-bottom: 0px;">
+    <div class="navbar-inner">
+      <a class="brand" href="#">{$modelInfo.modelTitle}</a>
+
+      <?php
+      if(!empty($modelInfo["searchHTML"])){
+      ?>
+      <div id='query_items' style="display:inline;">
+        <form id="data_list_search" class="form-search" style="display:inline;">
+          <?php
+          if(!empty($modelInfo["searchHTML"])){
+          print($modelInfo["searchHTML"]);
+          }
+          ?>
+        </form>
+      </div>
+      <?php
+      }
+      ?>
+      <div style="display:inline;">
+      <?php if (!$modelInfo["readOnly"]) { ?>
+      <input class="btn pull-right" id='item_add' onclick="javascript:dataOpeAdd('{\\$InitSearchPara}','{$modelInfo['addTitle']}');" type="button" value="{$modelInfo['addTitle']}" />
+      <?php }
+      if(!empty($modelInfo["otherManageAction"])){
+        print($modelInfo["otherManageAction"]);
+      }
+      ?>
+      </div>
+    </div>
+  </div>
+  </notempty>
+  <div id="dataListCon" class="cen_pg">
+    <div id="dataList"></div>
+    <div id="grid-help-info">
+      {$modelInfo["helpInfo"]}
+    </div>
+  </div>
 </div>
 
 <script src="__DXPUBLIC__/public/sigma_grid/gt_grid_all.js" type="text/javascript"></script>
@@ -54,12 +58,12 @@
 	<script src="__PUBLIC__/public/sigma_grid/src/gt_base.js" type="text/javascript"></script>
 	<script src="__PUBLIC__/public/sigma_grid/src/gt_tool.js" type="text/javascript"></script>
 </eq>
- -->
- 
+-->
+
 <script type="text/javascript" src="__ROOT__/min/g=dataListJs"></script>
-<script type="text/javascript" src="__DXPUBLIC__/basic/js/DataOpe.js"></script>
 
 <script>
+<!--
 var dxGrid  = null;
 $(function(){
 	dxGrid	= new $.dxGrid();
@@ -71,9 +75,10 @@ $(function(){
 	<notempty name="ignoreInitSearch">
 	dxGrid.setOrginURL("__URL__/get_datalist");
 	</notempty>
-	dxGrid.showGrid(['header_title','data_add','grid-help-info',<?php echo intval(C("DATAOPE_LIST_HEIGHT"));?>]);
+	dxGrid.showGrid(['header_title','data_add','query_items','grid-help-info','Copyright',46]);
 });
+-->
 </script>
 
 
-<include file="Public:footer" />
+<include file="Public:footer"/>

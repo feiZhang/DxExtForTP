@@ -41,3 +41,11 @@ Sigma.GridDefault.showCellToolTip	= function(cell,width){
 	width && (this.toolTipDiv.style.width=width +'px');
 	this.toolTipDiv.style.display="block";
 }
+
+/**
+ * 屏蔽数据正在加载时，切换页面，提示的错误信息
+ */
+Sigma.GridDefault.loadFailure   = function(respD,e){
+    //var msg=respD[this.CONST.exception]|| (e?e.message:undefined);
+    //alert(' LOAD Failed! '+'\n Exception : \n'+ msg );
+}

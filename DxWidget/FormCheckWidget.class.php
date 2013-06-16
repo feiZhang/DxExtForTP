@@ -39,7 +39,10 @@ class FormCheckWidget extends DxWidget{
             $val['value']   = $val['default'];
         }
         if(is_string($val['value'])){
+          if($val["valFormat"]=="json")
             $val['value']   = empty($val['value'])?array():json_decode($val['value'],true);
+          else
+            $val['value']   = empty($val['value'])?array():explode(",",$val["value"]);
         }
         $ret=$this->renderFile("render", $val);
         return preg_replace('/<!--(.*)-->/Uis', '', $ret);

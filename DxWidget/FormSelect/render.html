@@ -4,6 +4,9 @@
     <input type="hidden" name="{$name}" id="{$name}" class="{$class} {$validclass} {$custom_class}" value="{$value|DxFunction::escapeHtmlValue}">
 </label>
 <!--<else/>-->
+<!--<notempty name="textTo">-->
+<input type="hidden" name="{$textTo}" id="select#{$name}" value="{$value}" class="textTo {$class} {$validclass} {$custom_class}">
+<!--</notempty>-->
 <select name="{$name}" id="{$name}" class="autowidth {$class} {$validclass} {$custom_class}">
     <option value="">{$placeholder}</option>
     <!--<volist name="valChange" id="vo" key="k">-->

@@ -112,7 +112,7 @@ var cantonDataNoTree	= new Array();
             	if(defaultKey.constructor == String){
             		//fdn格式转换为数组格式
     				defaultKey = defaultKey.split(".");
-                    if(defaultKey[defaultKey.length-1]=="") defaultKey.pop();
+            if(defaultKey[defaultKey.length-1]=="") defaultKey.pop();
     				$(defaultKey).each(function(i,v){
     					defaultKey[i]	= v;
     				});

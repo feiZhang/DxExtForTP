@@ -15,13 +15,13 @@ class DxExtPublicAction extends DxExtCommonAction {
      		$main_url	= session("main_url");
      		if(!empty($main_url))
      			$this->redirect($main_url);
-     		else $this->redirect('Home/index');
+     		else $this->redirect(__ROOT__."/");
      	}else
          	$this->redirect('Public/login');
     }
     public function login() {
     	if($this->checkSaveAccount()){
-    		$this->redirect('Home/index');
+    		$this->redirect(__ROOT__."/");
     	}
     	session(null);
         $this->assign("clientIp", getenv('REMOTE_ADDR'));
@@ -37,7 +37,6 @@ class DxExtPublicAction extends DxExtCommonAction {
     }
 	public function verify()
 	{
-	    import('ORG.Util.Image');
         if (isset($_REQUEST['adv'])) {
             Image::showAdvVerify();
         } else {
@@ -47,21 +46,20 @@ class DxExtPublicAction extends DxExtCommonAction {
 	
 	Public function checkLogin()
 	{
-	    $rv = $this->userAuth();
+    $rv = $this->userAuth();
 		if($rv["state"]){
 			$main_url	= session("main_url");
-			if(!empty($main_url))
+			if(!empty($main_url)){
 				$this->assign("jumpUrl",__APP__.$main_url);
-			else{
-				$gotoUrl	= U("Home/index");
-				$this->assign("jumpUrl",$gotoUrl);
+      }else{
+				$this->assign("jumpUrl",__ROOT__."/");
 			}
 			$this->success($rv["msg"]);
 		}else{
 			$this->assign("jumpUrl",U("Public/login"));
 			$this->error($rv["msg"]);
 		}
-    }
+  }
 	//检查保存用户登录信息是否有效
     protected function checkSaveAccount(){
     	$cookie_account	= cookie("account");

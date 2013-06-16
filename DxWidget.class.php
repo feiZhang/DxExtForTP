@@ -1,6 +1,6 @@
 <?php
 class DxWidget extends Widget {
-	public function render($data='') {
+	public function render($data) {
 		
 	}
 	protected function renderFile($templateFile='',$var='') {

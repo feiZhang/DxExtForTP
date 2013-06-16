@@ -12,16 +12,19 @@
 		var URL_URL       = '__URL__';
 		var APP_URL       = '__APP__';
 		var PUBLIC_URL    = '__PUBLIC__';
+		var DX_PUBLIC     = '__DXPUBLIC__';
 		-->
 		</script>
 
     <eq name="Think.config.APP_DEBUG" value="true">
-	<link href="__ROOT__/min/g=headerCss&debug=1" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="__ROOT__/min/g=headerJs&debug=1"></script>
+    <link href="__ROOT__/min/g=headerCss&debug=1" rel="stylesheet" type="text/css" />
+    <link href="__ROOT__/min/g=projectHeaderCss&debug=1" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="__ROOT__/min/g=headerJs&debug=1"></script>
     <else/>
-	<link href="__ROOT__/min/g=headerCss" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="__ROOT__/min/g=headerJs"></script>
-    </eq>   
+    <link href="__ROOT__/min/g=headerCss" rel="stylesheet" type="text/css" />
+    <link href="__ROOT__/min/g=projectHeaderCss" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="__ROOT__/min/g=headerJs"></script>
+    </eq>
 
 </head>
 

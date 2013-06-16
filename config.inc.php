@@ -9,10 +9,10 @@ return array(
     //设置公共模板路径,属于TP的配置内容,一般情况下，不需要覆盖修改的内容。
     'TMPL_ACTION_ERROR'		=> dirname(__FILE__)."/DxTpl/success.html",
     'TMPL_ACTION_SUCCESS'	=> dirname(__FILE__)."/DxTpl/success.html",
-    'TOKEN_ON'				=> true, //表单令牌开启
-    'TOKEN_NAME'            => "DxToken",
-    'TOKEN_RESET'           => false,       //需要设置，否则ajax提交验证失败后，将导致系统重新生成令牌。
-    'DEFAULT_MODULE'		=> 'Home',
+    'TOKEN_ON'				    => true, //表单令牌开启
+    'TOKEN_NAME'          => "DxToken",
+    'TOKEN_RESET'         => false,       //需要设置，否则ajax提交验证失败后，将导致系统重新生成令牌。
+    'DEFAULT_MODULE'		  => 'Home',
     'APP_AUTOLOAD_PATH'		=> "Com.DxInfo",
     'SESSION_AUTO_START'	=> true,
     
@@ -57,7 +57,7 @@ return array(
 
     'NOT_AUTH_ACTION'		=> array("Public"=>1,"Web"=>1),		//无需权限认证的Action
     'REQUIST_AUTH_ACTION'	=> array(),					//必须权限认证的Action
-    'LOGIN_USER_NICK_NAME'	=> "name",		//用户昵称字段名
+    'LOGIN_USER_NICK_NAME'	=> "true_name",		//用户昵称字段名
     'LOGIN_MD5'				=> false,		//是否md5加密密码
     'USER_AUTH_KEY'         => 'login_user_id',
     //文件上传的临时路径

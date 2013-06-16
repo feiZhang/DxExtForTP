@@ -13,43 +13,44 @@ class DataOpeAction extends DxExtCommonAction{
 	        
 	/* 数据列表 for Grid **/
 	public function get_datalist(){
-	  	$model	= $this->model;
+    $model	= $this->model;
 		if(empty($model)) die("model为空!");
 		$enablePage	= $model->getModelInfo("enablePage");
 		if($enablePage!==false) $enablePage	= true;
 		require_once (C("DX_INFO_PATH")."/Vendor/GridServerHandler.php");
-        $gridHandler 	= new GridServerHandler();
-        if($enablePage){
+    $gridHandler 	= new GridServerHandler();
+    if($enablePage){
 			$start 			= intval($gridHandler->pageInfo["startRowNum"])-1;
 			$pageSize 		= intval($gridHandler->pageInfo["pageSize"]);
 			$pageSize		= ($pageSize==0?20:$pageSize);
-        }
-        if($start<0) $start = 0;
+    }
+    if($start<0) $start = 0;
 		
 		$where			= array_merge($this->defaultWhere,$this->_search());
 		//使用Model连贯操作时，每一个连贯操作，都会往Model对象中复制，如果嵌套使用Model的连贯操作，会覆盖掉原来已经存在的值，导致bug。
 		$fieldsStr = $model->getListFieldString();
 		if(isset($_REQUEST['export']) && !empty($_REQUEST['export'])){
-            $data_list  = $model->where($where)->field($fieldsStr)->order($model->getModelInfo("order"))->select();
-            $this->export($data_list, trim($_REQUEST['export']));
-        }else{
-        	if($enablePage){
-            	$data_list  = $model->where($where)->field($fieldsStr)->limit( $start.",".$pageSize )->order($model->getModelInfo("order"))->select();
-        	}else
-            	$data_list  = $model->where($where)->field($fieldsStr)->order($model->getModelInfo("order"))->select();
+      $data_list  = $model->where($where)->field($fieldsStr)->order($model->getModelInfo("order"))->select();
+      $this->export($data_list, trim($_REQUEST['export']));
+    }else{
+      if($enablePage){
+        $data_list  = $model->where($where)->field($fieldsStr)->limit( $start.",".$pageSize )->order($model->getModelInfo("order"))->select();
+      }else
+        $data_list  = $model->where($where)->field($fieldsStr)->order($model->getModelInfo("order"))->select();
+    }
+    //echo ($model->getLastSQL());die();
+    //无数据时data_list = null,此时返回的数据，grid不会更新rows，这导致，再删除最后一条数据时，grid无法删除前端的最后一样。
+    if(empty($data_list)){
+      $data_list	= array();
+    }else{
+      $data_change	= $model->getModelInfo("data_change");
+      if(is_array($data_change)){
+        foreach($data_change as $key=>$val){
+          $val($data_list,$key);
         }
-         //无数据时data_list = null,此时返回的数据，grid不会更新rows，这导致，再删除最后一条数据时，grid无法删除前端的最后一样。
-        if(empty($data_list)){
-        	$data_list	= array();
-        }else{
-        	$data_change	= $model->getModelInfo("data_change");
-        	if(is_array($data_change)){
-        		foreach($data_change as $key=>$val){
-        			$val($data_list,$key);
-        		}
-        	}
-        }
-        
+      }
+    }
+
 		$data_count  	= $enablePage?$model->where($where)->count():sizeof($data_list);
 		$gridHandler->setData($data_list);
 		$gridHandler->setTotalRowNum($data_count);
@@ -112,19 +113,22 @@ class DataOpeAction extends DxExtCommonAction{
 		$m  = $this->model;
 		//强制，将设置为readOnly的字段注销掉，防止自己构造post参数。。比如：入院时间是不允许修改的，但是用户可以自己构造post数据，提交入院时间字段，则tp的create会更新这个字段。
 		//目前的Readonly只支持edit的时候，add的时候，不支持。
-		foreach($m->getListFields() as $key=>$val){
-			if(!empty($_REQUEST[$m->getPk()]) && (isset($val["readOnly"]) && $val["readOnly"])){
-				unset($_GET[$val["name"]]);
-				unset($_POST[$val["name"]]);
-				unset($_REQUEST[$val["name"]]);
-			}else if($val["type"]=="uploadFile" && (is_array($_REQUEST[$key]) || !empty($_REQUEST["old_".$key]))){
-				//如果数据传递过来的是数组，则进行数据整合为json格式，比如：多文件上传.
-				$_REQUEST[$key]	= $_POST[$key]	= $_GET[$key]	= $this->moveAndDelFile($key,$m->getModelName());
-            }else if($val["type"]=="set" && is_array($_REQUEST[$key])){
-                //如果字段是set和 mul select。则将数据整合为json
-				$_REQUEST[$key]	= $_POST[$key]	= $_GET[$key]	= json_encode($_REQUEST[$key]);
-            }
-		}
+    foreach($m->getListFields() as $key=>$val){
+      if(!empty($_REQUEST[$m->getPk()]) && (isset($val["readOnly"]) && $val["readOnly"])){
+        unset($_GET[$val["name"]]);
+        unset($_POST[$val["name"]]);
+        unset($_REQUEST[$val["name"]]);
+      }else if($val["type"]=="uploadFile" && (is_array($_REQUEST[$key]) || !empty($_REQUEST["old_".$key]))){
+        //如果数据传递过来的是数组，则进行数据整合为json格式，比如：多文件上传.
+        $_REQUEST[$key]	= $_POST[$key]	= $_GET[$key]	= $this->moveAndDelFile($key,$m->getModelName());
+      }else if($val["type"]=="set" && is_array($_REQUEST[$key])){
+        //如果字段是set和 mul select。则将数据整合为json
+        if($val["valFarmat"]=="json")
+          $_REQUEST[$key]	= $_POST[$key]	= $_GET[$key]	= json_encode($_REQUEST[$key]);
+        else
+          $_REQUEST[$key]	= $_POST[$key]	= $_GET[$key]	= implode(",",$_REQUEST[$key]);
+      }
+    }
 		
 		if(!empty($m) && $m->create()){
 			$v = false;
@@ -167,7 +171,6 @@ class DataOpeAction extends DxExtCommonAction{
     /* 显示页面内容 **/
 	public function index(){
 		$model  = $this->model;
-	
 		if(empty($model)) die();
 
 		//支持通过url传递过来的ModelTitle
@@ -273,25 +276,25 @@ class DataOpeAction extends DxExtCommonAction{
 				$this -> ajaxReturn("","状态修改失败!请重试!",0);
 		}else $this -> ajaxReturn("","非法请求!请j试!",0);
 	}
-    
-    /** 通过ajax提交删除请求 **/
-    public function delete(){
-    	$deleteState    = false;
-    	$model  		= $this->model;
-    	if (! empty ( $model )) {
-    		$pk = $model->getPk ();
-    		$id = $_REQUEST["id"];
-    		if (isset ( $id )) {
-    			if(strpos($id, ",")) $condition = array ($pk => array ('in', explode ( ',', $id ) ) );
-    			else $condition = array($pk=>intval($id));
-    			$list			= $model->where ( $condition )->delete();
-    			$deleteState	= true;
-    		}
-    	}
 
-    	if($deleteState) $this->ajaxReturn(0,"删除".session(MODULE_NAME."_modelTitle")."成功!",1,"JSON");
-        else $this->ajaxReturn(0,"删除".session(MODULE_NAME."_modelTitle")."失败!",0,"JSON");
+  /** 通过ajax提交删除请求 **/
+  public function delete(){
+    $deleteState    = false;
+    $model  		= $this->model;
+    if (! empty ( $model )) {
+      $pk = $model->getPk ();
+      $id = $_REQUEST["id"];
+      if (isset ( $id )) {
+        if(strpos($id, ",")) $condition = array ($pk => array ('in', explode ( ',', $id ) ) );
+        else $condition = array($pk=>intval($id));
+        $list			= $model->where ( $condition )->delete();
+        $deleteState	= true;
+      }
     }
+
+    if($deleteState) $this->ajaxReturn(0,"删除".session(MODULE_NAME."_modelTitle")."成功!",1,"JSON");
+    else $this->ajaxReturn(0,"删除".session(MODULE_NAME."_modelTitle")."失败!",0,"JSON");
+  }
 
 	public function __destruct(){
 		parent::__destruct();

@@ -16,7 +16,7 @@ function dataOpeAdd(initData,dialogTitle){
             }
             //触发savedata事件,用于支持fckeditor保存数据.
             $('#itemAddForm').find(":input").trigger("savedata");
-            
+
             var theThis		= this;
             $.ajax({
                 type : "POST",
@@ -303,6 +303,32 @@ function downLoadAllFile(obj){
 	    window.open($(a).attr("href"));
 	});
 }
+
+
+/**
+ * 将textTo对象与数据列表绑定。。在选择改变时，也改变此值
+ */
+(function($){
+  $(function(){
+    $("input.textTo[type='hidden']").each(function(i,textTo){
+      toId  = $(textTo).attr("id");
+      if(toId.charAt(0)=="i"){      //radio checkbox 的值
+        $(textTo).val($(toId + ":checked").attr("text"));
+        $(toId).change(function(){
+          $(textTo).val($(this).attr("text"));
+        });
+      }else if(toId.charAt(0)=="s"){      //select的值
+        $(textTo).val($(toId).val()==""?"":$(toId).find('option:selected').text());
+        $(toId).change(function(){
+          if($(this).val()=="")
+            $(textTo).val("");
+          else
+            $(textTo).val($(this).find('option:selected').text());
+        });
+      }
+    });
+  });
+})(jQuery);
 
 /**处理多选select值*/
 function _dataope_onSetChange(obj){
