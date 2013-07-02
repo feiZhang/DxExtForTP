@@ -1,0 +1,4 @@
+1.将本目录复制到Web服务器，并将DxWebRoot配置到Web服务器某目录
+2.TP项目的index.php文件增加 define('DXINFO_PATH','/job/DxInfo');  配置目录所在的路径
+3.拷贝本目录下的config.php到项目应用的Conf目录下。
+4.拷贝DxInfo根目录下的alias.php文件到项目应用的Conf目录下
