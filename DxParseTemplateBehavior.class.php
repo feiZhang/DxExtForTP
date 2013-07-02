@@ -46,7 +46,7 @@ class DxParseTemplateBehavior extends Behavior {
             }else{
                 $path = THEME_PATH;
             }
-            $templateFile  =  $path.$module.C('TMPL_FILE_DEPR').$action.C('TMPL_TEMPLATE_SUFFIX');
+            $templateFile  = $path.$module.C('TMPL_FILE_DEPR').$action.C('TMPL_TEMPLATE_SUFFIX');
         }
         
         if(empty($action)) $action    = ACTION_NAME;
@@ -65,6 +65,7 @@ class DxParseTemplateBehavior extends Behavior {
     /**
      * 1.解析模板文件中include标签，支持 include DxInfo中的模板文件。
      * 2.替换DX_PUBLIC 模板路径
+     * 注意：避免自己引用自己
      */
     protected function praseIncludeForDxInfo($content){
         $content    = str_replace("__DXPUBLIC__", C("DX_PUBLIC"), $content);

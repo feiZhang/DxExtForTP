@@ -246,7 +246,7 @@ function showUploadPhoto(img,input){
         title:"上传头像",
         lock:true,
         ok:function(){
-        	xyz	= $("#selectXY");
+        	var xyz	= $("#selectXY");
         	if(xyz.text()==""){
         		showDialog("提醒","请先上传头像文件!");
         		return false;
@@ -265,8 +265,8 @@ function showUploadPhoto(img,input){
         		 "top":xyz.css("marginTop")},
                 success : function(data){
 	            	if(data.status){
-	            		$(img).attr("src",APP_URL + "/" + data.data.url);
-	            		$(input).val(data.data.file);
+	            		img.attr("src",APP_URL + "/" + (data.data.url).substring(1));
+	            		input.val(data.data.file);
                         _this.content(data.info).time(2000).button({
                             id: 'ok',
                             disabled: true

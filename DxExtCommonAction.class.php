@@ -174,7 +174,7 @@ class DxExtCommonAction extends Action {
 		$model  = $this->model;
 		$map    = array ();
 		//支持like、大于、小于
-    $dbFields   = array_keys($model->getListFields());
+        $dbFields   = array_keys($model->getListFields());
 		if(APP_DEBUG) Log::write(var_export($_REQUEST,true).var_export($dbFields,true).MODULE_NAME."|".ACTION_NAME,Log::INFO);
 		//$dbFields	= $model->getDbFields();
 		foreach($_REQUEST as $key=>$val){

@@ -30,7 +30,7 @@
 							    loadURL	:	"",
 							    container : 'dataList',
 							    replaceContainer 	: false, 
-							    toolbarContent 		: 'print | xls | state',
+							    toolbarContent 		: ' xls | state',
 							    pageSize 			: 20,
 							    loadURL				: "",
 							    exportURL			: "",

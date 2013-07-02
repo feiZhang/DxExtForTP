@@ -46,19 +46,19 @@ class DxExtPublicAction extends DxExtCommonAction {
 	
 	Public function checkLogin()
 	{
-    $rv = $this->userAuth();
-		if($rv["state"]){
-			$main_url	= session("main_url");
-			if(!empty($main_url)){
-				$this->assign("jumpUrl",__APP__.$main_url);
-      }else{
-				$this->assign("jumpUrl",__ROOT__."/");
-			}
-			$this->success($rv["msg"]);
-		}else{
-			$this->assign("jumpUrl",U("Public/login"));
-			$this->error($rv["msg"]);
-		}
+        $rv = $this->userAuth();
+        if($rv["state"]){
+            $main_url	= session("main_url");
+            if(!empty($main_url)){
+                $this->assign("jumpUrl",__APP__.$main_url);
+            }else{
+                $this->assign("jumpUrl",__ROOT__."/");
+            }
+            $this->success($rv["msg"]);
+        }else{
+            $this->assign("jumpUrl",U("Public/login"));
+            $this->error($rv["msg"]);
+        }
   }
 	//检查保存用户登录信息是否有效
     protected function checkSaveAccount(){

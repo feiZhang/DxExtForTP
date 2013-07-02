@@ -358,13 +358,13 @@ class DxFunction{
 					$fieldInput .= sprintf("<input name='%s' value=\"{\$objectData.%s|htmlentities=###,ENT_QUOTES,'UTF-8'}\" type='hidden' />",$field_name,$field_name);
 					break;
 				case "enum":
-          $fieldInput = sprintf('{:DxFunction::W_FIELD("FormEnum", array("name"=>"%1$s","allowdefault"=>empty($pkId[1]),"validclass"=>$valid["%1$s"],"custom_class"=>"itemAddRadio","value"=>$objectData["%1$s"],"fieldSet"=>$listFields["%1$s"]))}', $field_name);
-          break;
+                    $fieldInput = sprintf('{:DxFunction::W_FIELD("FormEnum", array("name"=>"%1$s","allowdefault"=>empty($pkId[1]),"validclass"=>$valid["%1$s"],"custom_class"=>"itemAddRadio","value"=>$objectData["%1$s"],"fieldSet"=>$listFields["%1$s"]))}', $field_name);
+                    break;
 				case "set":
-          $fieldInput = sprintf('{:DxFunction::W_FIELD("FormCheck", array("name"=>"%1$s","allowdefault"=>empty($pkId[1]),"validclass"=>$valid["%1$s"],"custom_class"=>"itemAddRadio","value"=>$objectData["%1$s"],"fieldSet"=>$listFields["%1$s"]))}', $field_name);
+                    $fieldInput = sprintf('{:DxFunction::W_FIELD("FormCheck", array("name"=>"%1$s","allowdefault"=>empty($pkId[1]),"validclass"=>$valid["%1$s"],"custom_class"=>"itemAddRadio","value"=>$objectData["%1$s"],"fieldSet"=>$listFields["%1$s"]))}', $field_name);
 					break;
 				case "select":
-          $fieldInput = sprintf('{:DxFunction::W_FIELD("FormSelect", array("name"=>"%1$s", "allowdefault"=>empty($pkId[1]), "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddSelect", "value"=>$objectData["%1$s"], "fieldSet"=>$listFields["%1$s"]))}', $field_name);
+                    $fieldInput = sprintf('{:DxFunction::W_FIELD("FormSelect", array("name"=>"%1$s", "allowdefault"=>empty($pkId[1]), "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddSelect", "value"=>$objectData["%1$s"], "fieldSet"=>$listFields["%1$s"]))}', $field_name);
 					break;
 				case 'date':
 				    $dateFormat    = "yyyy-MM-dd";

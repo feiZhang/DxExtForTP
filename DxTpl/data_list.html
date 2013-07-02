@@ -1,8 +1,8 @@
 <eq name="Think.CONFIG.HAS_HEADER" value='true'>
-<include file="Public:header_titler_home"/>
+    <include file="Public:header_home"/>
 <else/>
-<include file="Public:header" />
-<include file="Public:menu" />
+    <include file="Public:header" />
+    <include file="Public:menu" />
 </eq>
 
 <link href="__ROOT__/min/g=dataListCss" rel="stylesheet" type="text/css" />
@@ -75,7 +75,7 @@ $(function(){
 	<notempty name="ignoreInitSearch">
 	dxGrid.setOrginURL("__URL__/get_datalist");
 	</notempty>
-	dxGrid.showGrid(['header_title','data_add','query_items','grid-help-info','Copyright',46]);
+	dxGrid.showGrid(['header_title','data_add','query_items','grid-help-info','Copyright',<?php echo intval(C("DATAOPE_LIST_HEIGHT"));?>]);
 });
 -->
 </script>

@@ -5,11 +5,9 @@
  * 利用百度地图提供的api完成一下功能
  * 1、能够在地图上进行多点标注
  * 2、能够对地图上标注点进行说明。
- * @author hanmeiyan 修改 2013-04-26
+ * @author hanmeiyan 修改 2013-05-28
  */
-
 (function($){
-
 	/**
 	 * @param string city  显示该城市的地图
 	 * @param json   aimData 被标注的信息体
@@ -19,153 +17,117 @@
 	 *                       或着
 	 *                       [{addr:"文化路陈寨", name:"大象通信", html: "<p>大象通信</p>"},{addr:"文化路128号", name:"大象通信", html: "<p>大象通信</p>", lng :113.689313, lat:34.769065}]
 	 *                       这样传递数组形式，将标注多个位置
-	 * @param json   infoFormat 显示标注点窗口的信息格式，例子{title:'简要',width:290, height:160}
+	 *                       点属性：addr_id:标识点id
+	 *                       	   addr:'点地址'
+	 *                       	   name:覆盖点
+	 *                       	   html：弹出框中显示的内容
+	 *                 			   lng，lat：覆盖物的经纬度。
+	 *                 			   title:弹出框名称。
+	 *                 			   icon_img ： 覆盖物图片（可为空）
+	 *                 			   icon_width ： 覆盖物图片宽度（可为空）
+	 *                 			   icon_height ： 覆盖物图片高度（可为空）
 	 * @param string mapContainer 显示地图的容器的id 默认为map
+	 * @param object infoSetting  显示地图的配置{
+	 * 											label:true,//显示标识label
+	 * 											width:300,//弹出框的宽度，
+	 * 											icon_img://标识的图标的样式,
+	 * 											icon_width://宽度
+	 * 											icon_height://高度
+	 * 										 }（可为空） 
 	 */
-	$.Map = function(city, aimData, mapContainer){
-		var _this = this;
-		
-		//地图默认容器
-		if (undefined != arguments[2]) {
-			$.Map.infoFomat = arguments[2];
-		}
-		
-		if (typeof this != "object") {
-			return new $.Map(city, aimData, infoFormat, mapContainer);
-		}	
-		//实例化地图类
-		var map = new BMap.Map(mapContainer);
+	$.Map = function(city, aimData, mapContainer,infoSetting){
+		if(undefined == arguments[3]) var infoSetting ={};
+		var map 			= new BMap.Map(mapContainer);
+		var _this			= this;
+		_this.MarkPoints	= {};//定义点集合
 		map.centerAndZoom(city, 12);
 		//向地图增加地图平移缩放控件
 		map.addControl(new BMap.NavigationControl());
 		// 启动鼠标滚轮操作
-		map.enableScrollWheelZoom(); 
-		
+		map.enableScrollWheelZoom();
+		/**
+		 * 得到各个点的坐标
+		 */
+		_this.setMark		= function(point){
+			if((typeof point.lng=="undefined")||isNaN(point.lng)||point.lng=="" ||(typeof point.lat =="undefined"||isNaN(point.lng)||point.lng=="")){
+				var myGeo		  = new BMap.Geocoder();
+				myGeo.getPoint(point['addr'], function(p){
+					if (p) {
+						point.lng = p.lng;
+						point.lat = p.lat;
+						_this.setPoint(point);
+						return p;
+					}
+				},city);
+			}
+			else{
+				_this.setPoint(point);
+				return p;
+			}
+		}
+		/**
+		 * 标识点，为标识点增加单击事件
+		 */
+		_this.setPoint =  function(point){
+			var p 				= new BMap.Point(point.lng, point.lat);
+			//设置自定义图标
+			if(point.icon_img){
+				//如果该点属性中有覆盖物大小的属性，否则使用系统设置的覆盖物大小
+				var icon_width 	= point.icon_width?point.icon_width:(infoSetting.icon_width?infoSetting.icon_width:30);
+				var icon_height = point.icon_height?point.icon_height:(infoSetting.icon_height?infoSetting.icon_height:30);
+				var marker 		=   new BMap.Marker(p,{icon:new BMap.Icon(point.icon_img, new BMap.Size(icon_width,icon_height))});
+			}
+			else if(infoSetting.icon_img){
+				var icon_width 	= infoSetting.icon_width?infoSetting.icon_width:30;
+				var icon_height = infoSetting.icon_height?infoSetting.icon_height:30;
+				var marker 		=   new BMap.Marker(p,{icon:new BMap.Icon(infoSetting.icon_img, new BMap.Size(icon_width,icon_height))});
+			}else{
+				var marker 		=   new BMap.Marker(p);
+			}
+			//增加覆盖点
+			map.addOverlay(marker);
+			var sContent 		= point.html;
+			var infoWindow 		= new BMap.InfoWindow(sContent,$.extend(infoSetting,{title:point.name}));  // 创建信息窗口对象
+			point.infoWindow 	=  infoWindow;
+			//单击鼠标，弹出信息框
+			marker.addEventListener("click",function(e){
+				this.openInfoWindow(infoWindow,e.point);
+				$("img").live("load",function(){
+					 infoWindow.redraw();
+					});
+				 
+			});
+			//显示label标签
+			if((typeof infoSetting.label!='undefined') && infoSetting.label==true){
+				var label 		= new BMap.Label(point.name,{offset:new BMap.Size(20,-10)});
+				marker.setLabel(label);
+			}
+			point.marker 		= marker;
+			_this.MarkPoints[point.addr_id]  =  point;
+		}
+		//初始化数据
+		_this.init			= function(){
+			if ($.isArray(aimData)) {
+				for(var mark in aimData){
+					var point 		= aimData[mark];
+					_this.setMark(point);
+				}
+			} else {
+				_this.setMark(aimData);
+			}
+		}
 		
 		/**
-		 * 根据目标对象是否拥有经度、纬度信息做处理
-		 * @param object aimData  目标对象
-		 * @param int isSetCenter 是否设置标注点为地图中心 0不设置，1设置 默认为0
+		 * 打开窗口
 		 */
-		_this.chooseDeal = function(aimData) {
-		//	console.log(aimData);
-			var isSetCenter = (2 == arguments.length && 1 == arguments[1]) ? 1 : 0;  
-			if (undefined != aimData.lng && "" != aimData.lng && undefined != aimData.lat && "" != aimData.lat) {
-				//则根据经纬度来制定图标
-				var p = new BMap.Point(aimData.lng, aimData.lat);
-				var m = $.Map.setMarker(map, p, aimData, isSetCenter);
-				$.Map.setMarkerListener(m);
-			} else {
-				$.Map.getPoint(map, city, aimData, isSetCenter);
+		_this.OpenWindow		= function (point_id){
+			var point = _this.MarkPoints[point_id];
+			if(point&&typeof point['infoWindow']!='undefined'){
+				point.marker.openInfoWindow(point.infoWindow);
 			}
-		} // end _this.chooseDeal
-				
-		if ($.isArray(aimData)) {
-			for (var i = 0; i < aimData.length; i++) {
-				_this.chooseDeal(aimData[i]);
-			}
-		} else {
-			_this.chooseDeal(aimData);
+			else
+				alert('无法准确定位');
 		}
-		_this.openAimData	= function(addr_id){
-			var marker = $.Map.allPoints[addr_id];
-			if(typeof marker == "object")
-				$.Map.setInfoBox(marker).open(marker);
-			else{
-				alert('无法定位准确位置');
-			}
-		}
+		_this.init();
 	}
-	
-	/**
-	 * 定义地图类全局静态变量
-	 */
-	$.Map.infoFomat = {title:'简要',width:290, height:160}; //设置消息框的大小及标题
-	$.Map.allPoints = {};
-	
-	/**
-	 * 显示消息框
-	 * @param object map 地图对象实例
-	 * @param json   aimData 被标注的信息体
-	 * @returns object  返回百度SearchInfoWindow实例
-	 */
-	$.Map.setInfoBox = function(marker){
-		var title = $.Map.infoFomat.title;
-		if (undefined != marker.aimData.name && "" != marker.aimData.name) {
-			title = marker.aimData.name;
-		}
-		if(typeof marker.window =='undefined'){
-			marker.window =  new BMapLib.SearchInfoWindow(marker.map, marker.aimData.html, {
-			       title  : title,      //标题
-			       width  : $.Map.infoFomat.width,      //宽度
-			       height : $.Map.infoFomat.height,     //高度
-			       panel  : "panel",               //检索结果面板
-			       enableAutoPan : true,           //自动平移
-			       searchTypes   :[]
-			});
-		}
-		return marker.window;
-		
-	}
-	/**
-	 * 根据坐标创建marker
-	 * @param object map 地图实例
-	 * @param object p   坐标
-	 * @param json   aimData 被标注的信息体
-	 * @param int    isSetCenter 是否设置标注点为地图中心 0不设置， 1 设置
-	 * @return object  marker对象
-	 */
-	$.Map.setMarker = function (map, p, aimData) {
-		var marker = new BMap.Marker(p);//创建图标
-	    map.addOverlay(marker);//将标注添加到地图中
-	    marker.aimData = aimData;
-	    //默认不打开信息框
-	   
-	    
-	    if (4 == arguments.length && 1 == arguments[3]) {
-	    	marker.map.setCenter(marker.getPosition());
-	    }	 
-	    return marker;
-	}
-	
-	/**
-	 * 设置marker上的监听事件
-	 * @param object marker 被添加事件的对象
-	 */
-	$.Map.setMarkerListener = function(marker) {
-		marker.addEventListener("click", function(e){
-			//this.map.setCenter(this.getPosition());
-			//按照position位置
-			$.Map.setInfoBox(this).open(this);
-		});
-	}
-	/**
-	 * 设置地图坐标
-	 */
-	$.Map.setPoint = function(id,marker){
-		$.Map.allPoints[id] = marker;
-		return $.Map.allPoints;
-	}
-	/**
-	 * 根据地址获取坐标
-	 * @param object   map          地图对象
-	 * @param string   city         在指定的城市搜索位置
-	 * @param json     aimData      被标注的信息体
-	 * @param int      isSetCenter  是否设置标记点为地图中心
-	 */
-	$.Map.getPoint = function(map, city, aimData, isSetCenter) {
-		// 创建地址解析器实例
-		var myGeo = new BMap.Geocoder();
-		// 将地址解析结果显示在地图上,并调整地图视野
-		myGeo.getPoint(aimData.addr, function(point){
-			if (point) {
-				var m = $.Map.setMarker(map, point, aimData, isSetCenter);
-				$.Map.setMarkerListener(m);
-			}else{
-				var m =  false;
-			}
-			$.Map.setPoint(aimData.addr_id,m);
-		}, city);
-	}
-	
 })(jQuery);

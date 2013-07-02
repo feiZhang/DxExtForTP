@@ -1,5 +1,5 @@
 <?php
-class DxCantonAction extends DxExtCommonAction {
+class DxCantonAction extends DataOpeAction{
 	public function getSelectSelectSelect(){
 		$list	= $this->model->getSelectSelectSelect();
         //dump($this->model->getLastSQL());

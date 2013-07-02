@@ -92,7 +92,6 @@ $.dialog.open = function (url, options) {
 	    		// 获取iframe内部尺寸
 	    		iWidth 	= $idoc.width() + (_isIE6 ? 0 : parseInt($(ibody).css('marginLeft')));
 	    		iHeight = $idoc.height();
-	    		console.log(iHeight,iWidth);
 	    		if(iHeight>500) iHeight=500;
 	    		if(iWidth>800) iWidth=800;
 	    		if(iHeight<parseInt(_this.config.height)) iHeight=_this.config.height;

@@ -13,11 +13,11 @@ class DxExtCommonModel extends Model {
 	const HIDE_FIELD_DATA		= 8;      //列表时，是否不输出此字段数据
 	const HIDE_FIELD_EXPORT		= 16;		//是否不导出
 
-  const READONLY_FIELD_ADD    = 1;
-  const READONLY_FIELD_EDIT   = 2;
+    const READONLY_FIELD_ADD    = 1;
+    const READONLY_FIELD_EDIT   = 2;
 
-  const DISPLAY_NONE_FIELD_ADD    = 1;
-  const DISPLAY_NONE_FIELD_EDIT   = 2;
+    const DISPLAY_NONE_FIELD_ADD    = 1;
+    const DISPLAY_NONE_FIELD_EDIT   = 2;
 
 	const DP_TYPE_ENABLE		= 1;	//开启数据权限控制
 	const DP_TYPE_PUBLIC		= 2;	//开启公共数据权限，此字段判定，某个数据是否是公共数据。
@@ -47,17 +47,17 @@ class DxExtCommonModel extends Model {
     	 	type用于3个地方：1.grid生成时，sigma支持 string int float（排序结果不同）   2.查询框根据类型生成不同的格式(input输入框、时间选择框、下拉选择框、单选框)   3.数据新增和修改时，生成不同的样式（input输入框、时间选择框、下拉选择框、单选框）
     	 	uploadFile的附属参数:"upload"=>array("filetype"=>".gif、.jpeg、.jpg、.png、.pdf、.doc、.xls、.mp4、.mov","maxNum"=>0,"buttonValue"=>"文件上传","maxSize"=>1024*1024)),
     	 	uploadFile存储的数据不能直接显示，在model中配置 'data_change'=>array("file_name"=>"uploadFilesToGrid"), 指定字段进行内容转义
-        set的附加参数:valFormat=json,douhao   分别表示，以json格式存储，和以逗号隔开存储。
+            set的附加参数:valFormat=json,douhao   分别表示，以json格式存储，和以逗号隔开存储。
     	 title:中文说明
     	 hide:是否隐藏，此值根据位运算，获得隐藏的范围。。见常量 HIDE_FIELD，，如果在多个位置不显示，等于各个值的和。比如：列表新增都不显示则为3
          display_none:是否在界面上显示，hide控制是否在前端生成此字段，display_none控制是否显示此字段
     	 pk:是否主键
     	 width:列宽度，和查询框的宽度
-       textTo:将某个字典关联字段的id值对应的数据保存到某字段，比如：设置到canton_id上的textTo="canton_name", 表示，存储canton_id对应的显示值到canton_name
+         textTo:将某个字典关联字段的id值对应的数据保存到某字段，比如：设置到canton_id上的textTo="canton_name", 表示，存储canton_id对应的显示值到canton_name
     	 valChange:数据转换，[固定转换\关联表转换]，固定值转换时是一个数组(索引价格k)，比如：
     	     "valChange"=>array("1"=>"客户",'4'=>'超级管理员'),
     	     "valChange"=>array("model"=>"user","type"=>"basic_data_type") 注意:这里对应的model必须设置modelInfo的dictTable值才有效，，这种格式是从数据库获取数据，最终得到和上面一样的数据格式，，在使用多维数组时才启用type属性,type多维度时，使用逗号隔开
-           "valChange"=>array("sql"=>"select id,name from user")
+             "valChange"=>array("sql"=>"select id,name from user")
     	 下面是对应的sigmaGrid的特性配置
         	 frozen:是否锁定列
         	 grouped:字段是否进行分组合并显示
@@ -146,7 +146,7 @@ class DxExtCommonModel extends Model {
 	private $cacheListFields= array();	//缓存Model的listFileds数据，经过转换的结果
 	//数据权限相关
 	public $skipDataPowerCheck	= false;	//关闭数据权限域控制。
-  protected $viewTableName= "";
+    protected $viewTableName= "";
 
 	/* 将所有的数据库字段，全初始化为数据列表字段，默认使用数据库字段名 */
 	function initListFields(){
@@ -224,7 +224,7 @@ class DxExtCommonModel extends Model {
 	 * 重新整理listFields数据，将原始的listFields转换为运行时状态。比如：valChange的转换。
 	 * **/
 	public function getListFields($reNew=false,$original=false){
-    Log::write($this->name."->getListFields",LOG::INFO);
+        Log::write($this->name."->getListFields",LOG::INFO);
 		if($original) return $this->listFields;
 		if($reNew || C("APP_DEBUG")){
 			$this->setCacheListFields();
@@ -240,74 +240,74 @@ class DxExtCommonModel extends Model {
 		return $this->cacheListFields;
 	}
 	private function setCacheListFields(){
-    $tListFields   = array();
+        $tListFields   = array();
 		foreach($this->listFields as $key=>$field){
 			$tListFields[isset($field["name"])?$field["name"]:$key]	= $this->getOneListField($key,$field);
 		}
 		F('_fields/'.$this->name."_listFields",$tListFields);
 		$this->cacheListFields	= $tListFields;
-  }
-	private function getOneListField($key,$field){
-		if(!isset($field["name"])) $field["name"]	= $key;
-    if($field["type"]=="canton" && !isset($field["valChange"]))
-      $field["valChange"] = array("model"=>"Canton");
-		//将字典表，转换为valChange数据
-		if(isset($field["valChange"]["model"])){
-      if($this->name==$field["valChange"]["model"])
-        $m    = $this;
-      else
-        $m    = D($field["valChange"]["model"]);
-			$tValC	= $m->getCacheDictTableData();
-			if(!empty($field["valChange"]["type"])){
-				$tType	= explode(",",$field["valChange"]["type"]);
-				foreach($tType as $vvv)
-					$tValC	= $tValC[$vvv];
-			}
-			$field["valChange"]	= $tValC;
-    }else if(array_key_exists("sql",$field["valChange"])){
-      //使用SQL获得valChange映射
-      $tValc  = $this->query($field["valChange"]["sql"]);
-      $field["valChange"]   = array();
-      foreach($tValc as $oneV){
-        $field["valChange"][$oneV["id"]]   = $oneV["name"];
-      }
     }
-		//规整数据的enum字段，默认使用valChange替换，没有valChange字段，则从数据库获取enum的字段定义数据
-		if(empty($field["valChange"]) && array_key_exists("type", $field) && ($field["type"]=="enum" || $field["type"]=="set" || $field["type"]=="select")){
-				$sql	= sprintf("SELECT COLUMN_TYPE FROM information_schema.`COLUMNS` WHERE DATA_TYPE in ('set','enum') AND `TABLE_SCHEMA`='%s' AND `TABLE_NAME`='%s' AND COLUMN_NAME='%s'",C("DB_NAME"),$this->trueTableName,$field["name"]);
-				$tField	= $this->query($sql);
-				if(!empty($tField)){
-					//枚举类型的内部序号是从1开始。
-					$field["valChange"]	= explode(",","0,".str_replace(array("'","(",")"),array("","",""), substr($tField[0]["COLUMN_TYPE"],5)));
-					unset($field["valChange"][0]);
-					$field["valChange"]    = array_combine($field["valChange"],$field["valChange"]);
-				}
-		}
-		
-		if(isset($field["default"])){
-			//设置默认值
-			$d	= $field['default'];
-			if(is_array($d)){
-				if(count($d)>=2){
-					switch($d[0]){
-						case "func":
-							$func=$d[1];
-							if(function_exists($func)){
-								$param_arr=$d;
-								//移除前两个元素
-								array_shift($param_arr);
-								array_shift($param_arr);
-								$field["default"]=call_user_func_array($func, $param_arr);
-							}
-							break;
-					}
-				}
-			}else
+    private function getOneListField($key,$field){
+        if(!isset($field["name"])) $field["name"]	= $key;
+        if($field["type"]=="canton" && !isset($field["valChange"]))
+            $field["valChange"] = array("model"=>"Canton");
+        //将字典表，转换为valChange数据
+        if(isset($field["valChange"]["model"])){
+            if($this->name==$field["valChange"]["model"])
+                $m    = $this;
+            else
+                $m    = D($field["valChange"]["model"]);
+            $tValC	= $m->getCacheDictTableData();
+            if(!empty($field["valChange"]["type"])){
+                $tType	= explode(",",$field["valChange"]["type"]);
+                foreach($tType as $vvv)
+                    $tValC	= $tValC[$vvv];
+            }
+            $field["valChange"]	= $tValC;
+        }else if(array_key_exists("sql",$field["valChange"])){
+            //使用SQL获得valChange映射
+            $tValc  = $this->query($field["valChange"]["sql"]);
+            $field["valChange"]   = array();
+            foreach($tValc as $oneV){
+                $field["valChange"][$oneV["id"]]   = $oneV["name"];
+            }
+        }
+        //规整数据的enum字段，默认使用valChange替换，没有valChange字段，则从数据库获取enum的字段定义数据
+        if(empty($field["valChange"]) && array_key_exists("type", $field) && ($field["type"]=="enum" || $field["type"]=="set" || $field["type"]=="select")){
+            $sql	= sprintf("SELECT COLUMN_TYPE FROM information_schema.`COLUMNS` WHERE DATA_TYPE in ('set','enum') AND `TABLE_SCHEMA`='%s' AND `TABLE_NAME`='%s' AND COLUMN_NAME='%s'",C("DB_NAME"),$this->trueTableName,$field["name"]);
+            $tField	= $this->query($sql);
+            if(!empty($tField)){
+                //枚举类型的内部序号是从1开始。
+                $field["valChange"]	= explode(",","0,".str_replace(array("'","(",")"),array("","",""), substr($tField[0]["COLUMN_TYPE"],5)));
+                unset($field["valChange"][0]);
+                $field["valChange"]    = array_combine($field["valChange"],$field["valChange"]);
+            }
+        }
+
+        if(isset($field["default"])){
+            //设置默认值
+            $d	= $field['default'];
+            if(is_array($d)){
+                if(count($d)>=2){
+                    switch($d[0]){
+                    case "func":
+                        $func=$d[1];
+                        if(function_exists($func)){
+                            $param_arr=$d;
+                            //移除前两个元素
+                            array_shift($param_arr);
+                            array_shift($param_arr);
+                            $field["default"]=call_user_func_array($func, $param_arr);
+                        }
+                        break;
+                    }
+                }
+            }else
                 $field['default']=$d;
-			//重置默认值
-		}
-		return $field;
-	}
+            //重置默认值
+        }
+        return $field;
+    }
 	public function setListField($key,$v){
 		$this->listFields[$key]	= array_merge($this->listFields[$key],$v);
 		$this->setCacheListFields();
@@ -338,8 +338,8 @@ class DxExtCommonModel extends Model {
 			return $this->modelInfo;
 		}
 		$val  = $this->modelInfo[$key];
-    if($key=="order" && empty($val)) $val   = $this->getPk()." desc";
-    return $val;
+        if($key=="order" && empty($val)) $val   = $this->getPk()." desc";
+        return $val;
 	}
 	public function getExportFields(){
 		//编辑数据的字段列表，编辑数据时，要隐藏某些字段
@@ -383,14 +383,14 @@ class DxExtCommonModel extends Model {
 				if(!empty($field["renderer"])){
 					$gridField["renderer"]	= $field["renderer"];
 				}else if(!empty($field["valChange"]) && is_array($field["valChange"])){
-          //set 存储的数据是json数据；
-          if($field["type"]=="set"){
-            if($field["valFormat"]=="json")
-              $valueToJson    = "if(value[0]=='['){value = eval(value);var r='';$(value).each(function(i,v){r+=valChangeDatas[v]+' ';});return r;}else{return value;}";
-            else
-              $valueToJson    = "if(value=='') return '';var value = value.split(',');var r='';$(value).each(function(i,v){if(valChangeDatas[v]!=undefined) r+=valChangeDatas[v]+' ';});return r;";
-          }
-          else $valueToJson   = "return valChangeDatas[value];";
+                    //set 存储的数据是json数据；
+                    if($field["type"]=="set"){
+                        if($field["valFormat"]=="douhao")
+                            $valueToJson    = "if(value=='') return '';var value = value.split(',');var r='';$(value).each(function(i,v){if(valChangeDatas[v]!=undefined) r+=valChangeDatas[v]+' ';});return r;";
+                        else
+                            $valueToJson    = "if(value[0]=='['){value = eval(value);var r='';$(value).each(function(i,v){r+=valChangeDatas[v]+' ';});return r;}else{return value;}";
+                    }
+                    else $valueToJson   = "return valChangeDatas[value];";
 					$gridField["renderer"]	= sprintf("var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){ var valChangeDatas=%s;%s}",json_encode($field["valChange"]),$valueToJson);
 				}
 				//数据转换
@@ -420,18 +420,59 @@ class DxExtCommonModel extends Model {
 		return $searchFiled;
 	}
 
-  /**
-   * 使用相套sql语句，代替视图
-   * */
-  public function select($options=array()){
-    if(!empty($this->viewTableName)){
-      $orgTableName       = $options["table"];
-      $options["table"]   = $this->viewTableName;
+    /**
+     * 使用相套sql语句，代替视图
+     * */
+    public function select($options=array()){
+        if(!empty($this->viewTableName)){
+            $orgTableName       = $options["table"];
+            $options["table"]   = $this->viewTableName;
+        }
+        //
+        $res  = parent::select($options);
+        $options["table"]   = $orgTableName;
+        return $res;
     }
-    $res  = parent::select($options);
-    $options["table"]   = $orgTableName;
-    return $res;
-  }
+    //3.1.2居然删除了配置 DB_FIELDTYPE_CHECK ，这里只能恢复他。
+    protected function _parseOptions($options=array()) {
+        if(is_array($options))
+            $options =  array_merge($this->options,$options);
+        // 查询过后清空sql表达式组装 避免影响下次查询
+        $this->options  =   array();
+        if(!isset($options['table'])){
+            // 自动获取表名
+            $options['table']   =   $this->getTableName();
+            $fields             =   $this->fields;
+        }else{
+            // 指定数据表 则重新获取字段列表 但不支持类型检测
+            $fields             =   $this->getDbFields();
+        }
+
+        if(!empty($options['alias'])) {
+            $options['table']  .=   ' '.$options['alias'];
+        }
+        // 记录操作的模型名称
+        $options['model']       =   $this->name;
+
+        // 字段类型验证
+        if(C('DB_FIELDTYPE_CHECK') && isset($options['where']) && is_array($options['where']) && !empty($fields)) {
+            // 对数组查询条件进行字段类型检查
+            foreach ($options['where'] as $key=>$val){
+                $key            =   trim($key);
+                if(in_array($key,$fields,true)){
+                    if(is_scalar($val)) {
+                        $this->_parseType($options['where'],$key);
+                    }
+                }elseif('_' != substr($key,0,1) && false === strpos($key,'.') && false === strpos($key,'|') && false === strpos($key,'&')){
+                    unset($options['where'][$key]);
+                }
+            }
+        }
+
+        // 表达式过滤
+        $this->_options_filter($options);
+        return $options;
+    }
 	/** 自动增加数据权限功能，在所有的查询语句中追加数据权限控制条件 **/
 	protected function _options_filter(&$options) {
 		/**
@@ -442,8 +483,8 @@ class DxExtCommonModel extends Model {
 
 		$dataPowerFieldW    		= array();
 		$dataPowerFieldPublic		= "";
-		$dataPowerFieldDelete		= "";
 		$dbFields       	= $this->getDbFields();
+		$dataPowerFieldDelete		= "";
 		//if(APP_DEBUG) Log::write(var_export($dbFields,true).MODULE_NAME."|".ACTION_NAME."__dbFields",Log::INFO);
 		//追加数据删除字段标志,,直接追加Where条件。
 		if(is_array(C('DELETE_TAGS'))){
@@ -717,13 +758,14 @@ class DxExtCommonModel extends Model {
 	 * 1.delete标记。数据删除时，只作标记，而不实际删除		DELETE_TAGS => array("field"=>value,"field"=>value)
 	 * 2.save保存时的bug，由于能够自动 附加 where条件，所以 save(pk)  和 save() 这种从data中找pk作为条件的操作，会失败，所以需要重写save方法。
 	 * 3.TP原来的所有_auto必须在create中才能运行，这里重新复制了此功能，保证在before insert update前能够使用_auto...另：TP自带的auto可能会覆盖data中的数据，这个也不太好。这里则不会出现这种情况
-	 * 4.TP原来的delete可以在没有where条件的情况下执行，现在必须有where条件才能执行delete。
+     * 注意
+     * 1.TP原来的delete可以在没有where条件的情况下执行，现在的TP必须有where条件才能执行delete。
 	 * **/
 	public function realDelete($options=array()){
 		return parent::delete($options);
 	}
 	protected function _before_delete($options){
-  }
+    }
 	public function delete($options=array()) {
 		$deleteStatus	= false;
 		$f				= $this->getDbFields();
@@ -743,8 +785,8 @@ class DxExtCommonModel extends Model {
 			return false;
 		}
 		
-    $op   = $this->options;
-	  $this->_before_delete($op);
+        $op   = $this->options;
+        $this->_before_delete($op);
 
 		if($deleteStatus){
 			return $this->deleteTag($op);

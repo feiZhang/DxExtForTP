@@ -1,6 +1,16 @@
 <!--<empty name="valChange">-->
 <label>无</label>
 <!--<else/>-->
+<eq name="readOnly" value="true">
+<empty name="value"><label>无</label>
+<else/>
+<!--<volist name="valChange" id="vo" key="k">-->
+<if condition="in_array($key,$value)">
+{$vo}
+</if>
+<!--</volist>-->
+</empty>
+<else/>
 <!--<volist name="valChange" id="vo" key="k">-->
 <!--<if condition="in_array($key, $value)">-->
 <label class="checkbox inline">
@@ -12,4 +22,5 @@
 </label>
 <!--</if>-->
 <!--</volist>-->
+</eq>
 <!--</empty>-->
