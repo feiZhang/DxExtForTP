@@ -7,16 +7,22 @@
  * 4.数据唯一性验证
  * */
 class DataOpeAction extends DxExtCommonAction{
-	protected $defaultWhere		= array();
+	protected $defaultWhere		 = array();
 	//系统会自动根据Model信息生成Tpl文件的cache，如果一个Model的两个index展示界面不同，比如：一个是老人信息，有查询，一个是老人核查，没有查询，则需要将此属性设置为false，不启用tpl缓存
-	protected $cacheTpl			= true;
+	protected $cacheTpl			     = true;
 	        
 	/* 数据列表 for Grid **/
 	public function get_datalist(){
         $model	= $this->model;
         if(empty($model)) die("model为空!");
-		$enablePage	= $model->getModelInfo("enablePage");
-		if($enablePage!==false) $enablePage	= true;
+        if ($_REQUEST ["print"] == "1") {
+            $fieldsStr = $model->getPrintFieldString();
+            $enablePage = false;
+        } else {
+            $enablePage = $model->getModelInfo ( "enablePage" );
+            if ($enablePage !== false) $enablePage = true;
+            $fieldsStr = $model->getListFieldString();
+        }
 		require_once (DXINFO_PATH."/Vendor/GridServerHandler.php");
         $gridHandler 	= new GridServerHandler();
         if($enablePage){
@@ -27,23 +33,16 @@ class DataOpeAction extends DxExtCommonAction{
         if($start<0) $start = 0;
 		
 		$where			= array_merge($this->defaultWhere,$this->_search());
-		//使用Model连贯操作时，每一个连贯操作，都会往Model对象中复制，如果嵌套使用Model的连贯操作，会覆盖掉原来已经存在的值，导致bug。
-		$fieldsStr = $model->getListFieldString();
+		//使用Model连贯操作时，每一个连贯操作，都会往Model对象中赋值，如果嵌套使用Model的连贯操作，会覆盖掉原来已经存在的值，导致bug。
 		if(isset($_REQUEST['export']) && !empty($_REQUEST['export'])){
             $data_list  = $model->where($where)->field($fieldsStr)->order($model->getModelInfo("order"))->select();
-            $this->export($data_list, trim($_REQUEST['export']));
         }else{
             if($enablePage){
-                $data_list  = $model->where($where)->field($fieldsStr)->limit( $start.",".$pageSize )->order($model->getModelInfo("order"))->select();
+               $data_list  = $model->where($where)->field($fieldsStr)->limit( $start.",".$pageSize )->order($model->getModelInfo("order"))->select();
             }else
                 $data_list  = $model->where($where)->field($fieldsStr)->order($model->getModelInfo("order"))->select();
         }
-        if($_REQUEST["showsql"]=="1"){
-            print_r($where);
-            echo "<br />-------<br />";
-            print_r($model->getLastSQL());
-            echo "<br />-------<br />";
-        }
+        fb::log(MODULE_NAME."get_datalist:".$model->getLastSQL());
         //无数据时data_list = null,此时返回的数据，grid不会更新rows，这导致，再删除最后一条数据时，grid无法删除前端的最后一样。
         if(empty($data_list)){
             $data_list	= array();
@@ -55,11 +54,32 @@ class DataOpeAction extends DxExtCommonAction{
                 }
             }
         }
-
-		$data_count  	= $enablePage?$model->where($where)->count():sizeof($data_list);
-		$gridHandler->setData($data_list);
-		$gridHandler->setTotalRowNum($data_count);
-        $gridHandler->printLoadResponseText();
+        //计算总计：
+        if($model->getModelInfo("showTotal") && sizeof($data_list)>0){
+            $total  = array();
+            foreach ($data_list as $data){
+                foreach($data as $index=>$vvv){
+                    $total[$index] += floatval($vvv);
+                }
+            }
+            foreach($this->model->getListFields() as $fieldName=>$field){
+                if(array_key_exists("total",$field) && array_key_exists($fieldName,$total)){
+                	$total[$fieldName] = $field["total"];
+                }
+            }
+            $data_list[] = $total;
+        }
+        
+        if ($_REQUEST ["print"] == "1"){
+            $this->ajaxReturn(array("data"=>data_list,"fields"=>$model->getPrintFields()));
+        }else if(isset($_REQUEST['export']) && !empty($_REQUEST['export'])){
+            $this->export($data_list, trim($_REQUEST['export']));
+        }else{
+            $data_count  	= $enablePage?$model->where($where)->count():sizeof($data_list);
+            $gridHandler->setData($data_list);
+            $gridHandler->setTotalRowNum($data_count);
+            $gridHandler->printLoadResponseText();
+        }
 	}
     
     /**
@@ -91,7 +111,7 @@ class DataOpeAction extends DxExtCommonAction{
         if(empty($exportname)){
             $exportname="export";
         }
-        $exportname=get_filename_bybrowser($exportname);
+        $exportname=DxFunction::get_filename_bybrowser($exportname);
         
         //dump($fields_list);dump($data);die();
         //导出excel
@@ -103,16 +123,45 @@ class DataOpeAction extends DxExtCommonAction{
         $this->assign('objectData',$data);
         if(!empty($customHeader)) $this->assign("customHeader",$customHeader);
 
-        if(file_exists(THEME_PATH.$this->theModelName.'/export'.C('TMPL_TEMPLATE_SUFFIX'))){
-            $this->display("export");
-            exit();
-        }else{
-            $this->display("DxPublic:data_export");
-            exit();
-        }
+        $this->display("data_export");
     }
 
-	
+        
+    /**
+     * 处理数据打印.
+     * @param $data array 要导出的数据记录集
+     * @param $type bool   true:直接打印   false:预览打印
+     * @param $fields_list array 要导出的的数据的属性.默认使用model->getExportFields().<br/>
+     * @param $title      "打印标题"
+     * @param $otherPrintInfo   ""
+     * 格式说明array('field'=>array('name'=>"field", 'title'=>"Tittle in list"));
+     * @return 
+     * */
+    protected function printData($data, $type=false, $fields_list=array(), $title="",$otherPrintInfo=""){
+        $model = $this->model;
+        if (empty ( $model ))
+            die ( "model is empty!" );
+        
+        if (empty($fields_list)) {
+            $fields_list = $model->getPrintFields ();
+        }
+        if (empty($title)) {
+            $title = $this->model->getModelInfo ( "title" );
+        }
+        if (empty($otherPrintInfo)) {
+            $otherPrintInfo = $this->model->getModelInfo ( "otherPrintInfo" );
+        }
+        
+        $this->assign ( "title", $title );
+        $this->assign ( "listFields", $fields_list );
+        $this->assign ( "objectData", $data );
+        $this->assign ( "otherPrintInfo", $otherPrintInfo );
+        $this->assign ( "printType",$type );
+         
+        $this->display ( "data_print" );
+    }
+
+
 	/* 保存数据 **/
 	public function save(){
         $m  = $this->model;
@@ -160,7 +209,10 @@ class DataOpeAction extends DxExtCommonAction{
         	$this->ajaxReturn($m->getError(),"创建数据出现错误!请检查必填项是否填写完整!($msg)",0);
         }
 	}
-		
+    /**
+     * dxDisplay实现二次编译功能。。
+     * @param unknown $templateFile
+     */
     protected function dxDisplay($templateFile){
 		$tempFile	= TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
 		if(!$this->cacheTpl || C('APP_DEBUG') || !file_exists($tempFile)){
@@ -174,7 +226,6 @@ class DataOpeAction extends DxExtCommonAction{
 			file_put_contents($tempFile, $tempT);
 		}
 		$this->display($tempFile);
-
     }
     /* 显示页面内容 **/
 	public function index(){
@@ -183,27 +234,24 @@ class DataOpeAction extends DxExtCommonAction{
 
 		//支持通过url传递过来的ModelTitle
 		$enablePage	= $model->getModelInfo("enablePage");
+		$enablePrint	= $model->getModelInfo("enablePrint");
+		if($_REQUEST["print"]=="1") $enablePage = false;
 		if($enablePage!==false) $enablePage	= true;
 		session(MODULE_NAME."_modelTitle",empty($_REQUEST["modelTitle"])?$model->getModelInfo("title"):$_REQUEST["modelTitle"]);
 		$addTitle	= $model->getModelInfo("addTitle");
 		if(empty($addTitle)) $addTitle	= "新增".session(MODULE_NAME."_modelTitle");
 		$editTitle	= $model->getModelInfo("editTitle");
 		if(empty($editTitle)) $editTitle	= "修改".session(MODULE_NAME."_modelTitle");
-		
-		$this->assign("modelInfo",
-					array(
-						"modelTitle"=> session(MODULE_NAME."_modelTitle"),
-						"addTitle"=>$addTitle,
-						"editTitle"=>$editTitle,
-						"otherManageAction"=>$model->getModelInfo("otherManageAction"),
-						"searchHTML"=>$model->getModelInfo("searchHTML"),
-						"readOnly"=>$model->getModelInfo("readOnly")?$model->getModelInfo("readOnly"):false,
-						"gridHeader"=>$model->getModelInfo("gridHeader"),
-						"enablePage"=>$enablePage?"1":"0",
-						"helpInfo"=>$model->getModelInfo("helpInfo"),
-					));
-		
-		$gridField	= $model->fieldToGridField();
+        $this->assign ( "modelInfo", array_merge ( $model->getModelInfo(),array (
+            "modelTitle" => session ( MODULE_NAME . "_modelTitle" ),
+            "addTitle" => $addTitle,
+            "editTitle" => $editTitle,
+            "readOnly" => $model->getModelInfo ( "readOnly" ) ? $model->getModelInfo ( "readOnly" ) : false,
+            "enablePage" => $enablePage ? "1" : "0",
+            "enablePrint" => $enablePrint ? "1" : "0",
+        ) ) );
+
+        $gridField	= $model->fieldToGridField();
 		//因为Think模板引擎强制将所欲的{}认为是标签，进行解析，而在preg_**函数解析的过程中，会给所有的"加上\，则TP需要对解析出的函数执行 stripslashes，一切导致 \n变成了n，从而导致字段的js代码出错
 		$this->assign("gridFields",str_replace("{","{ ",json_encode($gridField["gridFields"])));
 		$this->assign("datasetFields",str_replace("{","{ ",json_encode($gridField["datasetFields"])));

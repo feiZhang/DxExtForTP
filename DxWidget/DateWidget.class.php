@@ -42,6 +42,7 @@ class DateWidget extends DxWidget {
         'readOnly'=>false
     );
     public function render($data) {
+        if(!is_array($data["fieldSet"])) $data["fieldSet"] = array();
         $val=  array_merge($this->default, $data["fieldSet"],$data);
         if($val['width']>0){
             $val['cwidth']="width: {$val['width']}px;";

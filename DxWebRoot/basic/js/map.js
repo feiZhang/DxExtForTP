@@ -86,6 +86,10 @@
 			}
 			//增加覆盖点
 			map.addOverlay(marker);
+			if(point.jump ){
+				marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+			}
+			
 			var sContent 		= point.html;
 			var infoWindow 		= new BMap.InfoWindow(sContent,$.extend(infoSetting,{title:point.name}));  // 创建信息窗口对象
 			point.infoWindow 	=  infoWindow;

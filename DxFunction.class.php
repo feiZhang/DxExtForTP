@@ -1,6 +1,10 @@
 <?php
 class DxFunction{
-    
+/**escape json data, prevent from thinkphp template convert*/
+	function escapeJson($data){
+		$ret=str_replace("{","{ ", json_encode($data));
+		return $ret;
+	}
 	/**
 	 * 获取一个当前日期
 	 * */
@@ -75,7 +79,7 @@ class DxFunction{
 				if($dir_file != "." && $dir_file !=".."){
 					$file = $dirname.'/'.$dir_file;
 					if(is_dir($file)){
-						deleteDir($file);//递归执行
+						DxFunction::deleteDir($file);//递归执行
 					}else{
 						unlink($file);
 					}
@@ -481,5 +485,26 @@ class DxFunction{
 		D('Message')->where(array('id'=>$msg_id))->delete();
 		$m->where(array('message_id'=>$msg_id))->delete();
 		return true;
+	}
+	
+	/**
+	 * 将数据库返回数组转换为valChange类型数组
+	 * 即数组列转行
+	 */
+	function arrayToArray($tV){
+	    $rv = array();
+	    if(empty($tV) || !is_array($tV)){
+	       return $v;
+	    }
+	    
+	    $keys = array_keys($tV[0]);
+	    $valStr = $keys[sizeof($keys)-1];
+	    unset($keys[sizeof($keys)-1]);
+	    $keyStr = "[\$tt['".implode("']][\$tt['",$keys)."']]";
+	    $vvv = sprintf("\$rv%s=\$tt['%s'];",$keyStr,$valStr);
+	    foreach($tV as $tt){
+	        eval($vvv);
+	    }
+	    return $rv;
 	}
 }	

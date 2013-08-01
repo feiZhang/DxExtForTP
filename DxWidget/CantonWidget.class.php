@@ -25,6 +25,7 @@ class CantonWidget extends DxWidget {
         //是否这只读字段
         );
     public function render($data) {
+        if(!is_array($data["fieldSet"])) $data["fieldSet"] = array();
     	$field			= array_merge($this->default,$data["fieldSet"],$data);
     	$rootCantonId	= $field["canton"]["rootCantonId"];
     	if(intval($rootCantonId)<1) $rootCantonId	= C("SYS_ROOTCANTONID");

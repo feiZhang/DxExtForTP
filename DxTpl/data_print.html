@@ -1,0 +1,25 @@
+<include file="Public:header" />
+
+<table>
+        <?php
+        foreach($listFields as $field){
+            printf("<tr style='display:%s'>",$field["hide"]?"none":"");
+            printf("<td align='right'>%s:</td>",$field["title"]);
+
+            echo "</tr>";            
+        } 
+        ?>
+    <volist id="vo" name="objectData">
+    <tr>
+        <volist id="fld" name="listFields">
+            <notempty name="fld['valChange']">
+                <td class="text">{$fld['valChange'][$vo[$fld['name']]]|htmlspecialchars}</td>
+            <else />
+                <td class="text">{$vo[$fld['name']]|htmlspecialchars}</td>
+            </notempty>
+        </volist>
+    </tr>
+    </volist>
+</table>
+
+<include file="Public:footer" />

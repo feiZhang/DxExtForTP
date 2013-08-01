@@ -5,16 +5,28 @@
     <include file="Public:menu" />
 </eq>
 
-<link href="__ROOT__/min/g=dataListCss" rel="stylesheet" type="text/css" />
+<eq name="modelInfo.enablePrint" value="true">
+<script language="javascript" src="__DXPUBLIC__/public/Lodop6.010/LodopFuncs.js"></script>
+<object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0> 
+	<embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 pluginspage="install_lodop32.exe"></embed>
+</object> 
+</eq>
+
+<link href="__DXPUBLIC__/min/g=dataListCss" rel="stylesheet" type="text/css" />
 <script src="__DXPUBLIC__/public/DatePicker/WdatePicker.js" type="text/javascript"></script>
 
-<div class="inx_center menumargin">
+<notempty name="modelInfo.leftArea">
+<div class="dataListLeftMenuArea">
+    {$modelInfo.leftArea}
+</div>
+</notempty>
+
+<div class="dataListDataArea">
 	<input id="modelInfo_editTitle" value="{$modelInfo.editTitle}" type="hidden" />
-  <table id="gridHeader" style="display:none">{$modelInfo['gridHeader']}</table>
-  <notempty name="modelInfo.modelTitle">
-  <div id="header_title" class="navbar" style="margin-bottom: 0px;">
-    <div class="navbar-inner">
-      <a class="brand" href="#">{$modelInfo.modelTitle}</a>
+    <table id="gridHeader" style="display:none">{$modelInfo['gridHeader']}</table>
+    <notempty name="modelInfo.modelTitle">
+    <div id="header_title" class="dataListHeader" style="margin-bottom: 0px;">
+        <span style="font-size: 22px;font-weight: bold;">{$modelInfo.modelTitle}</span>
 
       <?php
       if(!empty($modelInfo["searchHTML"])){
@@ -31,19 +43,18 @@
       <?php
       }
       ?>
-      <div style="display:inline;">
+
       <?php if (!$modelInfo["readOnly"]) { ?>
-      <input class="btn pull-right" id='item_add' onclick="javascript:dataOpeAdd('{\\$InitSearchPara}','{$modelInfo['addTitle']}');" type="button" value="{$modelInfo['addTitle']}" />
+      <input class="btn" id='item_add' onclick="javascript:dataOpeAdd('{\\$InitSearchPara}','{$modelInfo['addTitle']}');" type="button" value="{$modelInfo['addTitle']}" />
       <?php }
       if(!empty($modelInfo["otherManageAction"])){
         print($modelInfo["otherManageAction"]);
       }
       ?>
-      </div>
-    </div>
+
   </div>
   </notempty>
-  <div id="dataListCon" class="cen_pg">
+  <div id="dataListCon">
     <div id="dataList"></div>
     <div id="grid-help-info">
       {$modelInfo["helpInfo"]}
@@ -60,7 +71,8 @@
 </eq>
 -->
 
-<script type="text/javascript" src="__ROOT__/min/g=dataListJs"></script>
+<script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs"></script>
+<script type="text/javascript" src="__DXPUBLIC__/min/f=__PUBLIC__/js/dataope_ext.js"></script>
 
 <script>
 <!--
@@ -69,7 +81,7 @@ $(function(){
 	dxGrid	= new $.dxGrid();
 	var gridFields        = {$gridFields};
 	var datasetFields     = {$datasetFields};
-	dxGrid.init({ "gridDiv":"dataList",",loadUrl":"","gridFields":gridFields,"datasetFields":datasetFields,"parentGridDiv":"dataListCon","enablePage":"{$modelInfo['enablePage']}"});
+	dxGrid.init({ "gridDiv":"dataList",",loadUrl":"","gridFields":gridFields,"datasetFields":datasetFields,"parentGridDiv":"dataListCon","enablePage":"{$modelInfo['enablePage']}","enablePrint":"{$modelInfo['enablePrint']}"});
 	dxGrid.setBaseURL("__URL__");
 	dxGrid.setData(dxGrid.urladd("__URL__/get_datalist","{\\$InitSearchPara}"));
 	<notempty name="ignoreInitSearch">

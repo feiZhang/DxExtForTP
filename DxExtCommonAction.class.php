@@ -23,7 +23,7 @@ class DxExtCommonAction extends Action {
 	    
 	    if(C("DISABLE_ACTION_AUTH_CHECK")!==true){
     		$this->cacheActionList	= DxFunction::getModuleActionForMe();
-    		//dump($this->cacheActionList["myAction"]);die();
+    		//dump($_SESSION);dump($this->cacheActionList["myAction"]);die();
     
     		if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
     			if(0 == intval(session(C("USER_AUTH_KEY")))) {
@@ -36,7 +36,8 @@ class DxExtCommonAction extends Action {
     					$this->updateActionLog($log_id);
     				}
     				if(C('LOG_RECORD')) Log::save();
-    				die("您无权访问此页面!");
+    				$this->success("您无权访问此页面!","showmsg");
+    				exit;
     			}
     		}
 	    }

@@ -16,7 +16,7 @@
 
 <script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/load-image.min.js"></script>
 <script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/tmpl.min.js"></script>
-<script type="text/javascript" src="__ROOT__/min/g=dataEditJs"></script>
+<script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs"></script>
 
 <script type="text/javascript" src="__PUBLIC__/js/dataope_ext.js"></script>
 
@@ -24,7 +24,10 @@
 <!--
 (function($){
 	$(function(){
-	    $("#itemAddForm").validationEngine();
+        $("#itemAddForm").validationEngine({
+//            ajaxFormValidationMethod: 'post',
+            onValidationComplete:formSubmitComplete
+        });
 	});
 })(jQuery);
 //-->
@@ -36,15 +39,15 @@
 	</notempty>
 	</literal>
     <table class="itemAddTable" cellspacing="1" cellpadding="1">
-		<?php
-		foreach($listFields as $name=>$field){
+        <?php
+        foreach($listFields as $name=>$field){
             $fieldInput="";
             if($field["display_none"])
                 printf("<tr class=\"itemAddTr\" style=\"display:none\">\n");
             else
                 printf("<tr class=\"itemAddTr\">\n");
             printf("<td align='right' class='itemAddTd'><span class='itemAddField'><b>%s</b></span>:</td>\n",$field["title"]);
-            printf("<td>%s</td>\n",DxFunction::getFieldInput($field, $valid));
+            printf("<td>%s%s</td>\n",DxFunction::getFieldInput($field, $valid),$field["danwei"]);
             echo "</tr>\n\n";
         } 
 		?>

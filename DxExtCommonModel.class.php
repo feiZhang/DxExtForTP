@@ -3,7 +3,7 @@
  * Version：2.0
  * 目的：构建基础的Model模块，提供公共功能代码
  * 功能：
- * 1.通过设置 model 的 trueTableName 属性，支持表关联的Model    $this->trueTableName    = "(SELECT a.*,b.name,c.title FROM older a LEFT JOIN employee b ON a.id=b.older_id LEFT ...) older"
+ * 查看Doc/Readme.md文件
  * */
 class DxExtCommonModel extends Model {
 
@@ -12,134 +12,12 @@ class DxExtCommonModel extends Model {
 	const HIDE_FIELD_EDIT		= 4;      //修改数据时是否隐藏
 	const HIDE_FIELD_DATA		= 8;      //列表时，是否不输出此字段数据
 	const HIDE_FIELD_EXPORT		= 16;		//是否不导出
-
-    const READONLY_FIELD_ADD    = 1;
-    const READONLY_FIELD_EDIT   = 2;
-
-    const DISPLAY_NONE_FIELD_ADD    = 1;
-    const DISPLAY_NONE_FIELD_EDIT   = 2;
+	const HIDE_FIELD_PRINT         = 32;       //是否不打印
 
 	const DP_TYPE_ENABLE		= 1;	//开启数据权限控制
 	const DP_TYPE_PUBLIC		= 2;	//开启公共数据权限，此字段判定，某个数据是否是公共数据。
 	const DP_TYPE_STATIC_AUTO	= 4;	//auto的静态设定
 	
-	/**
-	 * 附加功能：数据权限控制 1.自动附加默认值到数据表 2.自动追加查询条件
-	 * 1.本类初始化时，自动追加 __auto特性 
-	 * 2.在登录后，需要根据定义情况，设置Seession变量 
-	 * 3.登录时设置 Session["DP_ADMIN"] = true 则表示显示所有数据 
-	 * 4.数据权限控制类别由 operator 来定义，默认为like，可选：eq等于
-	 * auto_type:对应MODEL的auto类型，INSERT UPDATE BOTH等
-	 * type取值：DP_TYPE_ENABLE-数据权限字段   DP_TYPE_PUBLIC-设定此字段是否为公共数据表示字段（如果此字段是公共数据判定字段，并且值=1，则此数据任何人可查看）	DP_TYPE_STATIC_AUTO-auto使用固定值填充（固定值设定到字段session_field中）
-	 * DP_NOT_CHECK_ACTION 格式： array("module_name"=>array("action_name"=>1,"action_name"=>1),"module_name"=>1);
-	 * DP_NOT_CHECK_MODEL 格式：  array("model_name"=>1,"model_name"=>1);
-	 * 数据权限功能得配置样例
-	 *  		'DP_POWER_FIELDS'       => array(
-	 *   				array('field_name'=>'create_dept','auto_type'=>1,'type'=>1,'session_field'=>'dept'),
-	 *   		)
-	 *   	'DP_NOT_CHECK_ACTION'	=> array("MODEL:ACTION","MODEL:ACTION");
-	* **/
-
-	/**
-	 * 附加功能:自动生成数据查询列表，对DataOpe提供基础数据
-	 listFields：字段的附加属性,数组类型，其key是字段的名称.
-    	 type:字段类型，分为：string[字符]、int、float（sigma支持这3种）、time[时间]、date[日期]、y_m(只显示年份和月份)、datetime[日期时间]、enum[枚举,单选框]、select[枚举,下拉框]、set[集合]、uploadFile[文件上传]、canton[区域]、cutPhoto[剪切头像]
-    	 	type用于3个地方：1.grid生成时，sigma支持 string int float（排序结果不同）   2.查询框根据类型生成不同的格式(input输入框、时间选择框、下拉选择框、单选框)   3.数据新增和修改时，生成不同的样式（input输入框、时间选择框、下拉选择框、单选框）
-    	 	uploadFile的附属参数:"upload"=>array("filetype"=>".gif、.jpeg、.jpg、.png、.pdf、.doc、.xls、.mp4、.mov","maxNum"=>0,"buttonValue"=>"文件上传","maxSize"=>1024*1024)),
-    	 	uploadFile存储的数据不能直接显示，在model中配置 'data_change'=>array("file_name"=>"uploadFilesToGrid"), 指定字段进行内容转义
-            set的附加参数:valFormat=json,douhao   分别表示，以json格式存储，和以逗号隔开存储。
-    	 title:中文说明
-    	 hide:是否隐藏，此值根据位运算，获得隐藏的范围。。见常量 HIDE_FIELD，，如果在多个位置不显示，等于各个值的和。比如：列表新增都不显示则为3
-         display_none:是否在界面上显示，hide控制是否在前端生成此字段，display_none控制是否显示此字段
-    	 pk:是否主键
-    	 width:列宽度，和查询框的宽度
-         textTo:将某个字典关联字段的id值对应的数据保存到某字段，比如：设置到canton_id上的textTo="canton_name", 表示，存储canton_id对应的显示值到canton_name
-    	 valChange:数据转换，[固定转换\关联表转换]，固定值转换时是一个数组(索引价格k)，比如：
-    	     "valChange"=>array("1"=>"客户",'4'=>'超级管理员'),
-    	     "valChange"=>array("model"=>"user","type"=>"basic_data_type") 注意:这里对应的model必须设置modelInfo的dictTable值才有效，，这种格式是从数据库获取数据，最终得到和上面一样的数据格式，，在使用多维数组时才启用type属性,type多维度时，使用逗号隔开
-             "valChange"=>array("sql"=>"select id,name from user")
-    	 下面是对应的sigmaGrid的特性配置
-        	 frozen:是否锁定列
-        	 grouped:字段是否进行分组合并显示
-        	 renderer:数据转换，此处为js代码  var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){ var valChange=%s;return valChange[value];}
-    	 特殊功能：
-    	     field:key对应的字段内容，例如：DATE_FORMAT(subsidy_end_date,"%Y-%m") subsidy_end_date        解决带函数字段问题。
-    	     editor:数据添加修改时，自定义输入框。例子（实现selectselect功能）:
-				 "editor"=>"<div id='selectCanton'></div><input type='hidden' id='canton_fdn' name='canton_fdn' value='' /><input type='hidden' id='canton_id' name='canton_id' value='' />
-							 <script type='text/javascript'>
-							 (function($){
-							 	$.selectselectselect(0,'selectCanton',0,ROOT_CANTON_ID,function(t){
-							 	$('#canton_id').val($(t).find('option:selected').attr('key'));
-							 	$('#canton_fdn').val($(t).val());
-							 	});
-							 })(jQuery);
-							 </script>
-							 ",
-	     未实现或部分实现功能
-	         formFiled:此字段一般为某id字段对应的 名称。。在数据增加修改时，自动复制值。
-	         readOnly:字段数据为只读....一种情况：字典表的维护，添加时需要类型显示为不能改，但是又需要将类型值追加到数据中，则再model中重新定义save方法，如果是新增，则将type字段readOnly改为false,注：readOnly的字段，还是会从前端post过来，但是在后端会被忽略掉
-             default:默认值(String|Array),    字符串:直接做为默认值. 为防止数据出现混乱,默认值在readonly及编辑时不生效.
-                                             数组:最少两个元素,
-                                 				第一个元素表示值的类型,
-                            		 			为func时,第二个值为函数名,之后的数据为函数的参数.如array('func', 'test', 'p1', 'p2'),则调用test('p1', 'p2');
-	 modelInfo:
-    	 title:中文说明    
-    	 addTitle:新增按钮的中文说明,默认为：新增+title内容
-	     editTitle:修改的中文说明，默认为：修改+title内容
-	     readOnly:本Model是否不需要新增数据
-	     otherManageAction:本model除新增外的其他操作
-	     searchHTML:操作框的html信息，一般为搜索框和查询按钮,,搜索框支持的特性：
-	 			1.id对应model数据字段 
-	 			2.class="dataOpeSearch"表示是查询条件
-	 			3.class="likeLeft likeRight"表示模糊查询的左相似或右相似
-	 			4.支持radio类型input
-	 			5.查询按钮执行js函数触发查询 dataOpeSearch(是否使用条件)
-	 			6.支持model字段生成输入框，例如：区域选择框。{$editFields.canton_fdn|DxFunction::getFieldInput=###,array(),0,true}  直报、实地检查应用
-	 	        例子:
-                姓名:<input id='name' class='likeLeft likeRight dataOpeSearch' value='' />
-                性别:{:DxFunction::W_FIELD(\"FormEnum\", array(\"fieldSet\"=>\$listFields['sex']))}
-				<input onclick='javascript:dataOpeSearch(true);' type='button' class='d-button d-state-highlight' value='查询' id='item_query_items' />
-				<input onclick='javascript:dataOpeSearch(false);' type='button' class='d-button d-state-highlight' value='全部数据' id='item_query_all' />
-				<input onclick='javascript:dataOpeExport(false);' type='button' class='d-button d-state-highlight' value='导出' id='item_export' />
-	 dictTable:字典表值字段,格式1. dictTable="title"（生成以主键为key，值字段数据为值的 数组) 格式2:dictTable="keyField,keyField,..,valueField");(其中keyField是作为数据关联的字段)   根据这个配置，程序自动将字典表转换为valChange的普通模式，这些数组会被缓存到Runtime得Data目录
-	 dictType:字典表的类型，可以是 "mySelf" 和 公共(默认)。。。公共的字典缓存是大家共享的，比如：老人类型，，私有的缓存是各自单独存放，比如:职工信息,每个养老院添加老人选择护理员时，只选自己的职工
-	 toString:提供给toString方法，整合数据的个是，   toString=array("%s %s 生于%s",array("real_name","sex","birthday"))  0：数据格式 1：对应的字段名
-	 helpInfo:帮助提示信息
-	 data_change:数据在后台就进行数据字典转换，尽量少用，valChange是将数据转换的工作交给js，减少后台php的执行时间，但是某些特殊转换无法使用valChange完成，则可以使用data_change，在后台获取到数据后，调用函数对数据进行转换，这样会耗费大量的php执行，离子：补贴状态转换 'data_change'=>array("aysn_state"=>"subsidyStateChange"),
-	 sigmaGrid功能配置项：
-    	 enablePage:grid是否提供分页。
-    	 gridHeader:自定义grid表头,,不要写table标签，只写TR标签即可。系统会自动追加Table标签。
-         order:默认的数据排序
-	     hasCheckBox:数据列表是否有checkbox
-	**/
-
-	/**
-	 * 附加功能：增加对全文索引的支持，
-	 * 1.提供默认的toString方法
-	 * 2.在数据insert update delete时，更新检索数据库
-	 * 增加一个全局配置变量  FULLTEXT_SEARCH  来开启全文索引功能，   默认索引表结构为：fulltext_search(object,pkid,content,object_title)
-	* **/
-
-	/**
-	 * 附加功能：标记删除
-	 * delete标记。数据删除时，只作标记，而不实际删除		DELETE_TAGS => array("field"=>value,"field"=>value)
-	 * 任何一个字段标记为删除值，都不在系统中显示了。
-	* **/
-	
-	/**
-	 * 附加功能：TP的数据验证规则，转换为前台js数据验证。
-	 * http://www.position-relative.net/creation/formValidator/
-	 * 注意：
-	 * 前端验证的提示信息，是在js中指定的。来自于框架的定义，无法变动。。比如：唯一性，统计是：* 此处不可为空;
-	 * 框架不支持，对每个input指定，不同的必填说明。
-	 * 所以，后台验证规则的错误描述语言应尽量与前台保持一致。参考：jquery.validationEngine-zh_CN.js
-	 * */
-	
-	/**
-	 * 附加功能:操作日志，系统自动记录操作日志到表operation_log中，表格式固定
-	 * 附加功能:数据变动日志，系统自动记录数据变动日志到表DataChangeLog中，表格式固定，目前问题：时间不长，表就较大了。
-	 * */
-
 	protected $listFields  	= array();  //模型字段的附加信息
 	protected $modelInfo   	= array();  //模型的附加信息。
 	private $cacheDictDatas	= array();	//缓存的字典表数据
@@ -162,21 +40,27 @@ class DxExtCommonModel extends Model {
 		}
 		$this->listFields	= $listF;
 	}
-
-	//将数据列表Grid要显示的字段，整合为一个字符串，作为SELECT 语句的字段列表
-	function getListFieldString(){
-		$r	= array();
-		foreach($this->getListFields() as $key=>$val){
-			if(!($val['hide'] & self::HIDE_FIELD_DATA)){
-				if(isset($val["field"]))
-					$r[]	= $val["field"];
-				else if(isset($val["name"]))
-					$r[]	= $val["name"];
-				else $r[]	= $key;
-			}
-		}
-		return implode(",",$r);
-	}
+        
+    // 将数据列表Grid要显示的字段，整合为一个字符串，作为SELECT 语句的字段列表
+    public function getListFieldString() {
+        return $this->getFieldsString ( self::HIDE_FIELD_DATA );
+    }
+    // 将要打印的字段，整合为一个字符串，作为SELECT 语句的字段列表
+    public function getPrintFieldString() {
+        return $this->getFieldsString ( self::HIDE_FIELD_PRINT );
+    }
+    private function getFieldsString($hideState) {
+        $r = array ();
+        foreach ( $this->getNoHideFields ( $hideState ) as $key => $val ) {
+            if (isset ( $val ["field"] ))
+                $r [] = $val ["field"];
+            else if (isset ( $val ["name"] ))
+                $r [] = $val ["name"];
+            else
+                $r [] = $key;
+        }
+        return implode ( ",", $r );
+    }
 
 	function __construct($name='',$connection='') {
 		parent::__construct($name,$connection);
@@ -257,21 +141,21 @@ class DxExtCommonModel extends Model {
                 $m    = $this;
             else
                 $m    = D($field["valChange"]["model"]);
-            $tValC	= $m->getCacheDictTableData();
-            if(!empty($field["valChange"]["type"])){
-                $tType	= explode(",",$field["valChange"]["type"]);
-                foreach($tType as $vvv)
-                    $tValC	= $tValC[$vvv];
-            }
-            $field["valChange"]	= $tValC;
+            $field["valChange"]	= $m->getCacheDictTableData();
         }else if(array_key_exists("sql",$field["valChange"])){
             //使用SQL获得valChange映射
-            $tValc  = $this->query($field["valChange"]["sql"]);
-            $field["valChange"]   = array();
-            foreach($tValc as $oneV){
-                $field["valChange"][$oneV["id"]]   = $oneV["name"];
+            $field["valChange"]  = $this->query($field["valChange"]["sql"]);
+            if($field["valChange"]){
+                $field["valChange"] = DxFunction::arrayToArray($tValC);
             }
         }
+        //找到数组的某一部分作为valChange转换，比如：大型数据字典 sysDic
+        if(!empty($field["valChange"]["type"])){
+            $tType	= explode(",",$field["valChange"]["type"]);
+            foreach($tType as $vvv)
+                $field["valChange"]	= $field["valChange"][$vvv];
+        }
+        
         //规整数据的enum字段，默认使用valChange替换，没有valChange字段，则从数据库获取enum的字段定义数据
         if(empty($field["valChange"]) && array_key_exists("type", $field) && ($field["type"]=="enum" || $field["type"]=="set" || $field["type"]=="select")){
             $sql	= sprintf("SELECT COLUMN_TYPE FROM information_schema.`COLUMNS` WHERE DATA_TYPE in ('set','enum') AND `TABLE_SCHEMA`='%s' AND `TABLE_NAME`='%s' AND COLUMN_NAME='%s'",C("DB_NAME"),$this->trueTableName,$field["name"]);
@@ -321,13 +205,13 @@ class DxExtCommonModel extends Model {
             if(!($field["hide"] & self::HIDE_FIELD_ADD) && $pkId==0){
                 if(!isset($field["name"])) $field["name"]   = $name;
                 $f[$field["name"]]  = $field;
-                $f[$field["name"]]["readOnly"]  = (bool)($field["readOnly"] & self::READONLY_FIELD_ADD);
-                $f[$field["name"]]["display_none"]  = (bool)($field["display_none"] & self::DISPLAY_NONE_FIELD_ADD);
+                $f[$field["name"]]["readOnly"]  = (bool)($field["readOnly"] & self::HIDE_FIELD_ADD);
+                $f[$field["name"]]["display_none"]  = (bool)($field["display_none"] & self::HIDE_FIELD_ADD);
             }else if(!($field["hide"] & self::HIDE_FIELD_EDIT) && $pkId>0){
                 if(!isset($field["name"])) $field["name"]   = $name;
                 $f[$field["name"]]  = $field;
-                $f[$field["name"]]["readOnly"]  = (bool)($field["readOnly"] & self::READONLY_FIELD_EDIT);
-                $f[$field["name"]]["display_none"]  = (bool)($field["display_none"] & self::DISPLAY_NONE_FIELD_EDIT);
+                $f[$field["name"]]["readOnly"]  = (bool)($field["readOnly"] & self::HIDE_FIELD_EDIT);
+                $f[$field["name"]]["display_none"]  = (bool)($field["display_none"] & self::HIDE_FIELD_EDIT);
             }
         }
         return $f;
@@ -341,13 +225,29 @@ class DxExtCommonModel extends Model {
         if($key=="order" && empty($val)) $val   = $this->getPk()." desc";
         return $val;
 	}
+	public function setModelInfo($key,$val){
+	    $this->modelInfo[$key] = $val;
+	}
+	
+    /**
+     * 获取需要到处的字段列表。
+     */
 	public function getExportFields(){
+	    return $this->getNoHideFields(self::HIDE_FIELD_EXPORT);
+	}
+    public function getPrintFields(){
+        return $this->getNoHideFields(self::HIDE_FIELD_PRINT);
+    }
+	/**
+	 * 获取某个类型未隐藏的字段列表。
+	 */
+	private function getNoHideFields($hideTag){
 		//编辑数据的字段列表，编辑数据时，要隐藏某些字段
 		$f	= array();
         $frozen=array();
 		foreach($this->getListFields() as $key=>$field){
             //默认导出所有的列
-			if(!($field["hide"] & self::HIDE_FIELD_EXPORT)){
+			if(!($field["hide"] & $hideTag)){
 				$fieldName	= empty($field['name'])?$key:$field['name'];
 				if(isset($field['frozen']) && $field['frozen']){
 					$frozen[$fieldName]=$field;
@@ -614,20 +514,7 @@ class DxExtCommonModel extends Model {
 			if(sizeof(explode(",",$dictConfig))<2) $dictConfig	= $this->getPk().",".$dictConfig;	//使用主键作为key
 			$tV	= $this->field($dictConfig)->select();
 			if($tV){
-				$len	= sizeof($tV[0]);
-				foreach($tV	as $tt){
-					$key	= "";
-					$i		= 0;
-					foreach($tt as $k=>$val){
-						if($i==$len-1){
-							$key	= $key." = '".$val."';";
-						}else{
-							$key	= $key."['".$val."']";
-						}
-						++$i;
-					}
-					eval("\$this->cacheDictDatas".$key);
-				}
+                $this->cacheDictDatas = DxFunction::arrayToArray($tV);
 			}
 			return F('_fields/'.$this->name."_".$userId."_dict",$this->cacheDictDatas);
 		}
@@ -1290,6 +1177,31 @@ class DxExtCommonModel extends Model {
 	        }
 	        else return false;
 	    }
+	}
+/**
+	 * 获取标记为删除状态的字段组成的条件。
+	 * @param		$returnArray		是否返回条件为数组
+	 * @param		$table_alias		表别名，因为返回的条件，可能是要用到组合查询中。
+	 * @return string
+	 */
+	public function getDeleteStateWhere($returnArray = true,$table_alias = ""){
+		$dbFields       		= $this->getDbFields();
+		$dataPowerFieldDelete	= "";
+		//if(APP_DEBUG) Log::write(var_export($dbFields,true).MODULE_NAME."|".ACTION_NAME."__dbFields",Log::INFO);
+		//追加数据删除字段标志,,直接追加Where条件。
+		if(!empty($table_alias)){
+			$table_alias = $table_alias.'.';
+		}
+		if(is_array(C('DELETE_TAGS'))){
+			foreach(C('DELETE_TAGS') as $key=>$val){
+				if(in_array($key,$dbFields)){
+					$dataPowerFieldDelete[]	= sprintf("%s%s!='%s'",$table_alias,$key,$val);
+				}
+			}
+		}if ($returnArray	== false){
+			$dataPowerFieldDelete = implode(" AND ", $dataPowerFieldDelete);
+		}
+		return $dataPowerFieldDelete;
 	}
 }
 ?>

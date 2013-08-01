@@ -63,6 +63,11 @@
 			}else{
 				_this.gridOption.pageSize		= 10000;
 			}
+			
+			if(gridArgs.enablePrint=="1"){
+				_this.gridOption.toolbarContent = _this.gridOption.toolbarContent + " | print"
+			}
+			
 			_this.gridOption.columns		= _this.colsOption;
 			_this.gridOption.dataset		= _this.dsOption;
 

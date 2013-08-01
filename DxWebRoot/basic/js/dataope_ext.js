@@ -3,7 +3,7 @@
  * */
 function dataOpeAdd(initData,dialogTitle){
     $.dialog({
-        id:"addObject",
+        id:"editObject",
         title:dialogTitle,
         content:'正在加载页面!<img src="' + PUBLIC_URL + '/public/loading.gif" />',
         esc:true,
@@ -11,47 +11,9 @@ function dataOpeAdd(initData,dialogTitle){
         padding:"0",
         ok:function(){
             if($("#itemAddForm").length<1) return true;
-            if(!$('#itemAddForm').validationEngine('validate')){
-                return false;
-            }
-            //触发savedata事件,用于支持fckeditor保存数据.
-            $('#itemAddForm').find(":input").trigger("savedata");
-
-            var theThis		= this;
-            $.ajax({
-                type : "POST",
-                url : URL_URL + "/save",
-                data : $("#itemAddForm").serialize(),
-                success : function(msg) {
-                    if (msg["status"] == 0) {
-                        showDialog("提示",msg["info"]);
-                    } else if(msg["status"] == 2) {
-                    	theThis.content(msg['info']);
-                        theThis.button({
-                            id: 'ok',
-                            disabled: true
-                        },{
-                            id:'cancel',
-                            disabled: true
-                        });
-                    	setTimeout(document.location.href= APP_URL + msg["data"],3000);
-                    } else {
-                        theThis.content(msg['info']);
-                        theThis.time(3000);
-                        theThis.button({
-                            id: 'ok',
-                            disabled: true
-                        },{
-                            id:'cancel',
-                            value:'关闭'
-                        });
-                        if(Sigma.GridCache["theDataOpeGrid"]){
-                        	Sigma.GridCache["theDataOpeGrid"].reload();
-                        }
-                    }
-                },
-                dataType : "json"
-            });
+            $("#itemAddForm").attr("action",URL_URL + "/save");
+            $('#itemAddForm').submit();
+            
             return false;
         },
         okValue:"确定",
@@ -82,34 +44,9 @@ function dataOpeEdit(id,dialogTitle,modelName){
         lock:true,
         ok:function(){
             if($("#itemAddForm").length<1) return true;
-            if(!$('#itemAddForm').validationEngine('validate')){
-                return false;
-            }
-            //触发savedata事件,用于支持fckeditor保存数据.
-            $('#itemAddForm').find(":input").trigger("savedata");
-            var theThis		= this;
-            $.ajax({
-                type : "POST",
-                url : this_post_url + "/save",
-                data : $("#itemAddForm").serialize(),
-                success : function(msg) {
-                    if (msg["status"] == 0) {
-                        showDialog("提示",msg["info"]);
-                    } else {
-                    	if(Sigma.GridCache["theDataOpeGrid"]){
-                    		Sigma.GridCache["theDataOpeGrid"].reload();
-                    	}
-                        theThis.content(msg['info']).time(2000).button({
-                            id: 'ok',
-                            disabled: true
-                        },{
-                            id:'cancel',
-                            value:'关闭'
-                        });
-                    }
-                },
-                dataType : "json"
-            });
+            $("#itemAddForm").attr("action",this_post_url + "/save");
+            $('#itemAddForm').submit();
+        
             return false;
         },
         okValue:"保存",
@@ -355,4 +292,44 @@ function _dataope_onCheckChange(obj){
     });
     p.find(".checksetval").val(ret.join(","));
     return false;
+}
+
+
+
+//
+function ajaxValidationCallback(status, form, json, options){
+	if (status === true) {
+		form.submit();
+	}
+}
+//数据验证后，自动执行此操作。
+function formSubmitComplete(form, r){
+	if(r){
+	    //触发savedata事件,用于支持fckeditor保存数据.
+	    $('#itemAddForm').find(":input").trigger("savedata");
+	    var theThis		= $.dialog.get('editObject');
+	    $.ajax({
+	        type : "POST",
+	        url : $("#itemAddForm").attr("action"),
+	        data : $("#itemAddForm").serialize(),
+	        success : function(msg) {
+	            if (msg["status"] == 0) {
+	                showDialog("提示",msg["info"]);
+	            } else {
+	            	if(Sigma.GridCache["theDataOpeGrid"]){
+	            		Sigma.GridCache["theDataOpeGrid"].reload();
+	            	}
+	                theThis.content(msg['info']).time(2000).button({
+	                    id: 'ok',
+	                    disabled: true
+	                },{
+	                    id:'cancel',
+	                    value:'关闭'
+	                });
+	            }
+	        },
+	        dataType : "json"
+	    });
+	}
+	return false;
 }
