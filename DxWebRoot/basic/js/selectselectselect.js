@@ -20,6 +20,11 @@ var cantonDataNoTree	= new Array();
      * completeEven			select构建完成后的回调函数
      */
     $.selectselectselect = function (data,containerDomId,defaultKey,rootKey,selectEven,completeEven,showRootKey) {
+        if(typeof this !== 'object'){
+        	//强制进行new操作
+            return new $.selectselectselect(data,containerDomId,defaultKey,rootKey,selectEven,completeEven,showRootKey);
+        }
+
         var tree 			= new Array();
     	if(data==0 || data==undefined || data=="" || data.length < 1){
     		if(cantonData.length<1){
@@ -37,10 +42,6 @@ var cantonDataNoTree	= new Array();
     		}
     		tree	= cantonData;
     	}
-        if(typeof this !== 'object'){
-        	//强制进行new操作
-            return new $.selectselectselect(data,containerDomId,defaultKey,rootKey,selectEven,completeEven,showRootKey);
-        }
 
         var containerDom 	= $("#" + containerDomId);
         var _this 			= this;

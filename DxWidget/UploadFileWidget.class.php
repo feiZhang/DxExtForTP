@@ -37,6 +37,7 @@ class UploadFileWidget extends DxWidget {
         //是否这只读字段
         );
     public function render($data) {
+    	if(!is_array($data["fieldSet"])) $data["fieldSet"] = array();
         $val=  array_merge($this->default,$data["fieldSet"], $data);     
         if(empty($val['value'])){
             $val['value']=  json_decode("{}");

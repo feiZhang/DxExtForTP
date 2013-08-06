@@ -8,8 +8,6 @@
  * */
 class DataOpeAction extends DxExtCommonAction{
 	protected $defaultWhere		 = array();
-	//系统会自动根据Model信息生成Tpl文件的cache，如果一个Model的两个index展示界面不同，比如：一个是老人信息，有查询，一个是老人核查，没有查询，则需要将此属性设置为false，不启用tpl缓存
-	protected $cacheTpl			     = true;
 	        
 	/* 数据列表 for Grid **/
 	public function get_datalist(){
@@ -211,11 +209,13 @@ class DataOpeAction extends DxExtCommonAction{
 	}
     /**
      * dxDisplay实现二次编译功能。。
-     * @param unknown $templateFile
+     * @param string $templateFile 模板名称
+     * @param string $cacheAliaName 模板缓存的别名，针对二次编译，某些情况，需要根据角色不同，展示不同界面，此时生成多个cache
      */
     protected function dxDisplay($templateFile){
-		$tempFile	= TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.C('TMPL_TEMPLATE_SUFFIX');
-		if(!$this->cacheTpl || C('APP_DEBUG') || !file_exists($tempFile)){
+        $cacheAliaName = "_".$this->model->getModelInfoMd5()."_".$this->model->getListFieldsMd5();
+		$tempFile	= TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.$cacheAliaName.C('TMPL_TEMPLATE_SUFFIX');
+		if(C("APP_DEBUG") || !file_exists($tempFile)){
             if(C("TOKEN_ON")){
                 //多次编译会导致生成多个TOKEN
                 C("TOKEN_ON",false);
@@ -235,20 +235,25 @@ class DataOpeAction extends DxExtCommonAction{
 		//支持通过url传递过来的ModelTitle
 		$enablePage	= $model->getModelInfo("enablePage");
 		$enablePrint	= $model->getModelInfo("enablePrint");
+		$enableImport	= $model->getModelInfo("enableImport");
 		if($_REQUEST["print"]=="1") $enablePage = false;
 		if($enablePage!==false) $enablePage	= true;
 		session(MODULE_NAME."_modelTitle",empty($_REQUEST["modelTitle"])?$model->getModelInfo("title"):$_REQUEST["modelTitle"]);
 		$addTitle	= $model->getModelInfo("addTitle");
 		if(empty($addTitle)) $addTitle	= "新增".session(MODULE_NAME."_modelTitle");
+		$importTitle	= $model->getModelInfo("importTitle");
+		if(empty($importTitle)) $importTitle	= "导入exl文件";
 		$editTitle	= $model->getModelInfo("editTitle");
 		if(empty($editTitle)) $editTitle	= "修改".session(MODULE_NAME."_modelTitle");
         $this->assign ( "modelInfo", array_merge ( $model->getModelInfo(),array (
             "modelTitle" => session ( MODULE_NAME . "_modelTitle" ),
             "addTitle" => $addTitle,
             "editTitle" => $editTitle,
+            "importTitle"=>$importTitle,
             "readOnly" => $model->getModelInfo ( "readOnly" ) ? $model->getModelInfo ( "readOnly" ) : false,
             "enablePage" => $enablePage ? "1" : "0",
             "enablePrint" => $enablePrint ? "1" : "0",
+            "enableImport"=>$enableImport?"1":"0",
         ) ) );
 
         $gridField	= $model->fieldToGridField();

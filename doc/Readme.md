@@ -117,7 +117,7 @@ listFields属性详解：
     	uploadFile存储的数据不能直接显示，在model中配置 'data_change'=>array("file_name"=>"uploadFilesToGrid"), 指定字段进行内容转义
         set的附加参数:valFormat=json,douhao   分别表示，以json 或 逗号隔开 存储多选数据
 2. title:中文标题
-3. hide:是否在前台生成此字段（此值使用位运算）。见常量 HIDE\_FIELD\_*，确定字段在某个场景下不生成html。如果在多个位置不生成，等于各个值的和。比如：列表新增都不生成则为3
+3. hide:是否在前台生成此字段（此值使用位运算）。见常量 HIDE\_FIELD\_*，确定字段在某个场景下不生成html 或不处理。如果在多个位置不生成，等于各个值的和。比如：列表新增都不生成则为3
 4. display\_none:是否在界面上显示，hide控制是否在前端生成此html，display\_none控制是否显示此html。有些字段，需要在新增、修改中存在，但是用户不可见
 5. pk:重定义主键字段。
 6. width:输入框宽度，查询框的宽度
@@ -129,7 +129,8 @@ listFields属性详解：
      	 "valChange"=>array("sql"=>"select xxx,yyy,zzz from user")，使用SQL语句替代上面的Model，增加灵活性     	      	 
 
 9. total:数据总计的字符覆盖，某些字段不需要总机结构，比如：区域，则设置此值，替代统计行的显示，一般设为空，但必须设置，不设置则使用计算结构显示
-10. danwei:数据框后面的字符描述，一般是单位，也可以是说明
+10. danwei:数据框后面的数据单位说明，在列表界面也显示
+11. note:数据新增修改时，字段后面的说明文字，比如：“固定电话请加区号”
 9. frozen:是否锁定列（sigma相关）
 10. grouped:字段是否进行分组合并显示（sigma相关）
 11. renderer:数据转换，此处为js代码（sigma相关），比如：
@@ -194,6 +195,7 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 15. hasCheckBox:数据列表是否有checkbox（sigma相关）
 16. total:是否在数据最后一行，增加总计行
 17. leftArea:左边增加的内容，比如：左边可以加一个区域树等，此变量为html代码
+18. enableImport:允许导入数据
 	
 ### 全文索引 ###
 效果：通过一个查询框，能够查询多个Model的主要属性，比如：机构名称、老人名称、员工名称等。类似google的效果。

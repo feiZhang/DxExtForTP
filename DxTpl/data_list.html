@@ -46,6 +46,12 @@
 
       <?php if (!$modelInfo["readOnly"]) { ?>
       <input class="btn" id='item_add' onclick="javascript:dataOpeAdd('{\\$InitSearchPara}','{$modelInfo['addTitle']}');" type="button" value="{$modelInfo['addTitle']}" />
+      <?php } ?>
+      <?php if ($modelInfo["enableImport"]) { ?>
+          <form method="post" action="__URL__/importFromExcel" enctype="multipart/form-data">
+          <input  type="file" name="file_stu" />
+           <input type="submit"  value="导入Excel表" />
+         </form>
       <?php }
       if(!empty($modelInfo["otherManageAction"])){
         print($modelInfo["otherManageAction"]);

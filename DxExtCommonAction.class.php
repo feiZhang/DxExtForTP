@@ -16,8 +16,8 @@ class DxExtCommonAction extends Action {
 		if(empty($this->model)) $this->model  = D($this->getModelName());
 		else $this->theModelName	= $this->model->name;
 	}
-	
-	private	$cacheActionList	= array();	//系统action的缓存，对应menu表
+
+    private	$cacheActionList	= array();	//系统action的缓存，对应menu表
 	function _initialize() {
 	    $log_id =	$this->writeActionLog();
 	    
@@ -26,8 +26,12 @@ class DxExtCommonAction extends Action {
     		//dump($_SESSION);dump($this->cacheActionList["myAction"]);die();
     
     		if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
+    		    //为了不验证公共方法，不如：public、web等，所以将session验证放在里面。
     			if(0 == intval(session(C("USER_AUTH_KEY")))) {
-    				$this->redirect('Public/login');
+    			    $url    =   C("LOGIN_URL");
+    			    if($url[0]!="/") $url = U($url);
+    			    redirect($url,0,"");
+    			    //redirect($url,2,"登录超时，请重新登录!");
     			}
     			//判断用户是否有当前动作操作权限
     			$privilege = $this->check_action_privilege();
@@ -60,40 +64,71 @@ class DxExtCommonAction extends Action {
 		foreach($sysSetData as $set){
 			C("SysSet.".$set["name"],$set["val"]);
 		}
-
-		//$t=D("Canton")->getSelectSelectSelect();dump($t["1673"]);dump($t["1672"]);die();
-		//$this->assign("origCantonData",str_replace("{","{ ",json_encode(D("Canton")->getSelectSelectSelect())));
-		// 		import ( 'ORG.RBAC' );
-		//         // 用户权限检查
-		//         if ( C('USER_AUTH_ON') ) {
-		//             if(C('USER_AUTH_ONLY_LOGIN')){
-		//             	//仅验证是否登录
-		//             	if(!$_SESSION[C ( 'USER_AUTH_KEY' )]){
-		//             		$this->assign ( 'jumpUrl', "/" );
-		//             		//跳转到认证网关
-		//             		$this->error ( '此页面为认证页面,请先登录后再访问!' );
-		//             	}
-		//             }else{
-		//             	//复杂的权限验证。。
-		// 	            if(RBAC::checkNotAuthLogin()){
-		// 	                // die("1");
-		// 	                //某些Model不需要权限验证
-		// 	            }else if (!$_SESSION[C ( 'USER_AUTH_KEY' )]) {
-		// 	            	//如果是首页，则直接转过去，而不用跳转。。
-		// 	                if(MODULE_NAME == C('DEFAULT_MODULE') && ACTION_NAME==C('DEFAULT_ACTION')){
-		// 	                    redirect(C('USER_AUTH_GATEWAY'));
-		// 	                }else
-			// 	                    $this->assign ( 'jumpUrl', C ( 'USER_AUTH_GATEWAY' ) );
-		// 	                //跳转到认证网关
-		// 	                $this->error ( '此页面为认证页面,请先登录后再访问!' );
-		// 	            }else if (! RBAC::AccessDecision()) {
-		// 	                $this->assign ( 'jumpUrl', C ( 'USER_AUTH_GATEWAY' ) );
-		// 	                $this->error ( L ( '_VALID_ACCESS_' ) );
-		//             	}
-		//             }
-		//         }
 	}
 
+	/**
+	 * 通用导入程序：导入excel或的csv等数据到数据库中
+	 */
+	public function import(){
+	    $this->importFromExcel();
+	}
+	
+	public function importFromExcel(){
+        // 引入excel类库
+        require_once DXINFO_PATH.'/Vendor/PHPExcel_1.7.9/PHPExcel.php';
+		require_once DXINFO_PATH.'/Vendor/PHPExcel_1.7.9/PHPExcel/Reader/Excel2007.php';
+		//require_once 'PHPExcel/IOFactory.php';	
+	    if (! empty ( $_FILES ['file_stu'] ['name'] )){
+        $tmp_file = $_FILES ['file_stu'] ['tmp_name'];
+        $file_types = explode ( ".", $_FILES ['file_stu'] ['name'] );
+        $file_type = $file_types [count ( $file_types ) - 1];
+        $filename=iconv("utf-8","gb2312",$_FILES['file_stu']['name']);
+        if (strtolower ( $file_type ) != "xls"){
+           $this->error ( '不是Excel文件，重新上传！' );
+        }
+        $savePath = "./Public/upload/";
+        if(!move_uploaded_file($tmp_file,$savePath.$filename))
+        $this->error ( '上传文件失败！' );
+        
+        // 获取xls的第一行，及标题列,必须存在标题
+        // 将标题列中的字段与要导入的字段进行匹配，如果导入字段匹配则执行数据导入
+        
+        
+		$objReader = PHPExcel_IOFactory::createReader( 'Excel5' ); 
+        $objPHPExcel = $objReader->load($savePath.$filename);
+        $highestRow = $objPHPExcel->getActiveSheet()->getHighestRow();
+        $highestColumn = $objPHPExcel->getActiveSheet()->getHighestColumn();
+        $highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
+        $model=$this->model;
+        $dbfields=$model->getDbFields();
+        for($row = 1; $row <= $highestRow; $row++){
+        	for($col = 0; $col < $highestColumnIndex; $col++){
+            $excelData[$row][$col] = (string)$objPHPExcel->getActiveSheet()->getCellByColumnAndRow($col, $row)->getValue();
+        	}
+        	foreach ($dbfields as $k=>$v){
+        	$data[$v]=$excelData[$row][$k];
+        	}
+        	if($model->create($data)){
+        		if($model->add()){
+        		$error[$row]=true;
+        		}
+        	}
+        }
+        $objPHPExcel->getActiveSheet()->insertNewColumnBefore('A',1);
+        for($row = 1; $row <= $highestRow; $row++){
+        	if($error[$row]==true){
+        	 $objPHPExcel->getActiveSheet()->setCellValue('A'.$row,'导入成功');  
+        	}
+        	else{ 
+        	$objPHPExcel->getActiveSheet()->setCellValue('A'.$row,'导入失败');
+        	}
+        }
+        $objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
+        $objWriter->save ( $savePath.$filename );
+	  }
+	  $this->success ( '导入数据完成！' );
+	}
+	
 	/**
 	 * (判断当前用户是否有这种动作的权限)
 	 * @param    (字符串)     (action_name)    (动作)

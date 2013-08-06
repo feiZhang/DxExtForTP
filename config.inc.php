@@ -4,6 +4,7 @@ $DXINFO_PATH = DXINFO_PATH;
 return array (
     'DISABLE_ACTION_AUTH_CHECK' => false,
     'DX_PUBLIC' => "/DxInfo/DxWebRoot",
+    'LOGIN_URL' => "Public/login",	//登录页面
     
     // 设置公共模板路径,属于TP的配置内容,一般情况下，不需要覆盖修改的内容。
     'TMPL_ACTION_ERROR' => $DXINFO_PATH . "/DxTpl/success.html",

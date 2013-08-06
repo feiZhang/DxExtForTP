@@ -47,7 +47,7 @@
             else
                 printf("<tr class=\"itemAddTr\">\n");
             printf("<td align='right' class='itemAddTd'><span class='itemAddField'><b>%s</b></span>:</td>\n",$field["title"]);
-            printf("<td>%s%s</td>\n",DxFunction::getFieldInput($field, $valid),$field["danwei"]);
+            printf("<td>%s%s%s</td>\n",DxFunction::getFieldInput($field, $valid),$field["danwei"],$field["note"]);
             echo "</tr>\n\n";
         } 
 		?>

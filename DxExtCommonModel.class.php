@@ -12,7 +12,8 @@ class DxExtCommonModel extends Model {
 	const HIDE_FIELD_EDIT		= 4;      //修改数据时是否隐藏
 	const HIDE_FIELD_DATA		= 8;      //列表时，是否不输出此字段数据
 	const HIDE_FIELD_EXPORT		= 16;		//是否不导出
-	const HIDE_FIELD_PRINT         = 32;       //是否不打印
+	const HIDE_FIELD_PRINT          = 32;       //是否不打印
+	const HIDE_FIELD_IMPORT         = 64;       //是否导入字段
 
 	const DP_TYPE_ENABLE		= 1;	//开启数据权限控制
 	const DP_TYPE_PUBLIC		= 2;	//开启公共数据权限，此字段判定，某个数据是否是公共数据。
@@ -110,31 +111,40 @@ class DxExtCommonModel extends Model {
 	public function getListFields($reNew=false,$original=false){
         Log::write($this->name."->getListFields",LOG::INFO);
 		if($original) return $this->listFields;
-		if($reNew || C("APP_DEBUG")){
-			$this->setCacheListFields();
-			return $this->cacheListFields;
-		}
+//     使用listFields的md5值，作为缓存名，形成唯一缓存，一点list改变，则缓存自动失效，随意无需renew
+// 		if($reNew || C("APP_DEBUG")){
+// 			$this->setCacheListFields();
+// 			return $this->cacheListFields;
+// 		}
 		if(empty($this->cacheListFields)){
-			$this->cacheListFields	= F('_fields/'.$this->name."_listFields");
+		    $cacheFile = '_fields/'.$this->name."_listFields_".$this->getListFieldsMd5();
+			$this->cacheListFields	= F($cacheFile);
 			//dump($this->cacheDictDatas);
 			if(empty($this->cacheListFields)){
-				$this->setCacheListFields();
+				$this->setCacheListFields($cacheFile);
 			}
 		}
 		return $this->cacheListFields;
 	}
-	private function setCacheListFields(){
+	public function getListFieldsMd5(){
+		return md5(json_encode($this->listFields));
+	}
+	public function getModelInfoMd5(){
+	    return md5(json_encode($this->modelInfo));
+	}
+	private function setCacheListFields($cacheFile){
         $tListFields   = array();
 		foreach($this->listFields as $key=>$field){
 			$tListFields[isset($field["name"])?$field["name"]:$key]	= $this->getOneListField($key,$field);
 		}
-		F('_fields/'.$this->name."_listFields",$tListFields);
+		F($cacheFile,$tListFields);
 		$this->cacheListFields	= $tListFields;
     }
     private function getOneListField($key,$field){
         if(!isset($field["name"])) $field["name"]	= $key;
-        if($field["type"]=="canton" && !isset($field["valChange"]))
+        if($field["type"]=="canton" && empty($field["valChange"])){
             $field["valChange"] = array("model"=>"Canton");
+        }
         //将字典表，转换为valChange数据
         if(isset($field["valChange"]["model"])){
             if($this->name==$field["valChange"]["model"])
@@ -146,7 +156,7 @@ class DxExtCommonModel extends Model {
             //使用SQL获得valChange映射
             $field["valChange"]  = $this->query($field["valChange"]["sql"]);
             if($field["valChange"]){
-                $field["valChange"] = DxFunction::arrayToArray($tValC);
+                $field["valChange"] = DxFunction::arrayToArray($field["valChange"]);
             }
         }
         //找到数组的某一部分作为valChange转换，比如：大型数据字典 sysDic
@@ -194,7 +204,6 @@ class DxExtCommonModel extends Model {
     }
 	public function setListField($key,$v){
 		$this->listFields[$key]	= array_merge($this->listFields[$key],$v);
-		$this->setCacheListFields();
 	}
 
     public function getEditFields($pkId=0){
@@ -273,9 +282,10 @@ class DxExtCommonModel extends Model {
 		foreach($lFields as $fieldNameKey	=> $field){
 			if(!($field["hide"] & self::HIDE_FIELD_LIST)){
 				$fieldName	= empty($field["name"])?$fieldNameKey:$field["name"];
+				$gridHeader = empty($field["danwei"])?$field["title"]:$field["title"]."(".$field["danwei"].")";
 				$gridField	= array(
 						"id"=>$fieldName,
-						"header"=>$field["title"],
+						"header"=>$gridHeader,
 						"frozen"=>(bool)($field["frozen"]),
 						"grouped"=>(bool)($field["grouped"]),
 						"width"=>isset($field["width"])?intval($field["width"]):"100",
