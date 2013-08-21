@@ -77,56 +77,101 @@ class DxExtCommonAction extends Action {
         // 引入excel类库
         require_once DXINFO_PATH.'/Vendor/PHPExcel_1.7.9/PHPExcel.php';
 		require_once DXINFO_PATH.'/Vendor/PHPExcel_1.7.9/PHPExcel/Reader/Excel2007.php';
-		//require_once 'PHPExcel/IOFactory.php';	
+		//require_once 'PHPExcel/IOFactory.php';
+		$num = 0;//导入总的记录数
+	    $successNum = 0;//导入成功的记录数
+	    $errorNum = 0;//导入失败的记录数	
 	    if (! empty ( $_FILES ['file_stu'] ['name'] )){
         $tmp_file = $_FILES ['file_stu'] ['tmp_name'];
         $file_types = explode ( ".", $_FILES ['file_stu'] ['name'] );
         $file_type = $file_types [count ( $file_types ) - 1];
-        $filename=iconv("utf-8","gb2312",$_FILES['file_stu']['name']);
+        $filename=$_FILES['file_stu']['name'];
         if (strtolower ( $file_type ) != "xls"){
            $this->error ( '不是Excel文件，重新上传！' );
         }
-        $savePath = "./Public/upload/";
-        if(!move_uploaded_file($tmp_file,$savePath.$filename))
+        $savePath = C("TEMP_FILE_PATH");
+        //如果零时路径不存在则创建
+        if(!is_dir($savePath))
+        mkdir($savePath,0777);
+        if(!move_uploaded_file($tmp_file,$savePath.'/'.$filename))
         $this->error ( '上传文件失败！' );
-        
-        // 获取xls的第一行，及标题列,必须存在标题
-        // 将标题列中的字段与要导入的字段进行匹配，如果导入字段匹配则执行数据导入
-        
-        
 		$objReader = PHPExcel_IOFactory::createReader( 'Excel5' ); 
-        $objPHPExcel = $objReader->load($savePath.$filename);
+        $objPHPExcel = $objReader->load($savePath.'/'.$filename);
         $highestRow = $objPHPExcel->getActiveSheet()->getHighestRow();
         $highestColumn = $objPHPExcel->getActiveSheet()->getHighestColumn();
+        //将表格的A、B、C...列名装换成1、2、3....
         $highestColumnIndex = PHPExcel_Cell::columnIndexFromString($highestColumn);
         $model=$this->model;
-        $dbfields=$model->getDbFields();
-        for($row = 1; $row <= $highestRow; $row++){
-        	for($col = 0; $col < $highestColumnIndex; $col++){
-            $excelData[$row][$col] = (string)$objPHPExcel->getActiveSheet()->getCellByColumnAndRow($col, $row)->getValue();
-        	}
-        	foreach ($dbfields as $k=>$v){
-        	$data[$v]=$excelData[$row][$k];
-        	}
-        	if($model->create($data)){
-        		if($model->add()){
-        		$error[$row]=true;
+        $importfields = $model->getImportFields();//model中可以导入的字段
+        for($col = 0; $col < $highestColumnIndex; $col++){
+           $flag = false;
+          //excel标题字段
+           $excelFields[$col] = (string)$objPHPExcel->getActiveSheet()->getCellByColumnAndRow($col, 1)->getValue();
+           foreach ($importfields as $i){
+        	  if($excelFields[$col] == $i[title]){
+        	    //excel标题对应的数据库中字段的名字
+        		$excelsqlFields[$col] = $i[name];
+        		//判断excel标题字段和model中可导入的字段是否相互对应	
+        		$flag = true;
         		}
         	}
+        	if($flag == false)
+        	$this->error ( $excelFields[$col].'字段无法导入！' );//表格中的字段和model中的字段不对应，不进行导入
         }
+        for($row = 2; $row <= $highestRow; $row++){
+           //获取excel每一行的数据，除去标题行
+           for($col = 0; $col < $highestColumnIndex; $col++){
+              $excelData[$row][$col] = (string)$objPHPExcel->getActiveSheet()->getCellByColumnAndRow($col, $row)->getFormattedValue();
+        	  }
+        	  foreach ($excelsqlFields as $k=>$v){
+        	   	//valChange数据的转换
+        	     foreach ($importfields as $m){
+        	   	       if($m[valChange]!=NULL)
+        	   		      foreach($m[valChange] as $i=>$j){
+        	   		      	if(is_array($j))
+        	   		      		foreach($j as $m=>$n){
+        	   		      		  if($excelData[$row][$k]== $n)
+        	   		      		    $data[$row][$v]=$m;
+        	   		      		}
+        	   		        if($excelData[$row][$k]== $j)
+        	   		        $data[$row][$v]=$i;	
+        	   		      }
+        	       }
+        	       //判断数据库中是否已有该字段的信息，如有的话不能重复导入 
+        	       if($v==$model->getModelInfo("notDuplicate")){
+        	   	   if($model->where('%s="%s"',$v,$excelData[$row][$k])->find())
+        	   	   $errorcontent[$row] = '数据库中已有'.$excelData[$row][$k]."的信息";//错误信息的内容
+        	       }
+        	       if($data[$row][$v]==NULL)	
+        	       $data[$row][$v]=$excelData[$row][$k];
+        	       }
+        	       //对数据库中没有的记录进行导入
+        	       if($errorcontent[$row]==NULL){
+        	         if($model->create($data[$row])){
+        		        if($model->add()){
+        		           $error[$row]=true;//判断数据是否导入成功
+        		           
+        		        }
+        	         }else{ $errorcontent[$row] = $model->getError();}//数据导入时返回的错误信息
+        	       }
+        	       $num++;
+        }
+        //重新组装文件，在文件开头增加导入结果列
         $objPHPExcel->getActiveSheet()->insertNewColumnBefore('A',1);
-        for($row = 1; $row <= $highestRow; $row++){
-        	if($error[$row]==true){
-        	 $objPHPExcel->getActiveSheet()->setCellValue('A'.$row,'导入成功');  
-        	}
-        	else{ 
-        	$objPHPExcel->getActiveSheet()->setCellValue('A'.$row,'导入失败');
+        for($row = 2; $row <= $highestRow; $row++){
+           if($error[$row]==true){
+             $objPHPExcel->getActiveSheet()->setCellValue('A'.$row,'导入成功'); 
+             $successNum++; 
+           }
+           else{ 
+        	$objPHPExcel->getActiveSheet()->setCellValue('A'.$row,'导入失败'.$errorcontent[$row]);
+        	$errorNum++;
         	}
         }
         $objWriter = PHPExcel_IOFactory::createWriter ( $objPHPExcel, 'Excel5' );
-        $objWriter->save ( $savePath.$filename );
+        $objWriter->save ( $savePath.'/'.$filename );
 	  }
-	  $this->success ( '导入数据完成！' );
+	  $this->success ( '导入数据完成！总共导入'.$num.'条记录，成功'.$successNum.'条，失败'.$errorNum.'条' );
 	}
 	
 	/**

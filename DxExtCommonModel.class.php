@@ -145,27 +145,29 @@ class DxExtCommonModel extends Model {
         if($field["type"]=="canton" && empty($field["valChange"])){
             $field["valChange"] = array("model"=>"Canton");
         }
+        if(intval($field["width"])<1) $field["width"] = "80";
         //将字典表，转换为valChange数据
         if(isset($field["valChange"]["model"])){
             if($this->name==$field["valChange"]["model"])
                 $m    = $this;
             else
                 $m    = D($field["valChange"]["model"]);
-            $field["valChange"]	= $m->getCacheDictTableData();
+            $tValC	= $m->getCacheDictTableData();
         }else if(array_key_exists("sql",$field["valChange"])){
             //使用SQL获得valChange映射
-            $field["valChange"]  = $this->query($field["valChange"]["sql"]);
-            if($field["valChange"]){
-                $field["valChange"] = DxFunction::arrayToArray($field["valChange"]);
+            $tValC  = $this->query($field["valChange"]["sql"]);
+            if($tValC){
+                $tValC = DxFunction::arrayToArray($field["valChange"]);
             }
         }
         //找到数组的某一部分作为valChange转换，比如：大型数据字典 sysDic
         if(!empty($field["valChange"]["type"])){
             $tType	= explode(",",$field["valChange"]["type"]);
             foreach($tType as $vvv)
-                $field["valChange"]	= $field["valChange"][$vvv];
+                $tValC	= $tValC[$vvv];
         }
-        
+        if(!empty($tValC))
+         $field["valChange"] = $tValC;
         //规整数据的enum字段，默认使用valChange替换，没有valChange字段，则从数据库获取enum的字段定义数据
         if(empty($field["valChange"]) && array_key_exists("type", $field) && ($field["type"]=="enum" || $field["type"]=="set" || $field["type"]=="select")){
             $sql	= sprintf("SELECT COLUMN_TYPE FROM information_schema.`COLUMNS` WHERE DATA_TYPE in ('set','enum') AND `TABLE_SCHEMA`='%s' AND `TABLE_NAME`='%s' AND COLUMN_NAME='%s'",C("DB_NAME"),$this->trueTableName,$field["name"]);
@@ -247,6 +249,9 @@ class DxExtCommonModel extends Model {
     public function getPrintFields(){
         return $this->getNoHideFields(self::HIDE_FIELD_PRINT);
     }
+    public function getImportFields(){
+        return $this->getNoHideFields(self::HIDE_FIELD_IMPORT);
+    }
 	/**
 	 * 获取某个类型未隐藏的字段列表。
 	 */
@@ -283,25 +288,31 @@ class DxExtCommonModel extends Model {
 			if(!($field["hide"] & self::HIDE_FIELD_LIST)){
 				$fieldName	= empty($field["name"])?$fieldNameKey:$field["name"];
 				$gridHeader = empty($field["danwei"])?$field["title"]:$field["title"]."(".$field["danwei"].")";
-				$gridField	= array(
-						"id"=>$fieldName,
-						"header"=>$gridHeader,
-						"frozen"=>(bool)($field["frozen"]),
-						"grouped"=>(bool)($field["grouped"]),
-						"width"=>isset($field["width"])?intval($field["width"]):"100",
-				);
+                $gridField = array (
+                    "id" => $fieldName,
+                    "header" => $gridHeader,
+                    "frozen" => ( bool ) ($field ["frozen"]),
+                    "grouped" => ( bool ) ($field ["grouped"]),
+                    "width" => $field ["width"] 
+                );
 				if(!empty($field["renderer"])){
 					$gridField["renderer"]	= $field["renderer"];
-				}else if(!empty($field["valChange"]) && is_array($field["valChange"])){
-                    //set 存储的数据是json数据；
-                    if($field["type"]=="set"){
-                        if($field["valFormat"]=="douhao")
-                            $valueToJson    = "if(value=='') return '';var value = value.split(',');var r='';$(value).each(function(i,v){if(valChangeDatas[v]!=undefined) r+=valChangeDatas[v]+' ';});return r;";
-                        else
-                            $valueToJson    = "if(value[0]=='['){value = eval(value);var r='';$(value).each(function(i,v){r+=valChangeDatas[v]+' ';});return r;}else{return value;}";
-                    }
-                    else $valueToJson   = "return valChangeDatas[value];";
-					$gridField["renderer"]	= sprintf("var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){ var valChangeDatas=%s;%s}",json_encode($field["valChange"]),$valueToJson);
+				}else{
+				    $valueToJson = "";
+    				if($field["type"]=="uploadFile"){
+    				    $url = sprintf("<a href='%s/Basic/download?f=%s&n=%s' download='%s' target='download'>%s</a>",__ROOT__,urlencode($file["url"]),urlencode($file["real_name"]),htmlentities($file["real_name"],ENT_QUOTES,'UTF-8'),htmlentities($file["real_name"],ENT_QUOTES,'UTF-8'));
+    				    $valueToJson    = "if(value[0]=='['){value = eval(value);var r='';$(value).each(function(i,v){r+='<a href=\"' + APP_URL + '/Basic/download?f=' + v['url'] + '&n=' + v['real_name'] + '\">' + v['real_name']+'</a><br />';});return r;}else{return value;}";
+    				}else if(!empty($field["valChange"]) && is_array($field["valChange"])){
+                        //set 存储的数据是json数据；
+                        if($field["type"]=="set"){
+                            if($field["valFormat"]=="douhao")
+                                $valueToJson    = "if(value=='') return '';var value = value.split(',');var r='';$(value).each(function(i,v){if(valChangeDatas[v]!=undefined) r+=valChangeDatas[v]+' ';});return r;";
+                            else
+                                $valueToJson    = "if(value[0]=='['){value = eval(value);var r='';$(value).each(function(i,v){r+=valChangeDatas[v]+' ';});return r;}else{return value;}";
+                        }
+                        else $valueToJson   = "return valChangeDatas[value];";
+    				}
+    				if(!empty($valueToJson)) $gridField["renderer"]	= sprintf("var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){ var valChangeDatas=%s;%s}",json_encode($field["valChange"]),$valueToJson);
 				}
 				//数据转换
 				if(isset($field["renderer"])) $gridField["renderer"]	= $field["renderer"];

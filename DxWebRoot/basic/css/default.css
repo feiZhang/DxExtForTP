@@ -1,4 +1,8 @@
 @charset "utf-8";
+body{
+    margin: 0;
+    padding: 0;
+}
 /* 将必填字段标志改为红色 */
 span.field_required{
     color:red;
@@ -14,13 +18,8 @@ div.dataListHeader{
     background-color: #FAFAFA;
     background-image: linear-gradient(to bottom, #FFFFFF, #F2F2F2);
     background-repeat: repeat-x;
-    border: 1px solid #D4D4D4;
-    border-radius: 4px 4px 4px 4px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
-    padding-left: 20px;
-    padding-right: 20px;
-    min-height: 50px;
-    line-height:50px;
+    padding: 5px 20px 5px 20px;
+    min-height: 20px;
 }
 div.dataListLeftMenuArea{
 	float:left;

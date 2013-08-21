@@ -18,11 +18,12 @@
 7. jquery-upload-file 带进度条的文件上传
 8. zTree 树
 
-## 使用 ##
+## 使用
 1. 将组件复制到Web服务器，并将DxWebRoot配置到Web服务器某目录
 2. TP项目的index.php文件增加 define('DXINFO\_PATH','/job/DxInfo')；配置目录所在的路径
 3. 拷贝doc目录下的config.php到项目应用的Conf目录下。
 4. 拷贝doc目录下的alias.php文件到项目应用的Conf目录下
+5. 拷贝doc目录下的 public 文件夹 到项目项目根目录
 5. 修改项目的config.php,修改 DX_PUBLIC 为DxWebRoot的Web路径
 6. 项目的Action继承DataOpeAction
 7. 项目的Model继承DxExtCommonModel
@@ -30,6 +31,7 @@
 ## 目录结构
 1. doc 系统文档
 2. DxTpl 公共的TP模板文件
+3. DxBasicAction 供项目继承的公共功能，比如：账号管理、文件共享等等常用功能
 3. DxWebRoot 公共的js和css文件。其中 basic 为模块所属的文件，min为js、css压缩组件，public为引入的第三方组件（`不允许修改public目录的任何文件，可采用功能覆盖的方式改写其行为`）
 4. DxWidget 框架提供的Widget插件
 5. Vendor 框架引入的第三方PHP组件
@@ -115,6 +117,7 @@ listFields属性详解：
 
 		uploadFile的附属参数:"upload"=>array("filetype"=>".gif、.jpeg、.jpg、.png、.pdf、.doc、.xls、.mp4、.mov","maxNum"=>0,"buttonValue"=>"文件上传","maxSize"=>1024*1024)),
     	uploadFile存储的数据不能直接显示，在model中配置 'data_change'=>array("file_name"=>"uploadFilesToGrid"), 指定字段进行内容转义
+    	文件上传的路径，在config中配置：UPLOAD_BASE_PATH 和 TEMP_FILE_PATH
         set的附加参数:valFormat=json,douhao   分别表示，以json 或 逗号隔开 存储多选数据
 2. title:中文标题
 3. hide:是否在前台生成此字段（此值使用位运算）。见常量 HIDE\_FIELD\_*，确定字段在某个场景下不生成html 或不处理。如果在多个位置不生成，等于各个值的和。比如：列表新增都不生成则为3
@@ -190,12 +193,15 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 11. data\_change:数据在后台就进行数据字典转换，尽量少用，valChange是将数据转换的工作交给js，减少后台php的执行时间，但是某些特殊转换无法使用valChange完成，则可以使用data\_change，在后台获取到数据后，调用函数对数据进行转换，这样会耗费大量的php执行，离子：补贴状态转换 'data\_change'=>array("aysn\_state"=>"subsidyStateChange"),
 12. enablePage:grid是否提供分页。（sigma相关）
 13. enablePrint:grid是否提供打印
+14. enableExport:grid是否提供导出excel功能
+15. enableImport:grid是否提供导入功能，一般为Excel
 13. gridHeader:自定义报表的个性化表头，不要写table标签，只写TR标签即可。系统会自动追加Table标签。（sigma相关）
 14. order:默认的数据排序（sigma相关）
 15. hasCheckBox:数据列表是否有checkbox（sigma相关）
 16. total:是否在数据最后一行，增加总计行
 17. leftArea:左边增加的内容，比如：左边可以加一个区域树等，此变量为html代码
 18. enableImport:允许导入数据
+19. addPageColumnNum:新增、修改页面的列数，默认为1.
 	
 ### 全文索引 ###
 效果：通过一个查询框，能够查询多个Model的主要属性，比如：机构名称、老人名称、员工名称等。类似google的效果。
@@ -231,29 +237,40 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 1. 支持表关联，通过设置Model的变量：protected $viewTableName ='(SELECT e.*,eg.name group_name FROM employee e LEFT JOIN employee\_group\_member egm ON egm.employee\_id=e.employee\_id LEFT JOIN employee\_group eg ON eg.employee\_group\_id=egm.employee\_group\_id) emp'; 来支持多表连结，不用创建视图，写多个Model了。
 2. Action使用非同名Model，通过设置Action的变量：theModelName，来指定此Action使用的Model
 
-### 自定义布局 ###
-复制组件DxTpl下的模板到项目中，人工修改，可以实现自定义布局，比如：重新排列新增页面的组件等。
+### 自定义模板布局
+比如：重新排列新增页面的组件等。
 
-### 数据过滤 ###
+自定义布局使用了TP的模板继承功能，
+
+在自定义的模板文件中，引入如下代码（如果重写了Action的方法，必须设置 dx_data_edit 的值）
+
+	<extend name="$dx_data_edit" />
+	<block name="dataEditFormTable">
+		自定义模板内容，一般为一个table标签，及数据字段
+	</block>
+
+### 数据过滤
 通过URL传递过滤项，比如：SysDic的实现，通过在URL（SysDic/index/type/SubsidyRank/modelTitle/补贴类型）增加type（过滤数据） modelTitle（改变页面标题：SysDic对应的标题应该是数据字典），可以将一个Model分隔为不同的功能：员工类型管理、房间类型管理等。
 
 系统支持，一次性过滤（默认），固定化过滤（url增加此参数InitSearchPara=1）
 
-## 其他功能扩展 ##
+## 其他功能扩展
 原理：在组件中实现基础的功能Action和Model，让项目去继承使用，比如：角色管理、用户管理、登录等。
 
-## 消息提示 ##
+## 消息提示
 在Action中使用 $this->success("消息内容","showmsg");会出现提示信息，并不跳转页面。注意：如果需要结束执行代码，则在此语句随后增加 exit; 语句
 
 *die显示的内容，会因为编码问题，在浏览器上显示为乱码
 
-## 常见问题 ##
+## 常见问题
 1. Model:getCacheDictTableData您所请求的方法不存在！ 原因：1.没有定义字典表的Model 2.使用的model中的"valChange"=>array("model"=>"Role")中的model要使用大写，例如Role，不能写作role。
 2. ModeI变量listFields的改变，必须在构造函数中, 使用setListField完成。因为系统会缓存ListFieIds数据
 
-## 新手注意事项
+## 注意事项
 1. 除非框架本身无法支持的功能，请勿随意在项目中重写 add.html data_edit.html data_list.html 各种父类的方法（DxExtCommonAction、DxExtCommonModel）
 2. 需要增加功能时，请使用类继承的方式，重写Action或Model的方法，请勿随意改动框架代码（框架代码仅支持公共功能）
+3. 模块级别的模板，使用新增的dxDisplay方法输出内容（增加了二次编译的支持，第一次编译：将组件模板编译为普通模板(生成字段列表等) 第二次编译：将系统数据引入模板）
+4. 由于TP项目的混乱，在LocationTemplateBehavior中有判断模板文件的函数，在 ThinkTemplate 中也有类似的函数，并且TP对tags的支持也有些混乱 (在view中调用了tags来处理模板文件，但是在处理include和模板继承中，又没有调用)，所以对于重写判定 模板文件的方法，就有些困难，目前框架支持TP3.1.2，如果要升级ThinkPHP请注意此问题。（框架在DxParseTemplateBehavior中增加了判断模板文件的函数，在TemplateDx中增加了对于include的处理，支持DxPublic和模板文件搜索）
 
 ## 版本历程
 1. 0.1版:为了实现简单代码重用和客户自定义界面，构建了FormAuto

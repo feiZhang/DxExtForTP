@@ -37,8 +37,8 @@ class FormEnumWidget extends DxWidget {
         'cwidth'=>'',
         );
     public function render($data) {
+    	if(!is_array($data["fieldSet"])) $data["fieldSet"] = array();
         $val            = array_merge($this->default, $data["fieldSet"], $data);
-
         //if(empty($val['value']) && $val['allowdefault'] && !$val['readonly']){
         if(empty($val['value']) && !empty($val['default'])){
             $val['value']    = DxFunction::escapeHtmlValue($val['default']);

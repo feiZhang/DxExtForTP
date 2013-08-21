@@ -55,51 +55,70 @@ Sigma.GridDefault.loadFailure   = function(respD,e){
  */
 Sigma.GridDefault.printGrid = function()
 {
-    var grid=this ,docT;
+    var theGrid=this;
+    if(this.navigator && this.navigator.pageInfo && this.navigator.pageInfo.totalRowNum && this.navigator.pageInfo.totalRowNum > 500){
+        $.dialog.confirm("要打印的数据为" + this.navigator.pageInfo.totalRowNum + "条，确定要打印！<br \>",function(){printGrid(theGrid)},function(){});
+    }else{
+        printGrid(theGrid);
+    }
+
+    function printGrid(grid){
+    //初始化打印，纸张大小等
+    var LODOP=getLodop(document.getElementById('LODOP_OB'),document.getElementById('LODOP_EM'));
+    if(LODOP==false){
+        return false;
+    }
+
     //关闭菜单、显示等待
     grid.closeGridMenu();
     grid.showWaiting();
-    //初始化打印，纸张大小等
-    LODOP=getLodop(document.getElementById('LODOP_OB'),document.getElementById('LODOP_EM'));  
     LODOP.SET_PRINT_PAPER(40, 0, 800, 734, "");
     LODOP.SET_PRINT_PAGESIZE(2, 0, 0, 'A4');
+
     $.ajax({
         type : "GET",
-        url : URL_URL + "/get_datalist",
+        url : URL_URL + "/get_datalist?print=1",
         data : $("#itemAddForm").serialize(),
         success : function(data) {
             var data_list = data['data'];
             var fields = data['fields'];
-            var table = document.createElement("table");
-            var row = table.insertRow();//创建一行 
+            var tableHtml = "<table>";
+            var tempArray = new Array();
             for ( var i in fields) {
-                var cell = row.insertCell();//创建一个单元
-                cell.innerHTML = fields[i].title;
+                if(fields[i].width>1000) fields[i].width=200;
+                tempArray.push("<th width=\"" + fields[i].width + "px\">" + fields[i].title + "</th>");
             }
+            tableHtml += "<tr>" + tempArray.join("") + "</tr>";
+            var oneLine = "";
             for ( var i in data_list) {
-                var row = table.insertRow();//创建一行 
-                var item = data_list[i];
-                for ( var j in item) {
-                    var cell = row.insertCell();//创建一个单元
-                    for ( var a in fields) {
-                        var change = fields[a];
-                        if (null != change.valChange) {
-                            var valchange = change.valChange;
-                            if (valchange[item[j]] != null)
-                                item[j] = valchange[item[j]];
-                        }
+                tempArray = [];
+                oneLine = data_list[i];
+                for ( var j in oneLine) {
+                    var change = fields[j];
+                    if (null != change.valChange) {
+                        var valchange = change.valChange;
+                        tempArray.push("<td>" + valchange[oneLine[j]] + "</td>");
+                    }else{
+                        tempArray.push("<td>" + oneLine[j] + "</td>");
                     }
-                    cell.innerHTML = item[j];
                 }
+                tableHtml += "<tr>" + tempArray.join("") + "</tr>";
             }
+            tableHtml += "</table>";
+            //console.log(data);
+            //console.log(fields);
+            //console.log(data_list);
+            //console.log(tableHtml);
+
             LODOP.PRINT_INIT("大象通信");
-            LODOP.ADD_PRINT_TABLE('0', '0', '90%', '989', table.outerHTML);
+            LODOP.ADD_PRINT_TABLE('0', '0', '90%', '989', tableHtml);
             LODOP.PREVIEW(); //预览打印
         },
         dataType : "json"
     });
 
-    Sigma.$thread(    function(){
+    Sigma.$thread(function(){
         grid.hideWaiting();
     },1000);
+    }
 }

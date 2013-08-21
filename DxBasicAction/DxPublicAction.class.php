@@ -37,6 +37,8 @@ class DxPublicAction extends DxExtCommonAction {
     }
 	public function verify()
 	{
+	    require_once (DXINFO_PATH."/Vendor/String.class.php");
+	    require_once (DXINFO_PATH."/Vendor/Image.class.php");
         if (isset($_REQUEST['adv'])) {
             Image::showAdvVerify();
         } else {

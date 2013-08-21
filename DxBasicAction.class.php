@@ -1,7 +1,7 @@
 <?php
 class DxBasicAction extends DataOpeAction {
 	function clearCache(){
-		deleteDir(RUNTIME_PATH,false);
+		DxFunction::deleteDir(RUNTIME_PATH,false);
 		printf("清除完成!");
 	}
 	
@@ -33,6 +33,7 @@ class DxBasicAction extends DataOpeAction {
 	 * 上传文件
 	 * */
 	public function upload_file(){
+		require_once (DXINFO_PATH."/Vendor/UploadHandler.class.php");
 		$upload_handler = new UploadHandler(array(
 			"validate"		=> '/\.(gif|jpe?g|png)$/i',
 			"upload_dir" 	=>	C('TEMP_FILE_PATH')."/",

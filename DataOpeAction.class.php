@@ -48,7 +48,7 @@ class DataOpeAction extends DxExtCommonAction{
             $data_change	= $model->getModelInfo("data_change");
             if(is_array($data_change)){
                 foreach($data_change as $key=>$val){
-                    $val($data_list,$key);
+                    DxFunction::$val($data_list,$key);
                 }
             }
         }
@@ -69,7 +69,7 @@ class DataOpeAction extends DxExtCommonAction{
         }
         
         if ($_REQUEST ["print"] == "1"){
-            $this->ajaxReturn(array("data"=>data_list,"fields"=>$model->getPrintFields()));
+            $this->ajaxReturn(array("data"=>$data_list,"fields"=>$model->getPrintFields()));
         }else if(isset($_REQUEST['export']) && !empty($_REQUEST['export'])){
             $this->export($data_list, trim($_REQUEST['export']));
         }else{
@@ -125,41 +125,6 @@ class DataOpeAction extends DxExtCommonAction{
     }
 
         
-    /**
-     * 处理数据打印.
-     * @param $data array 要导出的数据记录集
-     * @param $type bool   true:直接打印   false:预览打印
-     * @param $fields_list array 要导出的的数据的属性.默认使用model->getExportFields().<br/>
-     * @param $title      "打印标题"
-     * @param $otherPrintInfo   ""
-     * 格式说明array('field'=>array('name'=>"field", 'title'=>"Tittle in list"));
-     * @return 
-     * */
-    protected function printData($data, $type=false, $fields_list=array(), $title="",$otherPrintInfo=""){
-        $model = $this->model;
-        if (empty ( $model ))
-            die ( "model is empty!" );
-        
-        if (empty($fields_list)) {
-            $fields_list = $model->getPrintFields ();
-        }
-        if (empty($title)) {
-            $title = $this->model->getModelInfo ( "title" );
-        }
-        if (empty($otherPrintInfo)) {
-            $otherPrintInfo = $this->model->getModelInfo ( "otherPrintInfo" );
-        }
-        
-        $this->assign ( "title", $title );
-        $this->assign ( "listFields", $fields_list );
-        $this->assign ( "objectData", $data );
-        $this->assign ( "otherPrintInfo", $otherPrintInfo );
-        $this->assign ( "printType",$type );
-         
-        $this->display ( "data_print" );
-    }
-
-
 	/* 保存数据 **/
 	public function save(){
         $m  = $this->model;
@@ -196,10 +161,10 @@ class DataOpeAction extends DxExtCommonAction{
                 $pkId	= $v;
             }
             if($v === false){
-                $this->ajaxReturn($m->getDbError(),session(MODULE_NAME."_modelTitle")."数据操作失败，请与管理员联系!".$m->getError(),0);
+                $this->ajaxReturn($m->getDbError(),"数据操作失败，请与管理员联系!".$m->getError(),0);
             }else{
                 $returnD    = array("id"=>$pkId,"rows"=>$v);
-                $this->ajaxReturn($returnD,session(MODULE_NAME."_modelTitle")."数据操作成功!",1);
+                $this->ajaxReturn($returnD,"数据操作成功!",1);
             }
         }else{
         	fb::log($m);
@@ -214,6 +179,7 @@ class DataOpeAction extends DxExtCommonAction{
      */
     protected function dxDisplay($templateFile){
         $cacheAliaName = "_".$this->model->getModelInfoMd5()."_".$this->model->getListFieldsMd5();
+        $cacheAliaName .= "_".md5(json_encode($_REQUEST));
 		$tempFile	= TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.$cacheAliaName.C('TMPL_TEMPLATE_SUFFIX');
 		if(C("APP_DEBUG") || !file_exists($tempFile)){
             if(C("TOKEN_ON")){
@@ -233,20 +199,23 @@ class DataOpeAction extends DxExtCommonAction{
 		if(empty($model)) die();
 
 		//支持通过url传递过来的ModelTitle
-		$enablePage	= $model->getModelInfo("enablePage");
+		$enablePage	    = $model->getModelInfo("enablePage");
 		$enablePrint	= $model->getModelInfo("enablePrint");
 		$enableImport	= $model->getModelInfo("enableImport");
+		$enableExport	= $model->getModelInfo("enableExport");
 		if($_REQUEST["print"]=="1") $enablePage = false;
 		if($enablePage!==false) $enablePage	= true;
-		session(MODULE_NAME."_modelTitle",empty($_REQUEST["modelTitle"])?$model->getModelInfo("title"):$_REQUEST["modelTitle"]);
+		if($enableExport!==false) $enableExport = true;
+		//因为要在新增修改界面中显示，model的标题，所以需要保存在session中，随后根据情况清楚掉。
+		$modelTitle = empty($_REQUEST["modelTitle"])?$model->getModelInfo("title"):$_REQUEST["modelTitle"];
 		$addTitle	= $model->getModelInfo("addTitle");
-		if(empty($addTitle)) $addTitle	= "新增".session(MODULE_NAME."_modelTitle");
+		if(empty($addTitle)) $addTitle	= "新增".$modelTitle;
 		$importTitle	= $model->getModelInfo("importTitle");
 		if(empty($importTitle)) $importTitle	= "导入exl文件";
 		$editTitle	= $model->getModelInfo("editTitle");
-		if(empty($editTitle)) $editTitle	= "修改".session(MODULE_NAME."_modelTitle");
+		if(empty($editTitle)) $editTitle	= "修改".$modelTitle;
         $this->assign ( "modelInfo", array_merge ( $model->getModelInfo(),array (
-            "modelTitle" => session ( MODULE_NAME . "_modelTitle" ),
+            "modelTitle" => $modelTitle,
             "addTitle" => $addTitle,
             "editTitle" => $editTitle,
             "importTitle"=>$importTitle,
@@ -254,6 +223,7 @@ class DataOpeAction extends DxExtCommonAction{
             "enablePage" => $enablePage ? "1" : "0",
             "enablePrint" => $enablePrint ? "1" : "0",
             "enableImport"=>$enableImport?"1":"0",
+            "enableExport"=>$enableExport?"1":"0",
         ) ) );
 
         $gridField	= $model->fieldToGridField();
@@ -271,6 +241,11 @@ class DataOpeAction extends DxExtCommonAction{
 		foreach($_REQUEST as $key=>$val){
 			$this->assign($key,str_replace("%","",$val));
 		}
+		
+		if($_REQUEST["haveHeaderMenu"]=="false" || C("HAVE_HEADER_MENU")==false){
+			$this->assign("haveHeaderMenu",false);
+		}else $this->assign("haveHeaderMenu",true);
+		
         $this->dxDisplay("data_list");
     }
     
@@ -288,6 +263,7 @@ class DataOpeAction extends DxExtCommonAction{
 
 		//列出字段列表
 		$this->assign("listFields",$model->getEditFields($pkId));
+		$this->assign ( "modelInfo", $model->getModelInfo());
 // 		dump($model->getEditFields($pkId));
 
 		if($pkId>0){
@@ -301,8 +277,10 @@ class DataOpeAction extends DxExtCommonAction{
 		}
 		$this->assign('valid', $model->getValidate(Model::MODEL_INSERT));
 		$this->assign('objectData', array_merge($vo,$_REQUEST));
+		//引用于模板继承，使用变量作为模板文件
+		$this->assign('dx_data_edit', DXINFO_PATH."/DxTpl/data_edit.html");
 
-        $this->dxDisplay("Public:data_edit");
+		$this->dxDisplay("Public:data_edit");
 	}
     
 	/**
@@ -353,8 +331,8 @@ class DataOpeAction extends DxExtCommonAction{
             }
         }
 
-        if($deleteState) $this->ajaxReturn(0,"删除".session(MODULE_NAME."_modelTitle")."成功!",1,"JSON");
-        else $this->ajaxReturn(0,"删除".session(MODULE_NAME."_modelTitle")."失败!",0,"JSON");
+        if($deleteState) $this->ajaxReturn(0,"删除成功!",1,"JSON");
+        else $this->ajaxReturn(0,"删除失败!",0,"JSON");
     }
 
 	public function __destruct(){
@@ -386,7 +364,7 @@ class DataOpeAction extends DxExtCommonAction{
      * */
     public function checkFieldByUnique(){
     	$m  	= $this->model;
-    	$ret	= array($_REQUEST['fieldId'],false,'数据不唯一,请输入其它值.');
+    	$ret	= array($_REQUEST['fieldName'],false,'数据不唯一,请输入其它值.');
     	$name	= $_REQUEST['fieldName'];
     	$data	= array($name=>$_REQUEST['fieldValue']);
     	$type	= Model::MODEL_INSERT;
@@ -443,9 +421,9 @@ class DataOpeAction extends DxExtCommonAction{
     	}
     	foreach($value as $tkey=>$tval){
     		if($tval["cunzai"]!==true){
-    			$value[$tkey]["url"]	= move_file(substr(dirname($tval["url"]),2)."/".$tval["name"],"/".$modelName,"dateY_m");
+    			$value[$tkey]["url"]	= DxFunction::move_file(substr(dirname($tval["url"]),2)."/".$tval["name"],"/".$modelName,"dateY_m");
     			if(!empty($tval["thumbnail_url"])){
-    				$value[$tkey]["thumbnail_url"]	= move_file(substr(dirname($tval["thumbnail_url"]),2)."/".$tval["name"],"/".$modelName,"dateY_m","thumbnail_".$tval["name"]);
+    				$value[$tkey]["thumbnail_url"]	= DxFunction::move_file(substr(dirname($tval["thumbnail_url"]),2)."/".$tval["name"],"/".$modelName,"dateY_m","thumbnail_".$tval["name"]);
     			}
     		}
     	}

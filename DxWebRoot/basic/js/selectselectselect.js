@@ -92,7 +92,7 @@ var cantonDataNoTree	= new Array();
         _this.createSelect	= function(data){
             if (undefined != data) {
                 var dataLength = data.length;
-                var strHtml = "<div class=\"cantonDiv\" style=\"display:inline\"><select name='aCanton' type='canton'>";
+                var strHtml = "<div class=\"cantonDiv\" style=\"display:inline\"><select class='autowidth' name='aCanton' type='canton'>";
                 strHtml += "<option value=\"\">请选择</option>";
                 for(i=0;i<dataLength; i++) {
                     if (undefined != data[i]) {

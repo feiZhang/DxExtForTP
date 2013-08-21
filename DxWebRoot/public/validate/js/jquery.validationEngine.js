@@ -1350,7 +1350,7 @@
 			 var extraData = rule.extraData;
 			 var extraDataDynamic = rule.extraDataDynamic;
 			 var data = {
-				"fieldId" : field.attr("id"),
+				"fieldName" : field.attr("id"),
 				"fieldValue" : field.val()
 			 };
 

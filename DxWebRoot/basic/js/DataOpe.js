@@ -30,7 +30,7 @@
 							    loadURL	:	"",
 							    container : 'dataList',
 							    replaceContainer 	: false, 
-							    toolbarContent 		: ' xls | state',
+							    toolbarContent 		: 'state',
 							    pageSize 			: 20,
 							    loadURL				: "",
 							    exportURL			: "",
@@ -63,7 +63,9 @@
 			}else{
 				_this.gridOption.pageSize		= 10000;
 			}
-			
+			if(gridArgs.enableExport=="1"){
+				_this.gridOption.toolbarContent = _this.gridOption.toolbarContent + " | xls"
+			}
 			if(gridArgs.enablePrint=="1"){
 				_this.gridOption.toolbarContent = _this.gridOption.toolbarContent + " | print"
 			}

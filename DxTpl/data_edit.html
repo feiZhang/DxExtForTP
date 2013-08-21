@@ -1,6 +1,9 @@
 <notempty name="Think.get.haveHeader">
 	<include file="Public:header" />
 </notempty>
+<notempty name="Think.get.haveHeaderMenu">
+    <include file="Public:menu" />
+</notempty>
 
 <link href="__DXPUBLIC__/public/jquery-upload-file/css/jquery.fileupload-ui.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="__DXPUBLIC__/public/jquery-upload-file/blueimp/css/bootstrap-image-gallery.min.css">
@@ -38,20 +41,37 @@
 	<input name="{$pkId[0]}" value='{$pkId[1]}' style='display:none' type='hidden' class="pk"/>
 	</notempty>
 	</literal>
+<block name="dataEditFormTable">
     <table class="itemAddTable" cellspacing="1" cellpadding="1">
         <?php
-        foreach($listFields as $name=>$field){
+        if(empty($modelInfo["addPageColumnNum"])) $modelInfo["addPageColumnNum"] = 1;
+        $fieldSize = sizeof($listFields);$fieldIndex = 0;
+        reset($listFields);
+        $field = current($listFields);
+        while($field!==false){
             $fieldInput="";
             if($field["display_none"])
                 printf("<tr class=\"itemAddTr\" style=\"display:none\">\n");
             else
                 printf("<tr class=\"itemAddTr\">\n");
-            printf("<td align='right' class='itemAddTd'><span class='itemAddField'><b>%s</b></span>:</td>\n",$field["title"]);
-            printf("<td>%s%s%s</td>\n",DxFunction::getFieldInput($field, $valid),$field["danwei"],$field["note"]);
+            for($i=$modelInfo["addPageColumnNum"];$i>0;--$i){
+                if($fieldIndex<$fieldSize){
+                    printf("<td align='right' class='itemAddTd'><span class='itemAddField'><b>%s</b></span>:</td>\n",$field["title"]);
+                    printf("<td>%s%s%s</td>\n",DxFunction::getFieldInput($field, $valid),$field["danwei"],$field["note"]);
+                    $field = next($listFields);
+                }else{
+                    $field = false;
+                    printf("<td align='right' class='itemAddTd'></td>\n");
+                    printf("<td></td>\n");
+                }
+				++$fieldIndex;
+            }
             echo "</tr>\n\n";
         } 
 		?>
     </table>
+</block>
+
 </form>
 
 <include file="Public:upload_file_tmpl" />

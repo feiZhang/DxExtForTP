@@ -1,7 +1,10 @@
 /**
  * DataOpe的扩展js操作，比如：删除、修改、状态改变等等。
  * */
-function dataOpeAdd(initData,dialogTitle){
+function dataOpeAdd(initData,dialogTitle,moduleName){
+	//新增按钮是系统给出的，所以标题必然有，修改是客户写的，所以不一定有。
+	var this_post_url	= URL_URL;
+	if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url	= APP_URL + "/" + moduleName;
     $.dialog({
         id:"editObject",
         title:dialogTitle,
@@ -21,7 +24,7 @@ function dataOpeAdd(initData,dialogTitle){
         cancel:function(){},
         initialize:function(){
             var theThis   	= this;
-            $.get(URL_URL + "/add?" + initData,function(html){
+            $.get(this_post_url + "/add?" + initData,function(html){
                 theThis.content(html);
                 //需要排除日期类型的输入框(日期类型的输入框在获得焦点后不能弹出日期选择框.)
                 $(theThis.dom.main).contents().find(":input:visible").not(".Wdate").eq(0).focus();
@@ -30,11 +33,11 @@ function dataOpeAdd(initData,dialogTitle){
     });
 }
 
-function dataOpeEdit(id,dialogTitle,modelName){
+function dataOpeEdit(id,dialogTitle,moduleName){
 	var this_post_url	= URL_URL;
 	if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle=$("#modelInfo_editTitle").val();
 	if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle="修改";
-	if(modelName!=undefined) this_post_url	= APP_URL + "/" + modelName;
+	if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url	= APP_URL + "/" + moduleName;
     $.dialog({
         id:"editObject",
         title:dialogTitle,
@@ -69,17 +72,13 @@ function dataOpeDelete(id,msg){
         content:msg,
         ok:function(){
             _this	= this;
+            _this.button({id: 'ok',disabled: true},{id:'cancel',disabled:true});
+
             $.get(URL_URL+"/delete/"+id,function(data){
                 if(data.status){
                     Sigma.GridCache["theDataOpeGrid"].reload();
                 }
-                _this.time(2000).title("提示").content(data.info).button({
-                    id: 'ok',
-                    disabled: true
-                },{
-                    id:'cancel',
-                    value:'关闭'
-                });
+                _this.time(2000).title("提示").content(data.info);
             },"json");
             return false;
         },
@@ -308,6 +307,7 @@ function formSubmitComplete(form, r){
 	    //触发savedata事件,用于支持fckeditor保存数据.
 	    $('#itemAddForm').find(":input").trigger("savedata");
 	    var theThis		= $.dialog.get('editObject');
+	    theThis.button({id: 'ok',disabled: true,'value':'数据正在处理'},{id:'cancel',disabled:true});
 	    $.ajax({
 	        type : "POST",
 	        url : $("#itemAddForm").attr("action"),
@@ -315,17 +315,12 @@ function formSubmitComplete(form, r){
 	        success : function(msg) {
 	            if (msg["status"] == 0) {
 	                showDialog("提示",msg["info"]);
+	                theThis.button({id: 'ok',disabled: false,'value':'确定'},{id:'cancel',disabled:false});
 	            } else {
 	            	if(Sigma.GridCache["theDataOpeGrid"]){
 	            		Sigma.GridCache["theDataOpeGrid"].reload();
 	            	}
-	                theThis.content(msg['info']).time(2000).button({
-	                    id: 'ok',
-	                    disabled: true
-	                },{
-	                    id:'cancel',
-	                    value:'关闭'
-	                });
+	                theThis.content(msg['info']).time(2000).button({id: 'ok',disabled: true},{id:'cancel',value:'关闭'});
 	            }
 	        },
 	        dataType : "json"

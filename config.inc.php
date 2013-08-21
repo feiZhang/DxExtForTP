@@ -16,6 +16,8 @@ return array (
     'APP_AUTOLOAD_PATH' => $DXINFO_PATH,
     'SESSION_AUTO_START' => true,
     
+    'TMPL_ENGINE_TYPE' => "Dxthink",     //模板解析类。。TP自带的类对，tags支持非常弱，3.1.3就不支持tags，3.1.2的模板继承不支持tags，所以直接创建自己的模板类
+    
     // url重写的支持
     'URL_MODEL' => 2,
     'URL_ROUTER_ON' => true,
@@ -31,65 +33,31 @@ return array (
             'LocationTemplate', // 自动定位模板文件
             "_overlay" => true 
         ),
-        'view_parse' => array (
-            'DxParseTemplate', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
-            'ParseTemplate', // 模板解析 支持PHP、内置模板引擎和第三方模板引擎
-            "_overlay" => true 
-        ) 
     ),
     
     'DEFAULT_THEME' => '',
     // 自己的数据节点，同步数据要从此节点获取数据
     'APP_DEBUG' => false, // 是否开启调试模式
-                                      // 我的桌面默认宽度和高度,宽度和高度要不带单位，用于页面css显示 如 style="width:300px;height:206px"
-    'MY_DESKTOP' => array (
-        'width' => '300',
-        'height' => '206' 
-    ),
+    // 我的桌面默认宽度和高度,宽度和高度要不带单位，用于页面css显示 如 style="width:300px;height:206px"
+    'MY_DESKTOP' => array ('width' => '300','height' => '206' ),
     
     'DP_POWER_FIELDS' => array (
-        array (
-            'field_name' => 'create_userid',
-            'auto_type' => 1,
-            'type' => 0,
-            'session_field' => "_id" 
-        ),
-        array (
-            'field_name' => 'create_username',
-            'auto_type' => 1,
-            'type' => 0,
-            'session_field' => '_truename' 
-        ),
-        array (
-            'field_name' => 'create_dept_fdn',
-            'auto_type' => 1,
-            'type' => 1,
-            'session_field' => '_cantonfdn' 
-        ),
-        array (
-            'field_name' => 'create_public',
-            'auto_type' => 0,
-            'type' => 2,
-            'session_field' => '' 
-        ) 
+        array ('field_name' => 'create_user_id','auto_type' => 1,'type' => 0,'session_field' => "login_user_id" ),
+        array ('field_name' => 'create_user_name','auto_type' => 1,'type' => 0,'session_field' => 'truename' ),
+        array ('field_name' => 'create_canton_fdn','auto_type' => 1,'type' => 1,'session_field' => 'cantonfdn' ),
+        array ('field_name' => 'create_public','auto_type' => 0,'type' => 2,'session_field' => '' ) 
     ),
-    'DP_NOT_CHECK_ACTION' => array (
-        "Public" => 1,
-        "DataSync" => 1 
-    ), // 不进行数据权限控制的Action
-    'DELETE_TAGS' => array (
-        "delete_status" => "1" 
-    ),
-    
-    'NOT_AUTH_ACTION' => array (
-        "Public" => 1,
-        "Web" => 1 
-    ), // 无需权限认证的Action
+    'DP_NOT_CHECK_ACTION' => array ("Public" => 1,"DataSync" => 1 ), // 不进行数据权限控制的Action
+    'DELETE_TAGS' => array ("delete_status" => "1" ),
+    'NOT_AUTH_ACTION' => array ("Public" => 1,"Web" => 1 ), // 无需权限认证的Action
     'REQUIST_AUTH_ACTION' => array (), // 必须权限认证的Action
     'LOGIN_USER_NICK_NAME' => "name", // 用户昵称字段名
     'LOGIN_MD5' => false, // 是否md5加密密码
     'USER_AUTH_KEY' => 'login_user_id',
     // 文件上传的临时路径
-    'TEMP_FILE_PATH' => RUNTIME_PATH . "TMP_IMG" 
+    'TEMP_FILE_PATH' => RUNTIME_PATH . "TMP_IMG",
+    'UPLOAD_BASE_PATH' => APP_PATH."Upload",
+    //控制data_list的默认是否加载菜单
+    'HAVE_HEADER_MENU' => true, 
 );
 
