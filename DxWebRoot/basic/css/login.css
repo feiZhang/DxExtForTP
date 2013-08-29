@@ -1,0 +1,29 @@
+html,body {
+	padding:0;
+	margin:0;
+	font-family:Verdana, Arial, Helvetica, sans-serif;
+	line-height:20px;
+	color:#333;
+	height:100%;
+	font-size:12px;
+}
+.login-top{ background:url(../images/login_bg_top.gif) repeat-x; height:86px;}
+.login-980{ width:960px; margin:0 auto;}
+.login-left{color: #FFFFFF; float: left; font-size: 30px; font-weight: bold; line-height: 86px; width: 550px;}
+.login-right{ color: #FFFFFF; float: right; font-size: 14px; padding-top: 56px;  width: 380px;}
+.login-right span{}
+.login-center{ background:url(../images/login_ext_xian.gif) repeat-x;}
+.login-cen9{width:960px; margin:0 auto; height:425px; background:url(../images/login-bg-main.jpg) top center no-repeat;}
+.login-cenleft{ float: left; height: 400px; width: 600px;}
+.login-cenright{float: left; height: 280px; padding: 105px 0 0 0; width: 280px;}
+.log-input,.log-input01 {border: 1px solid #98999B; font-size:14px; height: 26px;  line-height: 26px; padding-left: 5px;}
+.log-input,.log-input0 {width:160px;}
+.log-input01,.log-input02 {width:80px;}
+.log-input0,.log-input02 {background: none repeat scroll 0 0 #FEF3AB; border: 1px solid #C9DD6A; height: 26px; font-size:14px; line-height: 26px; padding-left: 5px;}
+.log-button,.log-button{border: medium none; color: #FFFFFF; cursor: pointer; font-size: 14px; height: 30px; width: 70px;}
+.log-button{ background: url("../images/login-button.png") no-repeat scroll 0 0 transparent;}
+.log-button01{ background: url("../images/login-button.png") no-repeat scroll 0 -64px transparent;}
+.log-button:hover{ background: url("../images/login-button.png") no-repeat scroll 0 -32px transparent;}
+.log-button01:hover{ background: url("../images/login-button.png") no-repeat scroll 0 -96px transparent;}
+.log-button01 ,.log-button01{ border: medium none; color: #FFFFFF; cursor: pointer; font-size: 14px; height: 30px; width: 70px;}
+.login-footer{ width:960px; margin:0 auto; text-align:center;}

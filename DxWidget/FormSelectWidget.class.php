@@ -8,25 +8,10 @@
 class FormSelectWidget extends DxWidget {
     private $default=array(
         //是否允许显示默认值
-        "allowdefault"=>false,
-        //默认值
-        "default"=>'', 
-        "value"=>'',
-        "valChange"=>array(),
-        "name"=>'', 
         'placeholder'=>'请选择',
         //是否显示为多选
         "multiple"=>false,
-        //class
-        'class'=>'',
-        'validclass'=>'',
-        'custom_class'=>'',
         'readOnly'=>false,
-        //保留
-        'label'=>'',
-        'width'=>0,
-        'height'=>0,
-        'cwidth'=>'',
         );
     public function render($data) {
         $val=  array_merge($this->default, $data["fieldSet"], $data);
@@ -48,4 +33,3 @@ class FormSelectWidget extends DxWidget {
     }
 }
 
-?>

@@ -16,11 +16,6 @@ $theAppConfig = array (
     // 项目应用配置
 );
 
-if (file_exists ( "./debug.inc.php" ))
-    $theDebugConfig = require ("./debug.inc.php");
-else
-    $theDebugConfig = array ();
-
-$endConfig = array_merge ( $theProjectConfig, $theProjectDatabase, $theAppDatabase, $theAppConfig, $theDebugConfig );
+$endConfig = array_merge ( $theProjectConfig, $theProjectDatabase, $theAppDatabase, $theAppConfig );
 // var_dump($endConfig)
 return $endConfig;

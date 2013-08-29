@@ -3,29 +3,29 @@
  */
 
 (function($) {
-	window.rangein = function(field, rules, i, options) {
-		var range = rules[i + 2];
-		if ($.inArray(field.val(), range.split('|'))) {
-			return "数据不合法!";
-		}
-	};
-    
-	if($.validationEngineLanguage == undefined || $.validationEngineLanguage.allRules == undefined )
-		alert("Please include other-validations.js AFTER the translation file");
-	else {
-		//后台数据唯一性验证+(($('input[name=id]').size()>0):$('input[name=id]').val():"")
+    window.rangein = function(field, rules, i, options) {
+        var range = rules[i + 2];
+        if ($.inArray(field.val(), range.split('|'))) {
+            return "数据不合法!";
+        }
+    };
+
+    if($.validationEngineLanguage == undefined || $.validationEngineLanguage.allRules == undefined )
+        alert("Please include other-validations.js AFTER the translation file");
+    else {
+        //后台数据唯一性验证+(($('input[name=id]').size()>0):$('input[name=id]').val():"")
         $.validationEngineLanguage.allRules["checkFieldByUnique"] = {
                 "ajaxmethod": "POST",
-                "url": (URL_URL+"/checkFieldByUnique"),
-                "extraData":{"id":((typeof id=='undefined')?"":id)},
-        		"alertText": "此数据不可用!已存在!",
+                "url": APP_URL +"/Basic/checkFieldByUnique",
+                "extraDataDynamic":"#pkId,#modelName",
+                "alertText": "此数据不可用!已存在!",
                 "alertTextOk": "此数据有效!",
                 "alertTextLoad": "正在验证数据!"
         };
         //后台函数验证
         $.validationEngineLanguage.allRules["checkFieldByFunction"] = {
                 "ajaxmethod": "POST",
-                "url": (URL_URL+"/checkFieldByFunction"),
+                "url": APP_URL +"/Basic/checkFieldByFunction",
                 "alertText": "此数据不可用!",
                 "alertTextLoad": "正在验证数据!"
         };
@@ -36,5 +36,5 @@
                 "alertText3": "mm/dd/yyyy hh:mm:ss 或 ", 
                 "alertText4": "yyyy-mm-dd hh:mm:ss"
         };
-	}
+    }
 })(jQuery);

@@ -3,20 +3,11 @@
 <script type="text/javascript">
 $.selectselectselect(0,"selectselectselect_{$name}","{$value}","{$rootCantonId}",function(t){
     $("#{$name}").val($(t).val());
+    <notempty name="id_name">
+    if($('#{$id_name}').length>0){
+        $('#{$id_name}').val($(t).find('option:selected').attr('key'));
+    }
+    </notempty>
 });
 </script>
 
-
-<!-- 
-				$fieldInput		= "";
-				$fieldInput		.= sprintf("
-					<span id='selectselectselect_%s'></span>
-					<input type='hidden'  name='%s' id='%s' value=\"%s\" />
-					<script type=\"text/javascript\">
-					(function($){
-						\$.selectselectselect(0,\"selectselectselect_%s\",\"%s\",%d,function(t){
-							\$(\"#%s\").val(\$(t).val());
-						});
-					})(jQuery);
-					</script>",$field_name,$field_name,$field_name,"{".$field_content."}",$field_name,"{".$field_content."}",$rootCantonId,$field_name);
--->

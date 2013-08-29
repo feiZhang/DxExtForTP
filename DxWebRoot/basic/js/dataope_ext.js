@@ -1,21 +1,24 @@
 /**
  * DataOpe的扩展js操作，比如：删除、修改、状态改变等等。
  * */
-function dataOpeAdd(initData,dialogTitle,moduleName){
+function dataOpeAdd(config){
+	var moduleName = config.moduleName;
+	var dialogTitle = config.title;
+	var urlPara = config.data==undefined?"":config.data;
 	//新增按钮是系统给出的，所以标题必然有，修改是客户写的，所以不一定有。
 	var this_post_url	= URL_URL;
 	if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url	= APP_URL + "/" + moduleName;
     $.dialog({
         id:"editObject",
         title:dialogTitle,
-        content:'正在加载页面!<img src="' + PUBLIC_URL + '/public/loading.gif" />',
+        content:'正在加载页面!<img src="' + DX_PUBLIC + '/public/loading.gif" />',
         esc:true,
         lock:true,
         padding:"0",
         ok:function(){
-            if($("#itemAddForm").length<1) return true;
-            $("#itemAddForm").attr("action",URL_URL + "/save");
-            $('#itemAddForm').submit();
+            if($("form#itemAddForm").length<1) return true;
+            $("form#itemAddForm").attr("action",this_post_url + "/save");
+            $('form#itemAddForm').submit();
             
             return false;
         },
@@ -24,16 +27,21 @@ function dataOpeAdd(initData,dialogTitle,moduleName){
         cancel:function(){},
         initialize:function(){
             var theThis   	= this;
-            $.get(this_post_url + "/add?" + initData,function(html){
+            $.get(this_post_url + "/add?" + urlPara,function(html){
                 theThis.content(html);
                 //需要排除日期类型的输入框(日期类型的输入框在获得焦点后不能弹出日期选择框.)
                 $(theThis.dom.main).contents().find(":input:visible").not(".Wdate").eq(0).focus();
+                $("form#itemAddForm").attr("action",this_post_url);
             });
         }
     });
 }
 
-function dataOpeEdit(id,dialogTitle,moduleName){
+function dataOpeEdit(config){
+	var moduleName = config.moduleName;
+	var dialogTitle = config.title;
+	var urlPara = config.data==undefined?"":config.data;
+	
 	var this_post_url	= URL_URL;
 	if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle=$("#modelInfo_editTitle").val();
 	if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle="修改";
@@ -41,14 +49,14 @@ function dataOpeEdit(id,dialogTitle,moduleName){
     $.dialog({
         id:"editObject",
         title:dialogTitle,
-        content:'正在加载页面!<img src="' + PUBLIC_URL + '/public/loading.gif" />',
+        content:'正在加载页面!<img src="' + DX_PUBLIC + '/public/loading.gif" />',
         esc:true,
         padding:"0",
         lock:true,
         ok:function(){
-            if($("#itemAddForm").length<1) return true;
-            $("#itemAddForm").attr("action",this_post_url + "/save");
-            $('#itemAddForm').submit();
+            if($("form#itemAddForm").length<1) return true;
+            $("form#itemAddForm").attr("action",this_post_url + "/save");
+            $('form#itemAddForm').submit();
         
             return false;
         },
@@ -57,13 +65,19 @@ function dataOpeEdit(id,dialogTitle,moduleName){
         cancel:function(){},
         initialize:function(){
             var theThis   	= this;
-            $.get(this_post_url + "/edit/" + id,function(html){
+            $.get(this_post_url + "/edit/" + config.id + "?" + urlPara,function(html){
                 theThis.content(html);
+                $(theThis.dom.main).contents().find(":input:visible").not(".Wdate").eq(0).focus();
+                $("form#itemAddForm").attr("action",this_post_url);
             });
         }
     });
 }
-function dataOpeDelete(id,msg){
+function dataOpeDelete(config){
+	var this_post_url	= URL_URL;
+	var moduleName = config.moduleName;
+	var msg = config.msg;
+	if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url	= APP_URL + "/" + moduleName;
 	if(msg==undefined) msg="确定要删除此数据?";
     $.dialog({
         id:"deleteDataOpeItem",
@@ -74,7 +88,7 @@ function dataOpeDelete(id,msg){
             _this	= this;
             _this.button({id: 'ok',disabled: true},{id:'cancel',disabled:true});
 
-            $.get(URL_URL+"/delete/"+id,function(data){
+            $.get(this_post_url+"/delete/"+config.id,function(data){
                 if(data.status){
                     Sigma.GridCache["theDataOpeGrid"].reload();
                 }
@@ -305,13 +319,13 @@ function ajaxValidationCallback(status, form, json, options){
 function formSubmitComplete(form, r){
 	if(r){
 	    //触发savedata事件,用于支持fckeditor保存数据.
-	    $('#itemAddForm').find(":input").trigger("savedata");
+	    $('form#itemAddForm').find(":input").trigger("savedata");
 	    var theThis		= $.dialog.get('editObject');
 	    theThis.button({id: 'ok',disabled: true,'value':'数据正在处理'},{id:'cancel',disabled:true});
 	    $.ajax({
 	        type : "POST",
-	        url : $("#itemAddForm").attr("action"),
-	        data : $("#itemAddForm").serialize(),
+	        url : $("form#itemAddForm").attr("action"),
+	        data : $("form#itemAddForm").serialize(),
 	        success : function(msg) {
 	            if (msg["status"] == 0) {
 	                showDialog("提示",msg["info"]);

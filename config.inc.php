@@ -9,7 +9,7 @@ return array (
     // 设置公共模板路径,属于TP的配置内容,一般情况下，不需要覆盖修改的内容。
     'TMPL_ACTION_ERROR' => $DXINFO_PATH . "/DxTpl/success.html",
     'TMPL_ACTION_SUCCESS' => $DXINFO_PATH . "/DxTpl/success.html",
-    'TOKEN_ON' => true, // 表单令牌开启
+    'TOKEN_ON' => false, // 表单令牌关闭，感觉不到有什么用途，1.一个提交，多个model->create时，后面的令牌验证错误
     'TOKEN_NAME' => "DxToken",
     'TOKEN_RESET' => false, // 需要设置，否则ajax提交验证失败后，将导致系统重新生成令牌。
     'DEFAULT_MODULE' => 'Home',
@@ -56,7 +56,7 @@ return array (
     'USER_AUTH_KEY' => 'login_user_id',
     // 文件上传的临时路径
     'TEMP_FILE_PATH' => RUNTIME_PATH . "TMP_IMG",
-    'UPLOAD_BASE_PATH' => APP_PATH."Upload",
+    'UPLOAD_BASE_PATH' => dirname(APP_PATH)."/userUploadFiles",
     //控制data_list的默认是否加载菜单
     'HAVE_HEADER_MENU' => true, 
 );

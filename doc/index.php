@@ -1,4 +1,7 @@
 <?php
+if(ini_get("magic_quotes_gpc")=="1"){
+    die("please set php.php magic_quotes_gpc=off\n");
+}
 ini_set("display_errors","On");
 session_name('zhibao');
 //error_reporting(E_ALL);

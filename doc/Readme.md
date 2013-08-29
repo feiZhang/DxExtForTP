@@ -108,7 +108,7 @@ operator：对于自动填充无效，用户数据过滤时，确定过滤的方
 listFields属性详解：
 
 1. type:字段类型，string、int、float、t
-2. ime[时间]、date[日期]、y\_m(只显示年份和月份)、datetime[日期时间]、enum[枚举,单选框]、select[枚举,下拉框]、set[集合]、uploadFile[文件上传]、canton[区域]、cutPhoto[剪切头像]
+2. date[日期]、enum[枚举,单选框]、select[枚举,下拉框]、set[集合]、uploadFile[文件上传]、canton[区域]、cutPhoto[剪切头像]
 
 		type用于3个地方：
 		1. grid生成时，sigma支持 string int float（排序结果不同）
@@ -119,9 +119,12 @@ listFields属性详解：
     	uploadFile存储的数据不能直接显示，在model中配置 'data_change'=>array("file_name"=>"uploadFilesToGrid"), 指定字段进行内容转义
     	文件上传的路径，在config中配置：UPLOAD_BASE_PATH 和 TEMP_FILE_PATH
         set的附加参数:valFormat=json,douhao   分别表示，以json 或 逗号隔开 存储多选数据
+        date的附加参数:valFormat=yyyy-MM-dd HH:mm:ss  就是js插件WdatePicker的参数格式
+        canton的附加属性 canton=>array("rootCantonId"=>3520,"id_name"=>"canton_id")，即跟区域的Id，是否将选择的值赋值给id_name设定的input
 2. title:中文标题
 3. hide:是否在前台生成此字段（此值使用位运算）。见常量 HIDE\_FIELD\_*，确定字段在某个场景下不生成html 或不处理。如果在多个位置不生成，等于各个值的和。比如：列表新增都不生成则为3
 4. display\_none:是否在界面上显示，hide控制是否在前端生成此html，display\_none控制是否显示此html。有些字段，需要在新增、修改中存在，但是用户不可见
+14. readOnly:字段数据为只读，其值类似于hide属性..一种情况：字典表的维护，添加时需要类型显示为不能改，但是又需要将类型值追加到数据中，则再model中重新定义save方法，如果是新增，则将type字段readOnly改为false,注：readOnly的字段，还是会从前端post过来，但是在后端会被忽略掉
 5. pk:重定义主键字段。
 6. width:输入框宽度，查询框的宽度
 7. textTo:将某个字典关联字段的id值对应的数据保存到某字段，比如：设置到org\_id上的textTo="org\_name", 表示，存储org\_id对应的机构名称到org\_name，org\_name为冗余字段，主要方便实现，通过 机构名称 模糊查询
@@ -152,8 +155,7 @@ listFields属性详解：
 					 })(jQuery);
 					 </script>
 					 ",
-14. readOnly:字段数据为只读....一种情况：字典表的维护，添加时需要类型显示为不能改，但是又需要将类型值追加到数据中，则再model中重新定义save方法，如果是新增，则将type字段readOnly改为false,注：readOnly的字段，还是会从前端post过来，但是在后端会被忽略掉
-15. default:默认值(String|Array), 
+15. default:默认值(String|Array)
 	
 		字符串:直接做为默认值. 为防止数据出现混乱,默认值在readonly及编辑时不生效.
 		数组:最少两个元素,第一个元素表示值的类型,为func时,第二个值为函数名,之后的数据为函数的参数.如array('func', 'test', 'p1', 'p2'),则调用test('p1', 'p2');
@@ -197,7 +199,11 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 15. enableImport:grid是否提供导入功能，一般为Excel
 13. gridHeader:自定义报表的个性化表头，不要写table标签，只写TR标签即可。系统会自动追加Table标签。（sigma相关）
 14. order:默认的数据排序（sigma相关）
+15. stripeRows:grid是否交替颜色
 15. hasCheckBox:数据列表是否有checkbox（sigma相关）
+16. customRowAttribute:grid自定义样式，例如：
+
+		'customRowAttribute' => "var customRowAttribute = function(record,rn,grid){if(last_show_worker_id!=record.worker_id){last_show_worker_id=record.worker_id;}else{return 'style=\\\"background-color:#cccccc\\\"';}}",
 16. total:是否在数据最后一行，增加总计行
 17. leftArea:左边增加的内容，比如：左边可以加一个区域树等，此变量为html代码
 18. enableImport:允许导入数据
@@ -264,7 +270,7 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 
 ## 常见问题
 1. Model:getCacheDictTableData您所请求的方法不存在！ 原因：1.没有定义字典表的Model 2.使用的model中的"valChange"=>array("model"=>"Role")中的model要使用大写，例如Role，不能写作role。
-2. ModeI变量listFields的改变，必须在构造函数中, 使用setListField完成。因为系统会缓存ListFieIds数据
+2. ModeI变量listFields的改变，必须在构造函数中, 使用setListField、addListField完成。因为系统会缓存ListFieIds数据
 
 ## 注意事项
 1. 除非框架本身无法支持的功能，请勿随意在项目中重写 add.html data_edit.html data_list.html 各种父类的方法（DxExtCommonAction、DxExtCommonModel）

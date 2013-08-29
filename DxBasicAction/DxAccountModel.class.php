@@ -1,52 +1,55 @@
 <?php 
 class DxAccountModel extends DxExtCommonModel{
-    public  $listFields = array (
-            "account_id"    => array('type'=>'int','size'=>10,'title'=>'操作', 'pk'=>true,'hide'=>22,'renderer'	=> "var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){
-									var v	= '<a href=\"javascript:dataOpeEdit(' + value + ');\">修改</a>';
-									v	+= ' <a href=\"javascript:dataOpeDelete(' + value + ');\">删除</a>';
-									v	+= ' <a href=\"javascript:resetPasswd(' + value + ');\">重置密码</a>';
-									return v;
-								}"),
-            "username"      => array( 'type'=>'varchar','size'=>45 ,'title'=>'系统登录账号名'),
-            "pwd"           => array( 'type'=>'varchar','size'=>200,'title'=>'登录密码','type'=>'password','hide'=>'4'),
-            "real_name"     => array('type'=>'varchar','size'=>45,'title'=>'用户本人实际姓名'),
-            "tel"           => array( 'type'=>'varchar','size'=>12,'title'=>'联系电话'),
-            "email"         => array('type'=>'varchar','size'=>60,'title'=>'EMail'),
-            "address"       => array('type'=>'varchar','size'=>45,'title'=>'家庭地址'),
-            "role_id"       => array('type'=>' int','size'=>10,'title'=>'角色id','type'=>'enum','valChange'=>array('model'=>'Role')),
-            "dept_id"       => array('type'=>' int','size'=>10,'title'=>'部门ID'),
-            "canton_id"     => array('type'=>' int','size'=>10,'title'=>'所在区域'),
-            "canton_fdn"    => array('type'=>' varchar','size'=>45,'title'=>'区域串'),
-            "create_id"     => array( 'type'=>'int','size'=>10,'title'=>'创建人'),
-            "create_time"   => array( 'type'=>'timestamp','title'=>'创建时间','hide'=>22),
-            "status"        => array('type'=>'tinyint','size'=>1,'title'=>"状态",'type'=>'select','valChange'=>array('1'=>'正常','0'=>'未验证','-1'=>'已删除',2=>'禁用'),'COMMENT'=> '1.正常 0:未验证 -1:已删除 2:禁用'),
+    protected  $listFields = array (
+            "account_id"     => array('title'=>'操作','width'=>120, 'pk'=>true,'hide'=>22,'renderer'    => "var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){
+                                    var v   = '<a href=\"javascript:dataOpeEdit( { \'id\':' + value + '});\">修改</a>';
+                                    v   += ' <a href=\"javascript:dataOpeDelete( { \'id\':' + value + '});\">删除</a>';
+                                    v   += ' <a href=\"javascript:resetPasswd( { \'id\':' + value + '});\">重置密码</a>';
+                                    return v;
+                                }"),
+            "canton_id"      => array('title'=>'所在区域','hide'=>01,'display_none'=>0777),
+            "canton_fdn"     => array('title'=>'所在区域','width'=>140,'type'=>"canton","canton"=>array("id_name"=>"canton_id")),
+            "username"       => array('title'=>'系统用户名',),
+            "role_id"        => array('title'=>'角色','type'=>'enum','valChange'=>array('model'=>'Role')),
+            "pwd"            => array('title'=>'登录密码','hide'=>01,'type'=>'password'),
+            "name"           => array('title'=>'实际姓名','width'=>60),
+            "tel"            => array('title'=>'联系电话','width'=>80),
+            "address"        => array('title'=>'家庭地址','width'=>140),
+            "shorcut_ids"    => array('title'=>'快捷操作','hide'=>07),
+            "desk_ids"       => array('title'=>'桌面操作','hide'=>07),
+            "menu_ids"       => array('title'=>'菜单','hide'=>077777),
+            "status"         => array('title'=>"状态","width"=>30,'type'=>'enum','valChange'=>array('1'=>'正常','0'=>'未验证','-1'=>'已删除',2=>'禁用'),'COMMENT'=> '1.正常 0:未验证 -1:已删除 2:禁用'),
+            "create_user_id" => array('title'=>'创建人',"hide"=>06,"type"=>"select","valChange"=>array("model"=>"Account")),
+            "create_time"    => array('title'=>'创建时间','type'=>'datetime','hide'=>06),
     );
     protected $_validate = array(
             array('username','','帐号名称已经存在!',self::MUST_VALIDATE,'unique'),
-            array("real_name", "2,15", "姓名应大于2个字符且小于15个字符!", self::MUST_VALIDATE, 'length'),
+            array("name", "2,15", "姓名应大于2个字符且小于15个字符!", self::MUST_VALIDATE, 'length'),
             array('pwd','require','密码不能为空!',self::MUST_VALIDATE,'',self::MODEL_INSERT),
     );
-    
+
     protected $modelInfo=array(
-            "title"=>'系统账号','readOnly'=>false,"helpInfo"=>"1.删除账号并不影响机构信息",
-            'searchHTML'=>"
-            登录名:<input id='username' size='10' class='dataOpeSearch' value='' />
-            真实姓名:<input id='name' size='10' class='dataOpeSearch' value='' />
-            <input onclick='javascript:dataOpeSearch(true);' type='button' class='d-button d-state-highlight' value='查询' id='item_query_items' />
-            <input onclick='javascript:dataOpeSearch(false);' type='button' class='d-button d-state-highlight' value='全部数据' id='item_query_all' />",
+        'leftArea' => "{:W('Menu',array('type'=>\$type,'parent_id'=>\$menu_id))}",
+        "dictTable"=>"username",
+        "title"=>'系统账号','readOnly'=>false,"helpInfo"=>"请谨慎删除账号，通畅禁用账号即可!",
+        'searchHTML'=>"
+                <span class='add-on'>登录名:</span>
+                <input id='username' class='dataOpeSearch likeLeft likeRight span2' value='' type='text' />
+                <span class='add-on'>真实姓名:</span>
+                <input id='name' class='dataOpeSearch likeLeft likeRight span2' value='' type='text' />
+                <button onclick='javascript:dataOpeSearch(true);' class='btn' id='item_query_items'>查询</button>
+                <button onclick='javascript:dataOpeSearch(false);' class='btn' id='item_query_all' />全部数据</button>
+            ",
     );
-    
-    protected function _before_insert(&$data, $options) {
-        parent::_before_insert($data, $options);
-        $data['pwd'] = authcode($data['pwd'],"ENCODE");
-        return true;
-    }
-    
+
+    protected  $_auto = array(
+        array('pwd','DxFunction::authcode',Model:: MODEL_BOTH,'callback',array("ENCODE")),
+    );
+
     protected function _before_update(&$data, $options) {
+        fb::log($data);
         parent::_before_update($data, $options);
-        $data['pwd'] = authcode($data['pwd'],"ENCODE");
         return true;
     }
-    
 }
 ?>

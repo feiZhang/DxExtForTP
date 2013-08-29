@@ -1,5 +1,10 @@
 <notempty name="Think.get.haveHeader">
-	<include file="Public:header" />
+    <include file="Public:header" />
+    <!--数据修改和新增的js 因为ajax加载js会出现异常，所以在 data_list中加载-->
+    <script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/load-image.min.js"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/tmpl.min.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/js/dataope_ext.js"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs"></script>
 </notempty>
 <notempty name="Think.get.haveHeaderMenu">
     <include file="Public:menu" />
@@ -10,72 +15,69 @@
 
 <style>
 .progress,.table{
-	margin-bottom: 0px;
+    margin-bottom: 0px;
 }
 .table th, .table td {
-	padding: 2px;
+    padding: 2px;
 }
 </style>
 
-<script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/load-image.min.js"></script>
-<script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/tmpl.min.js"></script>
-<script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs"></script>
-
-<script type="text/javascript" src="__PUBLIC__/js/dataope_ext.js"></script>
-
-<script type="text/javascript">
-<!--
-(function($){
-	$(function(){
-        $("#itemAddForm").validationEngine({
-//            ajaxFormValidationMethod: 'post',
-            onValidationComplete:formSubmitComplete
-        });
-	});
-})(jQuery);
-//-->
-</script>
 <form id="itemAddForm">
-	<literal>
-	<notempty name="pkId.0">
-	<input name="{$pkId[0]}" value='{$pkId[1]}' style='display:none' type='hidden' class="pk"/>
-	</notempty>
-	</literal>
 <block name="dataEditFormTable">
-    <table class="itemAddTable" cellspacing="1" cellpadding="1">
+    <table class="itemAddTable" cellspacing="1" cellpadding="1" style="margin:10px">
         <?php
+        $display_none_field = "";
         if(empty($modelInfo["addPageColumnNum"])) $modelInfo["addPageColumnNum"] = 1;
         $fieldSize = sizeof($listFields);$fieldIndex = 0;
         reset($listFields);
         $field = current($listFields);
         while($field!==false){
             $fieldInput="";
-            if($field["display_none"])
-                printf("<tr class=\"itemAddTr\" style=\"display:none\">\n");
-            else
-                printf("<tr class=\"itemAddTr\">\n");
+            printf("<tr class=\"itemAddTr\">\\n");
             for($i=$modelInfo["addPageColumnNum"];$i>0;--$i){
                 if($fieldIndex<$fieldSize){
-                    printf("<td align='right' class='itemAddTd'><span class='itemAddField'><b>%s</b></span>:</td>\n",$field["title"]);
-                    printf("<td>%s%s%s</td>\n",DxFunction::getFieldInput($field, $valid),$field["danwei"],$field["note"]);
+                    if($field["display_none"]){
+                        $display_none_field .= DxFunction::getFieldInput($field, $valid);
+                        ++$i;
+                    }else{
+                        printf("<td align='right' class='itemAddTd'><span class='itemAddField'><b>%s</b></span>:</td>\\n",$field["title"]);
+                        printf("<td>%s%s%s</td>\\n",DxFunction::getFieldInput($field, $valid),$field["danwei"],$field["note"]);
+                    }
                     $field = next($listFields);
                 }else{
                     $field = false;
-                    printf("<td align='right' class='itemAddTd'></td>\n");
-                    printf("<td></td>\n");
+                    printf("<td align='right' class='itemAddTd'></td>\\n");
+                    printf("<td></td>\\n");
                 }
-				++$fieldIndex;
+                ++$fieldIndex;
             }
-            echo "</tr>\n\n";
+            echo "</tr>\\n";
         } 
-		?>
+        ?>
     </table>
+    <div style="display:none">
+    <input id="modelName" name="modelName" value='{$modelName}' type='hidden' />
+    <?php echo $display_none_field;?>
+    <literal>
+    <notempty name="pkId">
+    <input id="pkId" name="pkId" value='{$pkId}' type='hidden' />
+    </notempty>
+    </literal>
+    </div>
 </block>
 
 </form>
+<script type="text/javascript">
+<!--
+        $("#itemAddForm").validationEngine({
+//            ajaxFormValidationMethod: 'post',
+            onValidationComplete:formSubmitComplete
+        });
+//-->
+</script>
 
 <include file="Public:upload_file_tmpl" />
 
 <notempty name="Think.get.haveHeader">
-	<include file="Public:footer" />
+    <include file="Public:footer" />
 </notempty>

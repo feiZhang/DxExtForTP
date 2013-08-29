@@ -69,9 +69,15 @@
 			if(gridArgs.enablePrint=="1"){
 				_this.gridOption.toolbarContent = _this.gridOption.toolbarContent + " | print"
 			}
+            if(gridArgs.customRowAttribute != undefined && gridArgs.customRowAttribute != 0){
+                eval(gridArgs.customRowAttribute);
+                _this.gridOption.customRowAttribute = customRowAttribute;
+            }
 			
 			_this.gridOption.columns		= _this.colsOption;
 			_this.gridOption.dataset		= _this.dsOption;
+
+			_this.gridOption.stripeRows		= gridArgs.stripeRows;
 
 			_this.setGridContainer(gridArgs.gridDiv,gridArgs.parentGridDiv);
 			_this.setGridFields(gridArgs.gridFields);

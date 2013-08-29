@@ -48,7 +48,9 @@ class DxFunction{
 	 * */
 	function move_file($orig_file,$base_path,$sub_path="",$newFile=""){
 		$to_path	= C("UPLOAD_BASE_PATH").$base_path."/";
-		
+		if(!file_exists(C("UPLOAD_BASE_PATH"))){
+			mkdir(C("UPLOAD_BASE_PATH"));
+        }
 		if(substr($sub_path,0,4)=="date"){
 			$sub_path	= "/".date(substr($sub_path,4),time());
 		}
@@ -371,14 +373,7 @@ class DxFunction{
                     $fieldInput = sprintf('{:DxFunction::W_FIELD("FormSelect", array("name"=>"%1$s", "allowdefault"=>empty($pkId[1]), "validclass"=>$valid["%1$s"], "custom_class"=>"itemAddSelect", "value"=>$objectData["%1$s"], "fieldSet"=>$listFields["%1$s"]))}', $field_name);
 					break;
 				case 'date':
-				    $dateFormat    = "yyyy-MM-dd";
-				case 'y_m':
-				    $dateFormat    = "yyyy-MM";
-				case 'time':
-				    $dateFormat    = "HH:mm:ss";
-				case 'datetime':
-				    $dateFormat    = "yyyy-MM-dd HH:mm:ss";    //itemAddDateTime
-				    $fieldInput = sprintf('{:DxFunction::W_FIELD("Date", array("name"=>"%1$s", "fieldSet"=>$listFields["%1$s"], format=>"%2$s", "allowdefault"=>empty($pkId[1]),"validclass"=>$valid["%1$s"],"value"=>$objectData["%1$s"]))}', $field_name,$dateFormat);
+				    $fieldInput = sprintf('{:DxFunction::W_FIELD("Date", array("name"=>"%1$s", "fieldSet"=>$listFields["%1$s"], "allowdefault"=>empty($pkId[1]),"validclass"=>$valid["%1$s"],"value"=>$objectData["%1$s"]))}', $field_name);
 					break;
 				case "canton":
 					$fieldInput = sprintf('{:DxFunction::W_FIELD("Canton", array("name"=>"%1$s", "fieldSet"=>$listFields["%1$s"], "validclass"=>$valid["%1$s"], "value"=>$objectData["%1$s"]))}', $field_name);
