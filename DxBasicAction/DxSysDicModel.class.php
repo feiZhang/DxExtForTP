@@ -8,9 +8,10 @@ class DxSysDicModel extends DxExtCommonModel {
 										return v;
 									}",
 			),
-		"type" => array ('title'=>'类型','readOnly'=>06,'hide'=>01,'display_none'=>06),
-		"code" => array ('title'=> '类别'),
-		"name" => array ('title' 	=> '备注',"width"=>"300"),
+		"type" => array ('title' =>'类型','readOnly'=>06,'hide'=>01,'display_none'=>06),
+		"code" => array ('title' => '类别值','hide'=>07),
+		"name" => array ('title' => '类别',"width"=>"100"),
+		"memo" => array ('title' => '备注',"width"=>"300"),
 	);
 	
     protected $modelInfo=array(
@@ -20,7 +21,7 @@ class DxSysDicModel extends DxExtCommonModel {
         'leftArea' => "{:W('Menu',array('type'=>\$type,'parent_id'=>\$menu_id))}",
     );
     public function _after_insert($data, $options){
-    	$this->where(array('id'=>$data['id']))->save(array('code'=>$data['id']));
+    	$this->where(array('dic_id'=>$data['dic_id']))->save(array('code'=>$data['dic_id']));
     }
 }
 

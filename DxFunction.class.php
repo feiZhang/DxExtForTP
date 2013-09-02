@@ -361,7 +361,6 @@ class DxFunction{
 			switch($field["type"]){
 				case "password":
 					$fieldInput = sprintf("<input name='%s' type='password' value='' style='width:%spx' class=\"itemAddInput %s\" />",$field_name,$field["width"],$valid[$field_name]);
-					$fieldInput .= sprintf("<input name='%s' value=\"{\$objectData.%s|htmlentities=###,ENT_QUOTES,'UTF-8'}\" type='hidden' />",$field_name,$field_name);
 					break;
 				case "enum":
                     $fieldInput = sprintf('{:DxFunction::W_FIELD("FormEnum", array("name"=>"%1$s","allowdefault"=>empty($pkId[1]),"validclass"=>$valid["%1$s"],"custom_class"=>"itemAddRadio","value"=>$objectData["%1$s"],"fieldSet"=>$listFields["%1$s"]))}', $field_name);

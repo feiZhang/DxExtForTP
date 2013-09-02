@@ -277,6 +277,8 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 2. 需要增加功能时，请使用类继承的方式，重写Action或Model的方法，请勿随意改动框架代码（框架代码仅支持公共功能）
 3. 模块级别的模板，使用新增的dxDisplay方法输出内容（增加了二次编译的支持，第一次编译：将组件模板编译为普通模板(生成字段列表等) 第二次编译：将系统数据引入模板）
 4. 由于TP项目的混乱，在LocationTemplateBehavior中有判断模板文件的函数，在 ThinkTemplate 中也有类似的函数，并且TP对tags的支持也有些混乱 (在view中调用了tags来处理模板文件，但是在处理include和模板继承中，又没有调用)，所以对于重写判定 模板文件的方法，就有些困难，目前框架支持TP3.1.2，如果要升级ThinkPHP请注意此问题。（框架在DxParseTemplateBehavior中增加了判断模板文件的函数，在TemplateDx中增加了对于include的处理，支持DxPublic和模板文件搜索）
+5. 在save方法中调用insertOrUpdate方法时，如果是修改操作，会自动将设置readOnly的Post数据unset掉，所以，如果需要在后续继续操作此数据，则请先保存数据到变量中，随后恢复之
+6. 升级TP的版本，1.测试系统功能 2.DxModel的方法 myAutoOperation 代码更新
 
 ## 版本历程
 1. 0.1版:为了实现简单代码重用和客户自定义界面，构建了FormAuto

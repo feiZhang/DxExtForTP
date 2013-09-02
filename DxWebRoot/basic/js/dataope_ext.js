@@ -2,12 +2,12 @@
  * DataOpe的扩展js操作，比如：删除、修改、状态改变等等。
  * */
 function dataOpeAdd(config){
-	var moduleName = config.moduleName;
-	var dialogTitle = config.title;
-	var urlPara = config.data==undefined?"":config.data;
-	//新增按钮是系统给出的，所以标题必然有，修改是客户写的，所以不一定有。
-	var this_post_url	= URL_URL;
-	if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url	= APP_URL + "/" + moduleName;
+    var moduleName = config.moduleName;
+    var dialogTitle = config.title;
+    var urlPara = config.data==undefined?"":config.data;
+    //新增按钮是系统给出的，所以标题必然有，修改是客户写的，所以不一定有。
+    var this_post_url   = URL_URL;
+    if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url  = APP_URL + "/" + moduleName;
     $.dialog({
         id:"editObject",
         title:dialogTitle,
@@ -26,7 +26,7 @@ function dataOpeAdd(config){
         cancelValue:"取消",
         cancel:function(){},
         initialize:function(){
-            var theThis   	= this;
+            var theThis     = this;
             $.get(this_post_url + "/add?" + urlPara,function(html){
                 theThis.content(html);
                 //需要排除日期类型的输入框(日期类型的输入框在获得焦点后不能弹出日期选择框.)
@@ -38,14 +38,14 @@ function dataOpeAdd(config){
 }
 
 function dataOpeEdit(config){
-	var moduleName = config.moduleName;
-	var dialogTitle = config.title;
-	var urlPara = config.data==undefined?"":config.data;
-	
-	var this_post_url	= URL_URL;
-	if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle=$("#modelInfo_editTitle").val();
-	if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle="修改";
-	if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url	= APP_URL + "/" + moduleName;
+    var moduleName = config.moduleName;
+    var dialogTitle = config.title;
+    var urlPara = config.data==undefined?"":config.data;
+    
+    var this_post_url   = URL_URL;
+    if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle=$("#modelInfo_editTitle").val();
+    if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle="修改";
+    if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url  = APP_URL + "/" + moduleName;
     $.dialog({
         id:"editObject",
         title:dialogTitle,
@@ -64,7 +64,7 @@ function dataOpeEdit(config){
         cancelValue:"取消",
         cancel:function(){},
         initialize:function(){
-            var theThis   	= this;
+            var theThis     = this;
             $.get(this_post_url + "/edit/" + config.id + "?" + urlPara,function(html){
                 theThis.content(html);
                 $(theThis.dom.main).contents().find(":input:visible").not(".Wdate").eq(0).focus();
@@ -74,18 +74,18 @@ function dataOpeEdit(config){
     });
 }
 function dataOpeDelete(config){
-	var this_post_url	= URL_URL;
-	var moduleName = config.moduleName;
-	var msg = config.msg;
-	if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url	= APP_URL + "/" + moduleName;
-	if(msg==undefined) msg="确定要删除此数据?";
+    var this_post_url   = URL_URL;
+    var moduleName = config.moduleName;
+    var msg = config.msg;
+    if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url  = APP_URL + "/" + moduleName;
+    if(msg==undefined) msg="确定要删除此数据?";
     $.dialog({
         id:"deleteDataOpeItem",
         title:"提醒",
         lock:true,
         content:msg,
         ok:function(){
-            _this	= this;
+            _this   = this;
             _this.button({id: 'ok',disabled: true},{id:'cancel',disabled:true});
 
             $.get(this_post_url+"/delete/"+config.id,function(data){
@@ -106,18 +106,18 @@ function dataOpeDelete(config){
  * 数据查询函数
  * */
 function getDataSearchUrl(){
-	var para	= new Object();
+    var para    = new Object();
     $("input.dataOpeSearch,select.dataOpeSearch").each(function(){
         if($(this).val()=="") return;
         if($(this).attr("type")=="radio"){
             if($(this).attr("checked")=="checked"){
-                para[$(this).attr("id")]	= $(this).val();
+                para[$(this).attr("id")]    = $(this).val();
             }
         }else{
-            var tPara	= $(this).val();
-            if($(this).hasClass("likeLeft")) tPara	= "%" + tPara;
-            if($(this).hasClass("likeRight")) tPara	= tPara + "%";
-            para[$(this).attr("id")]	= tPara;
+            var tPara   = $(this).val();
+            if($(this).hasClass("likeLeft")) tPara  = "%" + tPara;
+            if($(this).hasClass("likeRight")) tPara = tPara + "%";
+            para[$(this).attr("id")]    = tPara;
         }
     });
     para = jQuery.param(para);
@@ -125,14 +125,14 @@ function getDataSearchUrl(){
 }
 function dataOpeSearch(noAllData){
     if(noAllData){
-    	dxGrid.query(getDataSearchUrl());
+        dxGrid.query(getDataSearchUrl());
     }else{
-    	dxGrid.query("");
+        dxGrid.query("");
     }
 }
 
-function resetPasswd(id){
-	$.dialog({
+function resetPasswd(config){
+    $.dialog({
         id: 'Prompt',
         fixed: true,
         lock: true,
@@ -149,17 +149,17 @@ function resetPasswd(id){
             input.focus();
         },
         ok: function () {
-        	var _this	= this;
-        	$.get(URL_URL + "/resetPassword?i="+id+"&p="+input.value,
-        			function(data){
-		                _this.content(data.info).time(2000).button({
-		                    id: 'ok',
-		                    disabled: true
-		                },{
-		                    id:'cancel',
-		                    value:'关闭'
-		                });
-		        	},"json");
+            var _this   = this;
+            $.get(URL_URL + "/resetPassword?i="+ config.id +"&p="+input.value,
+                    function(data){
+                        _this.content(data.info).time(2000).button({
+                            id: 'ok',
+                            disabled: true
+                        },{
+                            id:'cancel',
+                            value:'关闭'
+                        });
+                    },"json");
             return false;
         },
         okValue:"确定",
@@ -175,17 +175,17 @@ function resetPasswd(id){
  * templatesContainer : tmplContainer,
  * */
 function uploadFile(fileObject,options){
-	option	= $.extend(options,{
-		url:APP_URL + "/Basic/upload_file",
-		dataType : 'json',
-		autoUpload : true,
-		fileInput:$(fileObject).find("input[type='file']"),
-		singleFileUploads : true,
-		forceIframeTransport:true,
+    option  = $.extend(options,{
+        url:APP_URL + "/Basic/upload_file",
+        dataType : 'json',
+        autoUpload : true,
+        fileInput:$(fileObject).find("input[type='file']"),
+        singleFileUploads : true,
+        forceIframeTransport:true,
         uploadTemplateId: 'template-upload',
         downloadTemplateId: 'template-download'
-		});
-	fileObject.fileupload(option);
+        });
+    fileObject.fileupload(option);
 }
 /**
  * 打开剪切头像对话框
@@ -196,27 +196,27 @@ function showUploadPhoto(img,input){
         title:"上传头像",
         lock:true,
         ok:function(){
-        	var xyz	= $("#selectXY");
-        	if(xyz.text()==""){
-        		showDialog("提醒","请先上传头像文件!");
-        		return false;
-        	}
-        	if(xyz.width()==0 || xyz.height()==0){
-        		showDialog("提醒","请先选择头像区域!");
-        		return false;
-        	}
-        	var _this	= this;
+            var xyz = $("#selectXY");
+            if(xyz.text()==""){
+                showDialog("提醒","请先上传头像文件!");
+                return false;
+            }
+            if(xyz.width()==0 || xyz.height()==0){
+                showDialog("提醒","请先选择头像区域!");
+                return false;
+            }
+            var _this   = this;
             $.ajax({
                 type : "POST",
                 url : APP_URL + "/Basic/cut_img",
                 data : {"img":xyz.text(),
-        		 "width":xyz.width(),"height":xyz.height(),
-        		 "left":xyz.css("marginLeft"),
-        		 "top":xyz.css("marginTop")},
+                 "width":xyz.width(),"height":xyz.height(),
+                 "left":xyz.css("marginLeft"),
+                 "top":xyz.css("marginTop")},
                 success : function(data){
-	            	if(data.status){
-	            		img.attr("src",APP_URL + "/" + (data.data.url).substring(1));
-	            		input.val(data.data.file);
+                    if(data.status){
+                        img.attr("src",APP_URL + "/" + (data.data.url).substring(1));
+                        input.val(data.data.file);
                         _this.content(data.info).time(2000).button({
                             id: 'ok',
                             disabled: true
@@ -224,10 +224,10 @@ function showUploadPhoto(img,input){
                             id:'cancel',
                             value:'关闭'
                         });
-	            	}else{
-	            		showDialog("错误",data.info);
-	            	}
-	            },
+                    }else{
+                        showDialog("错误",data.info);
+                    }
+                },
                 dataType : "json"
             });
             return false;
@@ -236,7 +236,7 @@ function showUploadPhoto(img,input){
         cancel:function(){},
         cancelValue:"取消",
         initialize:function(){
-            var theThis   	= this;
+            var theThis     = this;
             $.get(APP_URL + "/Basic/upload_photo",function(html){
                 theThis.content(html);
             });
@@ -248,10 +248,10 @@ function showUploadPhoto(img,input){
  * 将html中的url全部下载 
  */
 function downLoadAllFile(obj){
-	var url	= $(obj).find(a[download]);
-	$(url).each(function(index,a){
-	    window.open($(a).attr("href"));
-	});
+    var url = $(obj).find(a[download]);
+    $(url).each(function(index,a){
+        window.open($(a).attr("href"));
+    });
 }
 
 
@@ -311,34 +311,34 @@ function _dataope_onCheckChange(obj){
 
 //
 function ajaxValidationCallback(status, form, json, options){
-	if (status === true) {
-		form.submit();
-	}
+    if (status === true) {
+        form.submit();
+    }
 }
 //数据验证后，自动执行此操作。
 function formSubmitComplete(form, r){
-	if(r){
-	    //触发savedata事件,用于支持fckeditor保存数据.
-	    $('form#itemAddForm').find(":input").trigger("savedata");
-	    var theThis		= $.dialog.get('editObject');
-	    theThis.button({id: 'ok',disabled: true,'value':'数据正在处理'},{id:'cancel',disabled:true});
-	    $.ajax({
-	        type : "POST",
-	        url : $("form#itemAddForm").attr("action"),
-	        data : $("form#itemAddForm").serialize(),
-	        success : function(msg) {
-	            if (msg["status"] == 0) {
-	                showDialog("提示",msg["info"]);
-	                theThis.button({id: 'ok',disabled: false,'value':'确定'},{id:'cancel',disabled:false});
-	            } else {
-	            	if(Sigma.GridCache["theDataOpeGrid"]){
-	            		Sigma.GridCache["theDataOpeGrid"].reload();
-	            	}
-	                theThis.content(msg['info']).time(2000).button({id: 'ok',disabled: true},{id:'cancel',value:'关闭'});
-	            }
-	        },
-	        dataType : "json"
-	    });
-	}
-	return false;
+    if(r){
+        //触发savedata事件,用于支持fckeditor保存数据.
+        $('form#itemAddForm').find(":input").trigger("savedata");
+        var theThis     = $.dialog.get('editObject');
+        theThis.button({id: 'ok',disabled: true,'value':'数据正在处理'},{id:'cancel',disabled:true});
+        $.ajax({
+            type : "POST",
+            url : $("form#itemAddForm").attr("action"),
+            data : $("form#itemAddForm").serialize(),
+            success : function(msg) {
+                if (msg["status"] == 0) {
+                    showDialog("提示",msg["info"]);
+                    theThis.button({id: 'ok',disabled: false,'value':'确定'},{id:'cancel',disabled:false});
+                } else {
+                    if(Sigma.GridCache["theDataOpeGrid"]){
+                        Sigma.GridCache["theDataOpeGrid"].reload();
+                    }
+                    theThis.content(msg['info']).time(2000).button({id: 'ok',disabled: true},{id:'cancel',value:'关闭'});
+                }
+            },
+            dataType : "json"
+        });
+    }
+    return false;
 }

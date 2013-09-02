@@ -303,7 +303,7 @@ class DxExtCommonModel extends Model {
                     "header" => $gridHeader,
                     "frozen" => ( bool ) ($field ["frozen"]),
                     "grouped" => ( bool ) ($field ["grouped"]),
-                    "width" => $field ["width"] 
+                    "width" => $field ["width"]
                 );
                 if(!empty($field["renderer"])){
                     $gridField["renderer"]  = $field["renderer"];
@@ -835,12 +835,19 @@ class DxExtCommonModel extends Model {
         }
         return $result;
     }
-    //copy自TP，因为是private，所以无法访问。。只能复制出来
+    /**
+     * copy自TP，因为是private，所以无法访问。。只能复制出来.
+     * 增加1.如果没有传递此字段的值，并且设置属性为ignore则对其进行忽略,,如果有值，则不进行自动填充
+     */
     protected function myAutoOperation(&$data,$type) {
         // 自动填充
         if(!empty($this->_auto)) {
             foreach ($this->_auto as $auto){
+
+                //框架添加的代码
+                if(!array_key_exists($auto[5],$data) && $auto[5]=="ignore") continue;
                 if(!empty($data[$auto[0]])) continue;       //如果有这个值，则不要覆盖。
+
                 // 填充因子定义格式
                 // array('field','填充内容','填充条件','附加规则',[额外参数])
                 if(empty($auto[2])) $auto[2] = self::MODEL_INSERT; // 默认为新增的时候自动填充

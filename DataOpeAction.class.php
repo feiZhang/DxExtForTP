@@ -133,6 +133,7 @@ class DataOpeAction extends DxExtCommonAction{
      * 注意：php中 if(0=="err") 为true 
      **/
     public function save(){
+        fb::log($_REQUEST,$m);
         $m  = $this->model;
         $v = $this->insertOrUpdate($m);
         if($v === "create_err"){

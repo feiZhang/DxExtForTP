@@ -8,19 +8,14 @@ class DxAccountAction extends DataOpeAction {
         parent::__construct();
         $menu_id = D('Menu')->where(array('menu_name'=>'系统管理','parent_id'=>0))->getField('id');
         $this->assign('menu_id',$menu_id);
-        //修改的时候，密码非必填
-        if(array_key_exists("id",$_REQUEST)){
-            $this->model->setListField("pwd",array("note"=>"为空则不更新密码"));
-        }
     }
 
     function editpass() {
        if ($_REQUEST["subEditPass"] == "修改") {
-            $m = D("Account");
-            $oldP = $m->field("pwd")->where(array('id'=>session(C('USER_AUTH_KEY'))))->find();
-            $newP =  $m->getEncryptPwd($_REQUEST['newPass']);
-            if ($m->verifyPassword($oldP['pwd'],$_REQUEST['oldpass'])) {
-                $r = $m->where(array("id" => session(C('USER_AUTH_KEY'))))->save(array("pwd" => $newP));
+            $m = $this->model;
+            $oldP = $m->field("login_pwd")->where(array('id'=>session(C('USER_AUTH_KEY'))))->find();
+            if ($m->verifyPassword($oldP['login_pwd'],$_REQUEST['oldpass'])) {
+                $r = $m->where(array("id" => session(C('USER_AUTH_KEY'))))->save(array("login_pwd" => $_REQUEST['newPass']));
                 if (FALSE !== $r) {
                     $this->assign("message", "密码修改成功!");
                 } else {
@@ -34,8 +29,7 @@ class DxAccountAction extends DataOpeAction {
 
     function resetPassword(){
         if(intval($_REQUEST["i"])>0){
-            $m  = D("Account");
-            $v  = $m->save(array("pwd"=>$m->getEncryptPwd($_REQUEST['p']),$m->getPk()=>intval($_REQUEST["i"])));
+            $v  = $this->model->where(array($this->model->getPk()=>intval($_REQUEST["i"])))->save(array("login_pwd"=>$_REQUEST['p']));
             if($v)
                 $this->ajaxReturn(0,"重置成功!",1);
             else

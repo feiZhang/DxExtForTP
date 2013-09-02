@@ -1,0 +1,47 @@
+<input type='hidden' name='{$name}' value='{$val}' id="{$vid}"/>
+<input type="text" value="{$label}" id="{$id}" class="{$baseclass} {$class}" placeholder="{$placeholder}" readonly/>
+<script type="text/javascript">
+(function($){
+    $(function(){
+        var l=$('#{$id}');
+        var v=$('#{$vid}');
+        var url="{$url}";
+        var did="{$did}";
+        var multi="{$multi}"=="true";
+        l.bind("click", function(){
+            require(["basic/js/pop"], function(pop){
+//<eq name="callback" value="">
+//common callback
+            pop(url,{"multi":multi,'id':did},v.val(),function(data,status){
+                var ls=[],vs=[];
+                $.each(data,function(idx,e){
+                    if(e.name){
+                        ls.push(e.name);
+                    }
+                    if(e.id){
+                        vs.push(e.id);
+                    }
+                });
+                l.val(ls.join(", "));
+                v.val(vs.join(",")).trigger('change');
+                return true;
+            });
+//<else/>
+//call user defined callback
+            pop(url,{"multi":multi,'id':did},v.val(),function(data,status){
+                var ret=false;
+                try{
+                    ret=window["{$callback}"](data,status,l,v);
+                }catch(e){
+                    
+                }
+                return ret;
+            });
+//</eq>
+//end pop
+                
+            });
+        })
+    });
+})(jQuery);
+</script>

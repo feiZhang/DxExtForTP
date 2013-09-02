@@ -60,8 +60,8 @@ class DxExtCommonAction extends Action {
 
     /**
      * 保存add和edit页面提交的数据
+     * 系统固定使用pkId作为主键进行数据传递的原因：因为js的数据验证插件validate无法配置动态获取到不同名称的值，只能固定为pkId
      */
-    
     public function insertOrUpdate($m){
         $pkId = "pkId";
         //强制，将设置为readOnly的字段注销掉，防止自己构造post参数。。比如：入院时间是不允许修改的，但是用户可以自己构造post数据，提交入院时间字段，则tp的create会更新这个字段。
@@ -85,9 +85,13 @@ class DxExtCommonAction extends Action {
             }
         }
 
+        if(!empty($_REQUEST[$pkId])){
+            $_POST[$m->getPk()] = $_REQUEST[$pkId];
+            $_REQUEST[$m->getPk()] = $_REQUEST[$pkId];
+        }
         if(!empty($m) && $m->create()){
             $v = false;
-            //dump($_REQUEST);dump($m);die();
+            //fb::log($_REQUEST,$m);
             if(!empty($_REQUEST[$pkId])){
                 $v = $m->save();
             }else{

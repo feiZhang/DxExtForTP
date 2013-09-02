@@ -1,7 +1,7 @@
 <?php
 class DxOperationLogModel extends DxExtCommonModel {
 	protected $listFields = array (
-		"create_user_name" => array ('title'=>'操作人'),
+		"creater_user_name" => array ('title'=>'操作人'),
 		"create_time" => array ('title'=>'操作时间','width'=>130),
 		'ip' => array ('title'=>'操作人IP',"width"=>"130",),
 		"action_name" => array ('title'=>'执行的操作',),
