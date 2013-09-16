@@ -24,7 +24,7 @@ class DxExtCommonAction extends Action {
         if(C("DISABLE_ACTION_AUTH_CHECK")!==true){
             $this->cacheActionList  = DxFunction::getModuleActionForMe();
             //dump($_SESSION);dump($this->cacheActionList["myAction"]);die();
-    
+            
             if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
                 //为了不验证公共方法，不如：public、web等，所以将session验证放在里面。
                 if(0 == intval(session(C("USER_AUTH_KEY")))) {
@@ -312,9 +312,9 @@ class DxExtCommonAction extends Action {
         }
         if(empty($action_name) || is_array($action_name)) $model->action_name   = "";
         else $model->action_name    = $action_name;
-        $model->account_name  = $_SESSION[C("LOGIN_USER_NICK_NAME")];
-        $model->account_id  = $_SESSION[C("USER_AUTH_KEY")];
-        $model->over_pri    = 0;
+        $model->account_name        = $_SESSION[C("LOGIN_USER_NICK_NAME")]==null?"":$_SESSION[C("LOGIN_USER_NICK_NAME")];;
+        $model->account_id          = $_SESSION[C("USER_AUTH_KEY")]==null?"":$_SESSION[C("USER_AUTH_KEY")];
+        $model->over_pri            = 0;
         unset($_REQUEST['_URL_']);
         unset($_REQUEST["_gt_json"]);
         $model->options = var_export($_REQUEST,true);

@@ -129,9 +129,9 @@ class DxPublicAction extends DxExtCommonAction {
                 $dbPass     = DxFunction::authcode($authInfo['login_pwd'], 'DECODE');
             }
 
-            if($authInfo['status'] != 0)
+            if($authInfo['status'] != 1){
                 return array("state" => false, "msg" => "帐号异常!处于非正常状态,请与管理员联系!".C("MANAGER_INFO"));
-            elseif((C('TEST_USERNAME')=="" || !C("TEST_USERNAME")) && $inputPass!=$dbPass) {
+            }elseif((C('TEST_USERNAME')=="" || !C("TEST_USERNAME")) && $inputPass!=$dbPass) {
                 return array("state"=>false,"msg"=>'密码错误！');
             }
 

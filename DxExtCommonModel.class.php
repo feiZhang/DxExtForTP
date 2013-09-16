@@ -19,6 +19,10 @@ class DxExtCommonModel extends Model {
     const DP_TYPE_PUBLIC        = 02;   //开启公共数据权限，此字段判定，某个数据是否是公共数据。
     const DP_TYPE_STATIC_AUTO   = 04;   //auto的静态设定
 
+    const FULLTEXT_MSG_NOT      = 0;   //不是消息
+    const FULLTEXT_MSG_NEW      = 1;   //未处理的消息
+    const FULLTEXT_MSG_OLD      = 2;   //已处理的消息
+
     protected $listFields   = array();  //模型字段的附加信息
     protected $modelInfo    = array();  //模型的附加信息。
     private $cacheDictDatas = array();  //缓存的字典表数据
@@ -26,8 +30,9 @@ class DxExtCommonModel extends Model {
     //数据权限相关
     public $skipDataPowerCheck  = false;    //关闭数据权限域控制。
     protected $viewTableName    = "";
-    private $isSelect           = false;
+    private $viewTableIsSelect  = false;
 
+    protected $fullTextState    = 0;        //Model追加的fulltext数据的状态,一般在model的_before_insert  _before_update中改变此属性
     /* 将所有的数据库字段，全初始化为数据列表字段，默认使用数据库字段名 */
     function initListFields(){
         if(sizeof($this->listFields) > 0) return;
@@ -138,6 +143,14 @@ class DxExtCommonModel extends Model {
         foreach($this->listFields as $key=>$field){
             $tListFields[isset($field["name"])?$field["name"]:$key] = $this->getOneListField($key,$field);
         }
+
+        //转换Model的自动验证规则为formValidation形式
+        $tempValid  = $this->convertValid($this->_validate);
+        foreach($tempValid as $fld =>$vvvv){
+            $tListFields[$fld]["valid"][self::MODEL_INSERT] = implode(" ",$vvvv[self::MODEL_INSERT]);
+            $tListFields[$fld]["valid"][self::MODEL_UPDATE] = implode(" ",$vvvv[self::MODEL_UPDATE]);
+        }
+
         F($cacheFile,$tListFields);
         $this->cacheListFields  = $tListFields;
     }
@@ -170,7 +183,7 @@ class DxExtCommonModel extends Model {
                 //使用SQL获得valChange映射
                 $tValC  = $this->query($field["valChange"]["sql"]);
                 if($tValC){
-                    $tValC = DxFunction::arrayToArray($field["valChange"]);
+                    $tValC = DxFunction::arrayToArray($tValC);//原始值是$field["valChange"]
                 }
             }else{
                 $tValC = $field["valChange"];
@@ -303,6 +316,7 @@ class DxExtCommonModel extends Model {
                     "header" => $gridHeader,
                     "frozen" => ( bool ) ($field ["frozen"]),
                     "grouped" => ( bool ) ($field ["grouped"]),
+                    "isCheckColumn"=>(bool)($field["isCheckColumn"]),
                     "width" => $field ["width"]
                 );
                 if(!empty($field["renderer"])){
@@ -359,9 +373,9 @@ class DxExtCommonModel extends Model {
         if(!empty($this->viewTableName)){
             $orgTableName    = $options["table"];
             $options["table"]   = $this->viewTableName;
-            $this->isSelect = true;
+            $this->viewTableIsSelect = true;
             $res  = parent::find($options);
-            $this->isSelect = false;
+            $this->viewTableIsSelect = false;
             $options["table"]   = $orgTableName;
         }else
             $res  = parent::find($options);
@@ -371,9 +385,9 @@ class DxExtCommonModel extends Model {
         if(!empty($this->viewTableName)){
             $orgTableName    = $options["table"];
             $options["table"]   = $this->viewTableName;
-            $this->isSelect = true;
+            $this->viewTableIsSelect = true;
             $res  = parent::select($options);
-            $this->isSelect = false;
+            $this->viewTableIsSelect = false;
             $options["table"]   = $orgTableName;
         }else
             $res  = parent::select($options);
@@ -430,7 +444,7 @@ class DxExtCommonModel extends Model {
         $dataPowerFieldW            = array();
         $dataPowerFieldPublic       = "";
         //查询的时候，需要根据视图sql进行数据权限的判定，但是在 修改时 就只能使用dbfileds进行
-        if($this->isSelect) $dbFields = array_keys($this->getListFields(false,true));
+        if($this->viewTableIsSelect) $dbFields = array_keys($this->getListFields(false,true));
         else $dbFields = $this->getDbFields();
         $dataPowerFieldDelete       = "";
         //if(APP_DEBUG) Log::write(var_export($dbFields,true).MODULE_NAME."|".ACTION_NAME."__dbFields",Log::INFO);
@@ -616,8 +630,11 @@ class DxExtCommonModel extends Model {
             $m          = D("FulltextSearch");
             //更新数据提交过来的数据，并不一定是数据库的所有字段，比如：卡号不能修改，则提交过来的数据将不会包含卡号，所以，需要重新从数据库获取新数据。
             $pkId       = $this->getPkIdFromWhere($options);
-            $saveState  = $m->where(array("object"=>$this->name,"pkid"=>$this->getPkIdFromWhere($options)))->save(array("content"=>$this->toString($pkId),"object_title"=>$this->getModelInfo("title")));
-            //if($saveState<1) $m->add(array("object"=>$this->name,"pkid"=>$this->getPkIdFromWhere($options),"content"=>$this->toString($data),"object_title"=>$this->getModelInfo("title")));
+            $saveState  = $m->where(array("object"=>$this->name,"data_id"=>$this->getPkIdFromWhere($options)))->save(
+                array("content"=>$this->toString($pkId),
+                "message_state"=>$this->fullTextState,
+                "object_title"=>$this->getModelInfo("title"))
+            );
         }
     }
     protected function _before_insert(&$data, $options) {
@@ -631,7 +648,11 @@ class DxExtCommonModel extends Model {
         $this->setCacheDictTableData();
         if(C("FULLTEXT_SEARCH") && $this->getModelInfo("toString")!=""){
             $m  = D("FulltextSearch");
-            $m->add(array("object"=>$this->name,"pkid"=>$this->getLastInsID(),"content"=>$this->toString($data),"object_title"=>$this->getModelInfo("title")));
+            $m->add(array("object"=>$this->name,
+                "data_id"=>$data[$this->getPk()],
+                "content"=>$this->toString($data),
+                "object_title"=>$this->getModelInfo("title"),
+                "message_state"=>$this->fullTextState));
         }
     }
 
@@ -932,34 +953,6 @@ class DxExtCommonModel extends Model {
         return $vo;
     }
 
-
-
-
-
-    /** 转换Model的自动验证规则为formValidation形式
-     * @param array $valids model
-     * @param int $type
-     * @return array 字段验证所需的css及消息提示.结构:
-     * array(
-     *   'fieldmsg'=>array(
-     *     'field1'=>array('msg1', 'msg2', 'msg3'),
-     *     'field1'=>array('msg1', 'msg2', 'msg3')
-     *   ),
-     *   'field1'=>"css class name string",
-     *   'field2'=>"css class name string",
-     *   'field'=>"css class name string",
-     * )
-     */
-    public function getValidate($type){
-        $valids = $this->_validate;
-        $r      = $this->convertValid($valids, $type);
-        $ret    = array();
-        foreach($r as $fld =>$v){
-            $ret[$fld]=  "validate[".implode(",", $v)."]";
-        }
-        return $ret;
-    }
-
     /**
      * 转换model的后台验证规则为 前台验证规则.jQuery validate
      * 后台规则格式：array(验证字段,验证规则,错误提示,[验证条件,附加规则,验证时间])
@@ -967,7 +960,7 @@ class DxExtCommonModel extends Model {
      * @param   $valids     TP的验证规则
      * @param   $type       验证时机，，生成验证规则是为了Insert还是为了Update
      */
-    protected function convertValid(array $valids, $type){
+    protected function convertValid(array $valids){
         $ret    = array();
         $lang   = array();
         foreach($valids as $valid){
@@ -978,17 +971,18 @@ class DxExtCommonModel extends Model {
             $error  = $valid[2];
             $cond   = isset($valid[3])?$valid[3]:"";
             $vrule  = isset($valid[4])?$valid[4]:"";
-            $vtime  = isset($valid[5])?$valid[5]:"";
-            if(empty($vtime) || $type=  Model::MODEL_BOTH|| $vtime==$type){
-                $cond   = isset($cond)?$cond:Model::EXISTS_VAILIDATE;
-                $vrule  = isset($vrule)?$vrule:'regex';
-                $r      = $this->genValidate( $rule,  $cond,  $vrule);
-                //一个字段，可能会定义多个验证规则。这里将验证规则 合并。
-                if(isset($ret[$fld])){
-                    $ret[$fld]= array_unique(array_merge($ret[$fld], $r));
-                }else{
-                    $ret[$fld]=$r;
-                }
+            $vtime  = isset($valid[5])?$valid[5]:self::MODEL_BOTH;
+
+            $cond   = isset($cond)?$cond:Model::EXISTS_VAILIDATE;
+            $vrule  = isset($vrule)?$vrule:'regex';
+            $oneValid   = $this->genValidate( $rule,  $cond,  $vrule);
+            if($vtime == self::MODEL_BOTH) $oneValid = array(self::MODEL_INSERT=>$oneValid,self::MODEL_UPDATE=>$oneValid);
+            else $oneValid = array($vtime=>$oneValid);
+            //一个字段，可能会定义多个验证规则。这里将验证规则 合并。
+            if(isset($ret[$fld])){
+                $ret[$fld]  = array_unique(array_merge($ret[$fld], $oneValid));
+            }else{
+                $ret[$fld]  = $oneValid;
             }
         }
         return $ret;

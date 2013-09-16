@@ -176,18 +176,29 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 5. otherManageAction:本model除新增外的其他操作
 6. searchHTML:操作框的html信息，一般为搜索框和查询按钮，搜索框支持的特性：
 	
-		1.id对应model数据字段 
+		1.name对应model数据字段 
 		2.class="dataOpeSearch"表示是查询条件
-		3.class="likeLeft likeRight"表示模糊查询的左相似或右相似
+		3.class="likeLeft likeRight"表示模糊查询的左相似或右相似,name增加前缀 gt_  egt_  lt_  elt_ 支持符号操作，一般应用于时间
 		4.支持radio类型input
 		5.查询按钮执行js函数触发查询 dataOpeSearch(是否使用条件)
-		6.支持model字段生成输入框，例如：区域选择框。{$editFields.canton_fdn|DxFunction::getFieldInput=###,array(),0,true}  直报、实地检查应用
-        例子:
-	    姓名:<input id='name' class='likeLeft likeRight dataOpeSearch' value='' />
-	    性别:{:DxFunction::W_FIELD(\"FormEnum\", array(\"fieldSet\"=>\$listFields['sex']))}
-		<input onclick='javascript:dataOpeSearch(true);' type='button' class='d-button d-state-highlight' value='查询' id='item_query_items' />
-		<input onclick='javascript:dataOpeSearch(false);' type='button' class='d-button d-state-highlight' value='全部数据' id='item_query_all' />
-		<input onclick='javascript:dataOpeExport(false);' type='button' class='d-button d-state-highlight' value='导出' id='item_export' />
+        6.暂时不再支持使用 createFieldInput 方法，生成查询输入框（两个Canton会互相影响）
+        例子(使用bootstrap样式):
+            <span class="add-on">老人姓名:</span>
+            <input type="text" class="dataOpeSearch z_input likeRight likeLeft" name="name" id="name" value="" style="width:60px;"/>
+            <span class="add-on">
+            审核:
+            <input type="radio" class="dataOpeSearch" name="check_state" id="check_state" value="1"/>通过
+            <input type="radio" class="dataOpeSearch" name="check_state" id="check_state" value="2"/>异常
+            <input type="radio" class="dataOpeSearch" name="check_state" id="check_state" value="" checked/>不限
+            </span>
+            <span class="add-on">
+            年龄从：
+            <input type="text" class="dataOpeSearch" id="egt_age" name="egt_age" value="">到
+            <input type="text" class="dataOpeSearch" id="elt_age" name="elt_age" value="">
+            </span>
+            <button class="btn" onclick=\'javascript:dataOpeSearch(true);\' type="button" id="allLaoren">查询</button>
+            <button onclick="javascript:dataOpeSearch(false);" class="btn" id="item_query_all">全部数据</button>
+
 7. dictTable:字典表值字段,格式1. dictTable="title"（生成以主键为key，值字段数据为值的 数组) 格式2:dictTable="keyField,keyField,..,valueField");(其中keyField是作为数据关联的字段)   根据这个配置，程序自动将字典表转换为valChange的普通模式，这些数组会被缓存到Runtime得Data目录
 8. dictType:字典表的类型，可以是 "mySelf" 和 公共(默认)。公共的字典缓存是大家共享的，比如：老人类型，私有的缓存是各自单独存放，比如:职工信息,每个养老院添加老人选择护理员时，只选自己的职工
 9. toString:提供给toString方法，整合数据的个是，   toString=array("%s %s 生于%s",array("real\_name","sex","birthday"))
@@ -215,6 +226,7 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 1. 配置各个Model的toString，则此Model将进入全文索引支持
 2. 在需要查询所有的地方，直接查询Model：FulltextSearch，表结构为：fulltext_search(object,pkid,content,object_title)
 3. 全局配置变量  FULLTEXT_SEARCH  来开启全文索引功能
+4. 在Model的_before_insert  _before_update中设置model的变量fullTextState，从而设定此数据是否为消息数据（消息就是系统的主要业务数据，一般显示在首页，比如:待办事项,请假等，有后续需要处理的数据）
 
 原理：在Model的insert update delete方法中，更新全文检索表数据。
 

@@ -4,6 +4,7 @@ $menu = D("Menu")->getMyQuickMenu();
 ?>
         <style>
         <!--
+a:hover{text-decoration: none;}
 div.menu-top-and-menu{ width:100%; height:55px;background:url(__DXPUBLIC__/basic/images/top-and-menu/top-zb.png) repeat-x #ffffff;}
 div.menu-top-and-menu div.top-zb{width:100%; height:80px; background:url(__DXPUBLIC__/basic/images/top-and-menu/top-zb_04.png) right center no-repeat;}
 div.menu-top-and-menu #site_name{ width:500px; color:#3463b1;font-size:26px;font-weight:bold;padding-left:35px;}
@@ -21,56 +22,56 @@ div.top-menu-list ul li a.selectTag{ line-height: 42px;background:url(__DXPUBLIC
         -->
         </style>
 <div class="menu-top-and-menu">
-	<div class="top-zb" style="padding:0px;">
-		<table width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr>
-				<td id="site_name"><a style="color: #3463B1;" href="__APP__/Home/index">{$Think.config.SysSet.SITE_NAME}</a></td>
-				<td>&nbsp;</td>
-				<td width="280" style="padding-top: 10px;"><table width="100%" border="0" cellspacing="0" cellpadding="0">
-						<tr>
-							<td id="user-message"><span class="systitile">{$userTrueName}</span> 你好，<br />欢迎登陆 <span class="systitile">{$Think.config.SysSet.SITE_NAME}</span></td>
-						</tr>
-					</table></td>
-				<td width="160">
-					<table width="100%" border="0" cellspacing="0" cellpadding="0">
-						<tr id="main-operation">
-							<td align="center" valign="middle"><a href="__APP__/Home/index"><img src="__DXPUBLIC__/basic/images/top-and-menu/home.png" width="34" height="35" /></a></td>
-							<td align="center" valign="middle"><a href="__APP__/Public/logout" target="_top"><img src="__DXPUBLIC__/basic/images/top-and-menu/logout.png" width="36" height="31" /></a></td>
-						</tr>
-						<tr>
-							<td align="center" valign="middle"><a href="__APP__/Home/index">返回首页</a></td>
-							<td align="center" valign="middle"><a href="__APP__/Public/logout" target="_top">用户退出</a></td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-		</table>
-	</div>
+    <div class="top-zb" style="padding:0px;">
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td id="site_name"><a style="color: #3463B1;" href="__APP__/Home/index">{$Think.config.SysSet.SITE_NAME}</a></td>
+                <td>&nbsp;</td>
+                <td width="280" style="padding-top: 10px;"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                            <td id="user-message">你好 <span class="systitile">{$Think.session.true_name}</span>，<br />欢迎登陆 <span class="systitile">{$Think.config.SysSet.SITE_NAME}</span></td>
+                        </tr>
+                    </table></td>
+                <td width="160">
+                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr id="main-operation">
+                            <td align="center" valign="middle"><a href="__APP__/Home/index"><img src="__DXPUBLIC__/basic/images/top-and-menu/home.png" width="34" height="35" /></a></td>
+                            <td align="center" valign="middle"><a href="__APP__/Public/logout" target="_top"><img src="__DXPUBLIC__/basic/images/top-and-menu/logout.png" width="36" height="31" /></a></td>
+                        </tr>
+                        <tr>
+                            <td align="center" valign="middle"><a href="__APP__/Home/index">返回首页</a></td>
+                            <td align="center" valign="middle"><a href="__APP__/Public/logout" target="_top">用户退出</a></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>
 
 <div class="top-menu-list">
-	<table width="100%" border="0" cellspacing="0" cellpadding="0">
-		<tr>
-			<td>
-				<div style="width: 100%; float: left; overflow: hidden; height: 42px; line-height: 42px;">
-					<ul id=tags>
-						<volist name="menu" id="vo">
-						<li>
-							<if condition="$vo['module_name'] eq MODULE_NAME">
-	                            <a class="selectTag" href="__APP__/{$vo['module_name']}/{$vo['action_name']}{$vo['args']}">{$vo['menu_name']}</a>
-	                        <else />
-	                            <a href="__APP__/{$vo['module_name']}/{$vo['action_name']}{$vo['args']}">{$vo['menu_name']}</a>
-	                        </if>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>
+                <div style="width: 100%; float: left; overflow: hidden; height: 42px; line-height: 42px;">
+                    <ul id=tags>
+                        <volist name="menu" id="vo">
+                        <li>
+                            <if condition="$vo['module_name'] eq MODULE_NAME">
+                                <a class="selectTag" href="__APP__/{$vo['module_name']}/{$vo['action_name']}{$vo['args']}">{$vo['menu_name']}</a>
+                            <else />
+                                <a href="__APP__/{$vo['module_name']}/{$vo['action_name']}{$vo['args']}">{$vo['menu_name']}</a>
+                            </if>
                         </li>
-						</volist>
-						<li><a href="__ROOT__/Account/editpass">修改密码</A></li>
-					</ul>
-				</div>
-			</td>
-			<td width="300px">
-				<div id="showMessage"></div>
-			</td>
-		</tr>
-	</table>
+                        </volist>
+                        <li><a href="__ROOT__/Account/editpass">修改密码</A></li>
+                    </ul>
+                </div>
+            </td>
+            <td width="300px">
+                <div id="showMessage"></div>
+            </td>
+        </tr>
+    </table>
 </div>
 

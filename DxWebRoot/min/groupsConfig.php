@@ -31,8 +31,6 @@ return array(
         $groupBasePath."/public/artDialog5/skins/default.css",
     ),
     'footerJs'	=> array(
-        $groupBasePath."/public/underscore-1.3.1.js",
-        $groupBasePath."/public/backbone.js",
         $groupBasePath."/public/artDialog5/source/jquery.artDialog.js",
         $groupBasePath."/public/artDialog5/source/artDialog.plugins.js",
         $groupBasePath."/public/explain_prompt/jquery-impromptu.4.0.js",

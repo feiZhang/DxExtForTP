@@ -149,11 +149,10 @@ class DataOpeAction extends DxExtCommonAction{
     /**
      * dxDisplay实现二次编译功能。。
      * @param string $templateFile 模板名称
-     * @param string $cacheAliaName 模板缓存的别名，针对二次编译，某些情况，需要根据角色不同，展示不同界面，此时生成多个cache
      */
     protected function dxDisplay($templateFile){
         $cacheAliaName = "_".$this->model->getModelInfoMd5()."_".$this->model->getListFieldsMd5();
-        $cacheAliaName .= "_".md5(json_encode($_REQUEST));
+        //$cacheAliaName .= "_".md5(json_encode($_REQUEST));
         $tempFile   = TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.$cacheAliaName.C('TMPL_TEMPLATE_SUFFIX');
         if(C("APP_DEBUG") || !file_exists($tempFile)){
             if(C("TOKEN_ON")){
@@ -251,7 +250,6 @@ class DataOpeAction extends DxExtCommonAction{
                 $this->error('要修改的数据不存在!请确认操作是否正确!');
             }
         }
-        $this->assign('valid', $model->getValidate(Model::MODEL_INSERT));
         $this->assign('objectData', array_merge($vo,$_REQUEST));
         //引用于模板继承，使用变量作为模板文件
         $this->assign('dx_data_edit', DXINFO_PATH."/DxTpl/data_edit.html");

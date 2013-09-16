@@ -43,7 +43,7 @@ return array (
     
     'DP_POWER_FIELDS' => array (
         array ('field_name' => 'create_user_id','auto_type' => 1,'type' => 0,'session_field' => "login_user_id" ),
-        array ('field_name' => 'create_user_name','auto_type' => 1,'type' => 0,'session_field' => 'truename' ),
+        array ('field_name' => 'create_user_name','auto_type' => 1,'type' => 0,'session_field' => 'true_name' ),
         array ('field_name' => 'create_canton_fdn','auto_type' => 1,'type' => 1,'session_field' => 'cantonfdn' ),
         array ('field_name' => 'create_public','auto_type' => 0,'type' => 2,'session_field' => '' ) 
     ),
@@ -51,7 +51,7 @@ return array (
     'DELETE_TAGS' => array ("delete_status" => "1" ),
     'NOT_AUTH_ACTION' => array ("Public" => 1,"Web" => 1 ), // 无需权限认证的Action
     'REQUIST_AUTH_ACTION' => array (), // 必须权限认证的Action
-    'LOGIN_USER_NICK_NAME' => "name", // 用户昵称字段名
+    'LOGIN_USER_NICK_NAME' => "true_name", // 用户昵称字段名
     'LOGIN_MD5' => false, // 是否md5加密密码
     'USER_AUTH_KEY' => 'login_user_id',
     // 文件上传的临时路径

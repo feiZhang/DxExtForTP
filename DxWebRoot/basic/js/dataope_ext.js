@@ -111,13 +111,13 @@ function getDataSearchUrl(){
         if($(this).val()=="") return;
         if($(this).attr("type")=="radio"){
             if($(this).attr("checked")=="checked"){
-                para[$(this).attr("id")]    = $(this).val();
+                para[$(this).attr("name")]    = $(this).val();
             }
         }else{
             var tPara   = $(this).val();
             if($(this).hasClass("likeLeft")) tPara  = "%" + tPara;
             if($(this).hasClass("likeRight")) tPara = tPara + "%";
-            para[$(this).attr("id")]    = tPara;
+            para[$(this).attr("name")]    = tPara;
         }
     });
     para = jQuery.param(para);
@@ -260,22 +260,16 @@ function downLoadAllFile(obj){
  */
 (function($){
   $(function(){
-    $("input.textTo[type='hidden']").each(function(i,textTo){
-      toId  = $(textTo).attr("id");
-      if(toId.charAt(0)=="i"){      //radio checkbox 的值
-        $(textTo).val($(toId + ":checked").attr("text"));
-        $(toId).change(function(){
-          $(textTo).val($(this).attr("text"));
-        });
-      }else if(toId.charAt(0)=="s"){      //select的值
-        $(textTo).val($(toId).val()==""?"":$(toId).find('option:selected').text());
-        $(toId).change(function(){
-          if($(this).val()=="")
-            $(textTo).val("");
-          else
-            $(textTo).val($(this).find('option:selected').text());
-        });
-      }
+    $("input.textTo[type='radio']").change(function(){
+      toId  = $(this).attr("textTo");
+      $("input" + "#" + toId).val(this.attr("text"));
+    });
+    $("select.textTo").change(function(){
+      toId  = $(this).attr("textTo");
+      if($(this).val()=="")
+          $("input" + "#" + toId).val("");
+      else
+          $("input" + "#" + toId).val(this.text());
     });
   });
 })(jQuery);

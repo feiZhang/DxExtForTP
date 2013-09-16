@@ -37,11 +37,11 @@
             for($i=$modelInfo["addPageColumnNum"];$i>0;--$i){
                 if($fieldIndex<$fieldSize){
                     if($field["display_none"]){
-                        $display_none_field .= DxFunction::getFieldInput($field, $valid);
+                        $display_none_field .= DxFunction::createFieldInput($field);
                         ++$i;
                     }else{
                         printf("<td align='right' class='itemAddTd'><span class='itemAddField'><b>%s</b></span>:</td>\\n",$field["title"]);
-                        printf("<td>%s%s%s</td>\\n",DxFunction::getFieldInput($field, $valid),$field["danwei"],$field["note"]);
+                        printf("<td>%s</td>\\n",DxFunction::createFieldInput($field));
                     }
                     $field = next($listFields);
                 }else{
@@ -52,29 +52,55 @@
                 ++$fieldIndex;
             }
             echo "</tr>\\n";
-        } 
+        }
         ?>
     </table>
     <div style="display:none">
+        <?php echo $display_none_field;?>
+    </div>
+</block>
+<div style="display:none">
     <input id="modelName" name="modelName" value='{$modelName}' type='hidden' />
-    <?php echo $display_none_field;?>
     <literal>
     <notempty name="pkId">
     <input id="pkId" name="pkId" value='{$pkId}' type='hidden' />
     </notempty>
     </literal>
-    </div>
-</block>
-
+</div>
 </form>
+
+<literal>
 <script type="text/javascript">
 <!--
-        $("#itemAddForm").validationEngine({
-//            ajaxFormValidationMethod: 'post',
-            onValidationComplete:formSubmitComplete
-        });
+function showInputValue(){
+<php>
+foreach($objectData as $key => $val){
+    switch($listFields[$key]["type"]){
+        case "enum":
+            printf('$("input[type=radio][value=%s][id=%s]").attr("checked",true);',$val,$key);
+            break;
+        case "set":
+            printf('$("input[type=checkbox]#%s").val("%s");',$key,$val);
+            break;
+        case "uploadFile":
+            printf('uploadFile($("%s"),uploadFile_%s_options);',$key,$key);
+            break;
+        default:
+            printf('$("#%s").val("%s");',$key,$val);
+            printf('$("#%s").change();',$key);//触发事件，选择区域信息
+        break;
+    }
+}
+</php>
+}
+showInputValue();
+$("#itemAddForm").validationEngine({
+    //ajaxFormValidationMethod: 'post',
+    onValidationComplete:formSubmitComplete
+});
 //-->
 </script>
+</literal>
 
 <include file="Public:upload_file_tmpl" />
 
