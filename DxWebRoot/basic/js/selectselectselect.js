@@ -4,6 +4,7 @@
  */
 var cantonData          = new Array();
 var cantonDataNoTree    = new Array();
+var cantonInit          = false;
 (function($){
     /**
      * 使用方式 
@@ -28,7 +29,8 @@ var cantonDataNoTree    = new Array();
         var containerDomId  = "selectselectselect_" + cantonDomId; // containerDomId       显示被加到目标dom元素的id
         var tree            = new Array();
         if(data==0 || data==undefined || data=="" || data.length < 1){
-            if(cantonData.length<1){
+            if(cantonInit == false){
+                cantonInit = true;
                 $.ajax({url:APP_URL+"/Canton/getSelectSelectSelect",success:function(data){
                         var cantonLength = data.length;
                         for (i=0;i<cantonLength; i++) {

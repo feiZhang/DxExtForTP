@@ -10,21 +10,27 @@
 class DxExtCommonAction extends Action {
     protected $model            = null;
     protected $theModelName     = "";
-    
+
     function __construct() {
         parent::__construct();
         if(empty($this->model)) $this->model  = D($this->getModelName());
         else $this->theModelName    = $this->model->name;
+
+        if($_REQUEST["haveHeaderMenu"]=="false" || C("HAVE_HEADER_MENU")==false){
+            $this->assign("haveHeaderMenu",false);
+        }else{
+            $this->assign("haveHeaderMenu",true);
+        }
     }
 
     private $cacheActionList    = array();  //系统action的缓存，对应menu表
     function _initialize() {
         $log_id =   $this->writeActionLog();
-        
+
         if(C("DISABLE_ACTION_AUTH_CHECK")!==true){
             $this->cacheActionList  = DxFunction::getModuleActionForMe();
             //dump($_SESSION);dump($this->cacheActionList["myAction"]);die();
-            
+
             if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
                 //为了不验证公共方法，不如：public、web等，所以将session验证放在里面。
                 if(0 == intval(session(C("USER_AUTH_KEY")))) {
@@ -263,7 +269,7 @@ class DxExtCommonAction extends Action {
       }
       $this->success ( '导入数据完成！总共导入'.$num.'条记录，成功'.$successNum.'条，失败'.$errorNum.'条' );
     }
-    
+
     /**
      * (判断当前用户是否有这种动作的权限)
      * @param    (字符串)     (action_name)    (动作)
@@ -271,11 +277,11 @@ class DxExtCommonAction extends Action {
     public function check_action_privilege($module_name = '',$action_name = '') {
         $cacheAction    = $this->cacheActionList;
         if(empty($cacheAction)) return false;   //不通过
-        
+
         $thisModule = empty($module_name)?MODULE_NAME:$module_name;
         $thisAction = empty($action_name)?ACTION_NAME:$action_name;
         //dump($thisModule);dump($thisAction);
-        //dump($cacheAction["myAction"][$thisModule][$thisAction]);dump($cacheAction["allAction"][$thisModule][$thisAction]);
+        //dump($cacheAction["myAction"]);dump($cacheAction["allAction"][$thisModule][$thisAction]);
         if(empty($cacheAction["myAction"][$thisModule][$thisAction])){
             if(empty($cacheAction["allAction"][$thisModule][$thisAction])){
                 return true;    //未定义的Action，默认都有权限操作
@@ -285,7 +291,7 @@ class DxExtCommonAction extends Action {
         }else
             return true;
     }
-    
+
     protected function getModelName() {
         if(empty($this->theModelName)) {
             $this->theModelName = parent::getActionName();

@@ -21,8 +21,9 @@
 			var pop_title	= o.attr('title') || "提示";
 			var pop_width	= o.attr('width') || "auto";
 			var pop_height	= o.attr('height') || "auto";
-			
-			$.dialog.open(pop_href,{"beforeunload":pop_callback,"title":pop_title,"width":pop_width,"height":pop_height})
+		    if(pop_href.indexOf("?")>0) pop_href = pop_href + "&haveHeaderMenu=false";
+            else pop_href = pop_href + "?haveHeaderMenu=false"
+			$.dialog.open(pop_href + "&haveHeaderMenu=false",{"beforeunload":pop_callback,"title":pop_title,"width":pop_width,"height":pop_height})
 			//阻止链接跳转页面，而执行pop函数
 			event.preventDefault();
 		});

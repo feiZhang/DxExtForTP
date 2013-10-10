@@ -127,7 +127,8 @@ listFields属性详解：
 14. readOnly:字段数据为只读，其值类似于hide属性..一种情况：字典表的维护，添加时需要类型显示为不能改，但是又需要将类型值追加到数据中，则再model中重新定义save方法，如果是新增，则将type字段readOnly改为false,注：readOnly的字段，还是会从前端post过来，但是在后端会被忽略掉
 5. pk:重定义主键字段。
 6. width:输入框宽度，查询框的宽度
-7. textTo:将某个字典关联字段的id值对应的数据保存到某字段，比如：设置到org\_id上的textTo="org\_name", 表示，存储org\_id对应的机构名称到org\_name，org\_name为冗余字段，主要方便实现，通过 机构名称 模糊查询
+7.
+textTo:将某个字典关联字段的id值对应的数据保存到某字段，比如：设置到org\_id上的textTo="org\_name",表示，存储org\_id对应的机构名称到org\_name，org\_name为冗余字段，主要方便实现，通过机构名称 模糊查询,功能在dataope_ext中实现，绑定数据的change方法
 8. valChange:数据转换，将表存储的key转换为对应的vaule，将userid转换显示为username，[固定转换\关联表转换\SQL语句转换]，比如：
 
 	     "valChange"=>array("1"=>"客户",'4'=>'超级管理员')  将1显示为客户，4显示为超级管理员
@@ -265,6 +266,7 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 	<extend name="$dx_data_edit" />
 	<block name="dataEditFormTable">
 		自定义模板内容，一般为一个table标签，及数据字段
+		<?php echo DxFunction::createFieldInput($listFields["name"]);?>
 	</block>
 
 ### 数据过滤

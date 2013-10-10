@@ -1,8 +1,8 @@
 <?php
 class DxFunction{
-/**escape json data, prevent from thinkphp template convert*/
+    /**escape json data, prevent from thinkphp template convert*/
     function escapeJson($data){
-        $ret=str_replace("{","{ ", json_encode($data));
+        $ret=htmlentities(str_replace("{","{ ", json_encode($data)));
         return $ret;
     }
     /**
@@ -244,31 +244,38 @@ class DxFunction{
             $allAction      = array();
             $action_list    = $menuM->getAllAction();
             foreach($action_list as $l){
-                if(!empty($l["module_name"]) && !empty($l["action_name"]))
-                    $allAction[$l["module_name"]][$l["action_name"]][$l[$menuM->getPk()]]   = array("args"=>$l["args"],"menu_name"=>$l["menu_name"]);
+                if(!empty($l["module_name"]) && !empty($l["action_name"])){
+                    //如果系统的菜单是引用一个目录内的项目，则会有项目的url前缀，将其去掉
+                    $modelName = explode("/",$l["module_name"]);
+                    $modelName = $modelName[sizeof($modelName)-1];
+                    $allAction[$modelName][$l["action_name"]][$l[$menuM->getPk()]]   = array("args"=>$l["args"],"menu_name"=>$l["menu_name"]);
+                }
             }
             S("Cache_module_action_ALL",json_encode($allAction));
         }else{
             $allAction  = json_decode($allAction,true);
         }
-        
+
         $my_id          = session(C('USER_AUTH_KEY'));
         if(intval($my_id)<1) return array("allAction"=>$allAction);
-    
+
         if(!$ignore) $myAction  = S("Cache_module_action_".$my_id);
         if(!$ignore && !empty($myAction)){
             $myAction   = json_decode($myAction,true);
             return array("allAction"=>$allAction,"myAction"=>$myAction);
         }
-    
+
         if(empty($menuM)) $menuM = D('Menu');
         $action_list    = $menuM->getMyAction();
         $myAction       = array();
         foreach($action_list as $l){
-            if(!empty($l["module_name"]) && !empty($l["action_name"]))
-                $myAction[$l["module_name"]][$l["action_name"]][$l[$menuM->getPk()]]    = array("args"=>$l["args"],"menu_name"=>$l["menu_name"]);
+            if(!empty($l["module_name"]) && !empty($l["action_name"])){
+                $modelName = explode("/",$l["module_name"]);
+                $modelName = $modelName[sizeof($modelName)-1];
+                $myAction[$modelName][$l["action_name"]][$l[$menuM->getPk()]]    = array("args"=>$l["args"],"menu_name"=>$l["menu_name"]);
+            }
         }
-    
+
         S("Cache_module_action_".$my_id,json_encode($myAction),3600);
         return array("allAction"=>$allAction,"myAction"=>$myAction);
     }

@@ -8,7 +8,7 @@
  * */
 class DataOpeAction extends DxExtCommonAction{
     protected $defaultWhere      = array();
-            
+
     /* 数据列表 for Grid **/
     public function get_datalist(){
         $model  = $this->model;
@@ -215,10 +215,7 @@ class DataOpeAction extends DxExtCommonAction{
             $this->assign($key,str_replace("%","",$val));
         }
 
-        if($_REQUEST["haveHeaderMenu"]=="false" || C("HAVE_HEADER_MENU")==false){
-            $this->assign("haveHeaderMenu",false);
-        }else $this->assign("haveHeaderMenu",true);
-
+        $this->assign('dx_data_list', DXINFO_PATH."/DxTpl/data_list.html");
         $this->dxDisplay("data_list");
     }
 
@@ -249,21 +246,24 @@ class DataOpeAction extends DxExtCommonAction{
             }else{
                 $this->error('要修改的数据不存在!请确认操作是否正确!');
             }
+        }else{
+            $vo = $model->getListFieldDefault();
         }
-        $this->assign('objectData', array_merge($vo,$_REQUEST));
+        $recordDataInfo = array_merge($vo,$_REQUEST);
+        $this->assign('recordDataInfo', str_replace("{","{ ",json_encode($recordDataInfo)));
         //引用于模板继承，使用变量作为模板文件
         $this->assign('dx_data_edit', DXINFO_PATH."/DxTpl/data_edit.html");
 
         $this->dxDisplay("Public:data_edit");
     }
-    
+
     /**
      * 数据展示页面
      * */
     public function view(){
         $this->dxDisplay("Public:data_view");
     }
-    
+
     /**
      * 快速改变某个数据某个字段的值，比如，修改数据状态。
      * @v    要改变的数据值
@@ -306,8 +306,8 @@ class DataOpeAction extends DxExtCommonAction{
             }
         }
 
-        if($deleteState) $this->ajaxReturn(0,"删除成功!",1,"JSON");
-        else $this->ajaxReturn(0,"删除失败!",0,"JSON");
+        if($deleteState) $this->ajaxReturn(array("data"=>0,"info"=>"删除成功!","status"=>1),"JSON");
+        else $this->ajaxReturn(array("data"=>0,"info"=>"删除失败!","status"=>0),"JSON");
     }
 
     public function __destruct(){

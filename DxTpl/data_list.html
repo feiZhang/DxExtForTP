@@ -73,17 +73,18 @@
     <script src="__DXPUBLIC__/public/sigma_grid/src/gt_tool.js" type="text/javascript"></script>
 </eq>
 
-<eq name="Think.config.APP_DEBUG" value="true">
-<script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs&debug=1"></script>
-<else/>
-<script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs"></script>
-</eq>
 <!--数据修改和新增的js 因为ajax加载js会出现异常，所以在这里进行加载-->
 <script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/load-image.min.js"></script>
 <script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/tmpl.min.js"></script>
-<script type="text/javascript" src="__PUBLIC__/js/dataope_ext.js"></script>
-<script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs"></script>
 
+<eq name="Think.config.APP_DEBUG" value="true">
+<script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs&debug=1"></script>
+<script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs&debug=1"></script>
+<else/>
+<script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs"></script>
+<script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs"></script>
+</eq>
+<script type="text/javascript" src="__PUBLIC__/js/dataope_ext.js"></script>
 <script>
 <!--
 var dxGrid  = null;
@@ -102,9 +103,13 @@ $(function(){
     dxGrid.setOrginURL("__URL__/get_datalist");
     </notempty>
     dxGrid.showGrid(['header_title','data_add','query_items','grid-help-info','Copyright',<?php echo intval(C("DATAOPE_LIST_HEIGHT"));?>,<?php echo empty($modelInfo["exclude_data_list_height"])?0:$modelInfo["exclude_data_list_height"];?>]);
+
+<block name="dataListGridExt">
+</block>
 });
 -->
 </script>
 
 
 <include file="Public:footer"/>
+

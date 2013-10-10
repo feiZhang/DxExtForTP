@@ -38,6 +38,9 @@ return array(
         $groupBasePath."/public/jquery-imgpreview.js",
         $groupBasePath."/basic/js/DxShowMessage.js",
         $groupBasePath."/basic/js/dxFunction.js",
+        $groupBasePath."/public/angular.js",
+        $groupBasePath."/basic/js/angular_ext.js",
+        $groupBasePath."/basic/js/pop.js",
     ),
     'dataListCss'    => array(
         $groupBasePath."/public/sigma_grid/gt_grid.css",
@@ -55,7 +58,6 @@ return array(
         $groupBasePath."/basic/js/validate.js",
         ),
     'dataEditJs'    => array(
-        $groupBasePath."/basic/js/dataope_ext.js",
         $groupBasePath."/public/validate/js/jquery.validationEngine.js",
         $groupBasePath."/public/validate/js/languages/jquery.validationEngine-zh_CN.js",
         $groupBasePath."/basic/js/validate.js",

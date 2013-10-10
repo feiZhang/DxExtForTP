@@ -1,10 +1,35 @@
 <notempty name="Think.get.haveHeader">
     <include file="Public:header" />
-    <!--数据修改和新增的js 因为ajax加载js会出现异常，所以在 data_list中加载-->
-    <script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/load-image.min.js"></script>
-    <script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/tmpl.min.js"></script>
-    <script type="text/javascript" src="__PUBLIC__/js/dataope_ext.js"></script>
+    <eq name="modelInfo.enablePrint" value="1">
+    <script language="javascript" src="__DXPUBLIC__/public/Lodop6.010/LodopFuncs.js"></script>
+    <object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0 style="display:none"> 
+        <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 pluginspage="install_lodop32.exe"></embed>
+    </object> 
+    </eq>
+
+    <link href="__DXPUBLIC__/min/g=dataListCss" rel="stylesheet" type="text/css" />
+    <script src="__DXPUBLIC__/public/DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script src="__DXPUBLIC__/public/sigma_grid/gt_grid_all.js" type="text/javascript"></script>
+
+    <eq name="Think.config.APP_DEBUG" value="true">
+    <script src="__DXPUBLIC__/public/sigma_grid/src/gt_base.js" type="text/javascript"></script>
+    <script src="__DXPUBLIC__/public/sigma_grid/src/gt_grid.js" type="text/javascript"></script>
+    <script src="__DXPUBLIC__/public/sigma_grid/src/gt_column.js" type="text/javascript"></script>
+    <script src="__DXPUBLIC__/public/sigma_grid/src/gt_tool.js" type="text/javascript"></script>
+    </eq>
+
+<!--数据修改和新增的js 因为ajax加载js会出现异常，所以在这里进行加载-->
+<script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/load-image.min.js"></script>
+<script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/tmpl.min.js"></script>
+
+    <eq name="Think.config.APP_DEBUG" value="true">
+    <script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs&debug=1"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs&debug=1"></script>
+    <else/>
+    <script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs"></script>
     <script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs"></script>
+    </eq>
+    <script type="text/javascript" src="__PUBLIC__/js/dataope_ext.js"></script>
 </notempty>
 <notempty name="Think.get.haveHeaderMenu">
     <include file="Public:menu" />
@@ -14,15 +39,23 @@
 <link rel="stylesheet" href="__DXPUBLIC__/public/jquery-upload-file/blueimp/css/bootstrap-image-gallery.min.css">
 
 <style>
-.progress,.table{
-    margin-bottom: 0px;
+/*文件上传的样式*/
+.progress, .table {
+        margin-bottom: 0;
 }
 .table th, .table td {
-    padding: 2px;
+        padding: 2px;
 }
 </style>
+<script>
+<!--
+var recordDataInfo = {$recordDataInfo};
+-->
+</script>
 
-<form id="itemAddForm">
+<include file="Public:upload_file_tmpl" />
+
+<form id="itemAddForm" ng-controller="dataEditCtrl">
 <block name="dataEditFormTable">
     <table class="itemAddTable" cellspacing="1" cellpadding="1" style="margin:10px">
         <?php
@@ -63,46 +96,20 @@
     <input id="modelName" name="modelName" value='{$modelName}' type='hidden' />
     <literal>
     <notempty name="pkId">
-    <input id="pkId" name="pkId" value='{$pkId}' type='hidden' />
+    <input id="pkId" ng-model="pkId" name="pkId" value='{$pkId}' type='hidden' />
     </notempty>
     </literal>
 </div>
 </form>
 
-<literal>
 <script type="text/javascript">
 <!--
-function showInputValue(){
-<php>
-foreach($objectData as $key => $val){
-    switch($listFields[$key]["type"]){
-        case "enum":
-            printf('$("input[type=radio][value=%s][id=%s]").attr("checked",true);',$val,$key);
-            break;
-        case "set":
-            printf('$("input[type=checkbox]#%s").val("%s");',$key,$val);
-            break;
-        case "uploadFile":
-            printf('uploadFile($("%s"),uploadFile_%s_options);',$key,$key);
-            break;
-        default:
-            printf('$("#%s").val("%s");',$key,$val);
-            printf('$("#%s").change();',$key);//触发事件，选择区域信息
-        break;
-    }
-}
-</php>
-}
-showInputValue();
 $("#itemAddForm").validationEngine({
     //ajaxFormValidationMethod: 'post',
     onValidationComplete:formSubmitComplete
 });
 //-->
 </script>
-</literal>
-
-<include file="Public:upload_file_tmpl" />
 
 <notempty name="Think.get.haveHeader">
     <include file="Public:footer" />

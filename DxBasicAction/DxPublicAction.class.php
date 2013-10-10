@@ -47,7 +47,7 @@ class DxPublicAction extends DxExtCommonAction {
             Image::buildImageVerify();
         }
     }
-    
+
     Public function checkLogin()
     {
         $rv = $this->userAuth();

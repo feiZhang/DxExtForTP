@@ -48,27 +48,6 @@ class DxExtCommonModel extends Model {
         $this->listFields   = $listF;
     }
 
-    // 将数据列表Grid要显示的字段，整合为一个字符串，作为SELECT 语句的字段列表
-    public function getListFieldString() {
-        return $this->getFieldsString ( self::HIDE_FIELD_DATA );
-    }
-    // 将要打印的字段，整合为一个字符串，作为SELECT 语句的字段列表
-    public function getPrintFieldString() {
-        return $this->getFieldsString ( self::HIDE_FIELD_PRINT );
-    }
-    private function getFieldsString($hideState) {
-        $r = array ();
-        foreach ( $this->getNoHideFields ( $hideState ) as $key => $val ) {
-            if (isset ( $val ["field"] ))
-                $r [] = $val ["field"];
-            else if (isset ( $val ["name"] ))
-                $r [] = $val ["name"];
-            else
-                $r [] = $key;
-        }
-        return implode ( ",", $r );
-    }
-
     function __construct($name='',$connection='') {
         parent::__construct($name,$connection);
 
@@ -132,6 +111,34 @@ class DxExtCommonModel extends Model {
         }
         return $this->cacheListFields;
     }
+    //获取字段的默认值，在新增数据时，需要
+    public function getListFieldDefault(){
+        $default = array();
+        foreach($this->getListFields() as $name=>$field){
+            $default[$name] = $field["default"];
+        }
+        return $default;
+    }
+    // 将数据列表Grid要显示的字段，整合为一个字符串，作为SELECT 语句的字段列表
+    public function getListFieldString() {
+        return $this->getFieldsString ( self::HIDE_FIELD_DATA );
+    }
+    // 将要打印的字段，整合为一个字符串，作为SELECT 语句的字段列表
+    public function getPrintFieldString() {
+        return $this->getFieldsString ( self::HIDE_FIELD_PRINT );
+    }
+    private function getFieldsString($hideState) {
+        $r = array ();
+        foreach ( $this->getNoHideFields ( $hideState ) as $key => $val ) {
+            if (isset ( $val ["field"] ))
+                $r [] = $val ["field"];
+            else if (isset ( $val ["name"] ))
+                $r [] = $val ["name"];
+            else
+                $r [] = $key;
+        }
+        return implode ( ",", $r );
+    }
     public function getListFieldsMd5(){
         return md5(json_encode($this->listFields));
     }
@@ -156,8 +163,11 @@ class DxExtCommonModel extends Model {
     }
     private function getOneListField($key,$field){
         if(!isset($field["name"])) $field["name"]   = $key;
-        if($field["type"]=="canton" && empty($field["valChange"])){
-            $field["valChange"] = array("model"=>"Canton");
+        if($field["type"]=="canton"){
+            $field["width"] = "180";
+            $field["default"] = session("canton_fdn");
+            if(empty($field["default"])) $field["default"] = C("ROOT_CANTON_FDN");
+            if(empty($field["valChange"])) $field["valChange"] = array("model"=>"Canton");
         }
         if(intval($field["width"])<1) $field["width"] = "80";
 
@@ -216,9 +226,7 @@ class DxExtCommonModel extends Model {
                         break;
                     }
                 }
-            }else
-                $field['default']=$d;
-            //重置默认值
+            }
         }
         return $field;
     }
@@ -351,20 +359,7 @@ class DxExtCommonModel extends Model {
         //dump($datasetFields);dump($gridFields);die();
         return array("gridFields"=>$gridFields,"datasetFields"=>$datasetFields);
     }
-    /**
-     * 移除：将Model所需的查询列，获取到
-     * **/
-    public function getSearchFields(){
-        $searchFiled    = array();
-        foreach($this->getListFields() as $field){
-            if(isset($field["search"])){
-                $searchFiled[]  = array_merge($field["search"],$field);
-                //array("type"=>$field["type"],"enname"=>$field["name"],"cnname"=>$field["title"],"valChange"=>$field[""]));
-            }
-        }
-        return $searchFiled;
-    }
-    
+
     /**
      * 使用相套sql语句，代替视图
      * 1.请勿将where条件写在  函数的参数中，请使用where进行where参数传递

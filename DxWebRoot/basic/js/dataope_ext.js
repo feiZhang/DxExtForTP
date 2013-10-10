@@ -2,46 +2,15 @@
  * DataOpe的扩展js操作，比如：删除、修改、状态改变等等。
  * */
 function dataOpeAdd(config){
-    var moduleName = config.moduleName;
-    var dialogTitle = config.title;
-    var urlPara = config.data==undefined?"":config.data;
-    //新增按钮是系统给出的，所以标题必然有，修改是客户写的，所以不一定有。
-    var this_post_url   = URL_URL;
-    if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url  = APP_URL + "/" + moduleName;
-    $.dialog({
-        id:"editObject",
-        title:dialogTitle,
-        content:'正在加载页面!<img src="' + DX_PUBLIC + '/public/loading.gif" />',
-        esc:true,
-        lock:true,
-        padding:"0",
-        ok:function(){
-            if($("form#itemAddForm").length<1) return true;
-            $("form#itemAddForm").attr("action",this_post_url + "/save");
-            $('form#itemAddForm').submit();
-            
-            return false;
-        },
-        okValue:"确定",
-        cancelValue:"取消",
-        cancel:function(){},
-        initialize:function(){
-            var theThis     = this;
-            $.get(this_post_url + "/add?" + urlPara,function(html){
-                theThis.content(html);
-                //需要排除日期类型的输入框(日期类型的输入框在获得焦点后不能弹出日期选择框.)
-                $(theThis.dom.main).contents().find(":input:visible").not(".Wdate").eq(0).focus();
-                $("form#itemAddForm").attr("action",this_post_url);
-            });
-        }
-    });
+    dataOpeEdit(config);
 }
 
 function dataOpeEdit(config){
     var moduleName = config.moduleName;
     var dialogTitle = config.title;
     var urlPara = config.data==undefined?"":config.data;
-    
+    var data_id = config.id==undefined?0:config.id;
+
     var this_post_url   = URL_URL;
     if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle=$("#modelInfo_editTitle").val();
     if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle="修改";
@@ -57,7 +26,9 @@ function dataOpeEdit(config){
             if($("form#itemAddForm").length<1) return true;
             $("form#itemAddForm").attr("action",this_post_url + "/save");
             $('form#itemAddForm').submit();
-        
+            if(config.reloadPage=="1"){
+                $('form#itemAddForm').attr("afterSubmit","reloadPage");
+            }
             return false;
         },
         okValue:"保存",
@@ -65,8 +36,9 @@ function dataOpeEdit(config){
         cancel:function(){},
         initialize:function(){
             var theThis     = this;
-            $.get(this_post_url + "/edit/" + config.id + "?" + urlPara,function(html){
+            $.get(this_post_url + "/edit/" + data_id + "?" + urlPara,function(html){
                 theThis.content(html);
+                angular.bootstrap(document,["dxApp"]);
                 $(theThis.dom.main).contents().find(":input:visible").not(".Wdate").eq(0).focus();
                 $("form#itemAddForm").attr("action",this_post_url);
             });
@@ -89,10 +61,14 @@ function dataOpeDelete(config){
             _this.button({id: 'ok',disabled: true},{id:'cancel',disabled:true});
 
             $.get(this_post_url+"/delete/"+config.id,function(data){
-                if(data.status){
-                    Sigma.GridCache["theDataOpeGrid"].reload();
-                }
                 _this.time(2000).title("提示").content(data.info);
+                if(config.reloadPage=="1"){
+                    setInterval(function(){document.location.reload();},2000);
+                }else{
+                    if(data.status){
+                        Sigma.GridCache["theDataOpeGrid"].reload();
+                    }
+                }
             },"json");
             return false;
         },
@@ -169,25 +145,6 @@ function resetPasswd(config){
 }
 
 /**
- * 上传文件 for  add  edit
- * acceptFileTypes : fileType,
- * uploadTemplateId : uploadTemplateId,
- * templatesContainer : tmplContainer,
- * */
-function uploadFile(fileObject,options){
-    option  = $.extend(options,{
-        url:APP_URL + "/Basic/upload_file",
-        dataType : 'json',
-        autoUpload : true,
-        fileInput:$(fileObject).find("input[type='file']"),
-        singleFileUploads : true,
-        forceIframeTransport:true,
-        uploadTemplateId: 'template-upload',
-        downloadTemplateId: 'template-download'
-        });
-    fileObject.fileupload(option);
-}
-/**
  * 打开剪切头像对话框
  * */
 function showUploadPhoto(img,input){
@@ -254,26 +211,6 @@ function downLoadAllFile(obj){
     });
 }
 
-
-/**
- * 将textTo对象与数据列表绑定。。在选择改变时，也改变此值
- */
-(function($){
-  $(function(){
-    $("input.textTo[type='radio']").change(function(){
-      toId  = $(this).attr("textTo");
-      $("input" + "#" + toId).val(this.attr("text"));
-    });
-    $("select.textTo").change(function(){
-      toId  = $(this).attr("textTo");
-      if($(this).val()=="")
-          $("input" + "#" + toId).val("");
-      else
-          $("input" + "#" + toId).val(this.text());
-    });
-  });
-})(jQuery);
-
 /**处理多选select值*/
 function _dataope_onSetChange(obj){
     var _this=$(obj);
@@ -302,18 +239,31 @@ function _dataope_onCheckChange(obj){
 }
 
 
-
-//
-function ajaxValidationCallback(status, form, json, options){
-    if (status === true) {
-        form.submit();
-    }
-}
 //数据验证后，自动执行此操作。
 function formSubmitComplete(form, r){
     if(r){
+        //将textTo的数据赋值
+        $("input.textTo[type='radio']").each(function(){
+            toId  = $(this).attr("textTo");
+            $("input" + "#" + toId).val($(this).attr("text"));
+        });
+        $("select.textTo").each(function(){
+            toId  = $(this).attr("textTo");
+            if($(this).val()=="")
+                $("input" + "#" + toId).val("");
+            else if($(this).hasClass("cantonSelect")){
+                // 最后一个可能为空选
+                var tvvv = $(this).find('option:selected').attr('key');
+                if(tvvv!=undefined && tvvv!=""){
+                    $("input" + "#" + toId).val($(this).find('option:selected').attr('key'));
+                }
+            }else
+                $("input" + "#" + toId).val($(this).text());
+        });
+
         //触发savedata事件,用于支持fckeditor保存数据.
         $('form#itemAddForm').find(":input").trigger("savedata");
+
         var theThis     = $.dialog.get('editObject');
         theThis.button({id: 'ok',disabled: true,'value':'数据正在处理'},{id:'cancel',disabled:true});
         $.ajax({
@@ -325,7 +275,9 @@ function formSubmitComplete(form, r){
                     showDialog("提示",msg["info"]);
                     theThis.button({id: 'ok',disabled: false,'value':'确定'},{id:'cancel',disabled:false});
                 } else {
-                    if(Sigma.GridCache["theDataOpeGrid"]){
+                    if($('form#itemAddForm').attr("afterSubmit")=="reloadPage"){
+                        setInterval(function(){document.location.reload();},2000);
+                    }else if(Sigma.GridCache["theDataOpeGrid"]){
                         Sigma.GridCache["theDataOpeGrid"].reload();
                     }
                     theThis.content(msg['info']).time(2000).button({id: 'ok',disabled: true},{id:'cancel',value:'关闭'});
@@ -336,3 +288,4 @@ function formSubmitComplete(form, r){
     }
     return false;
 }
+
