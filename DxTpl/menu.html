@@ -35,11 +35,11 @@ div.top-menu-list ul li a.selectTag{ line-height: 42px;background:url(__DXPUBLIC
                 <td width="160">
                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr id="main-operation">
-                            <td align="center" valign="middle"><a href="__APP__/Home/index"><img src="__DXPUBLIC__/basic/images/top-and-menu/home.png" width="34" height="35" /></a></td>
+                            <td align="center" valign="middle"><a href="__APP__/Home/index" target="_top"><img src="__DXPUBLIC__/basic/images/top-and-menu/home.png" width="34" height="35" /></a></td>
                             <td align="center" valign="middle"><a href="__APP__/Public/logout" target="_top"><img src="__DXPUBLIC__/basic/images/top-and-menu/logout.png" width="36" height="31" /></a></td>
                         </tr>
                         <tr>
-                            <td align="center" valign="middle"><a href="__APP__/Home/index">返回首页</a></td>
+                            <td align="center" valign="middle"><a href="__APP__/Home/index" target="_top">返回首页</a></td>
                             <td align="center" valign="middle"><a href="__APP__/Public/logout" target="_top">用户退出</a></td>
                         </tr>
                     </table>
@@ -58,13 +58,13 @@ div.top-menu-list ul li a.selectTag{ line-height: 42px;background:url(__DXPUBLIC
                         <volist name="menu" id="vo">
                         <li>
                             <if condition="$vo['module_name'] eq MODULE_NAME">
-                                <a class="selectTag" href="__APP__/{$vo['module_name']}/{$vo['action_name']}{$vo['args']}">{$vo['menu_name']}</a>
+                                <a {$Think.config.MENU_TARGET} class="selectTag" href="__APP__/{$vo['module_name']}/{$vo['action_name']}{$vo['args']}">{$vo['menu_name']}</a>
                             <else />
-                                <a href="__APP__/{$vo['module_name']}/{$vo['action_name']}{$vo['args']}">{$vo['menu_name']}</a>
+                                <a {$Think.config.MENU_TARGET} href="__APP__/{$vo['module_name']}/{$vo['action_name']}{$vo['args']}">{$vo['menu_name']}</a>
                             </if>
                         </li>
                         </volist>
-                        <li><a href="__ROOT__/Account/editpass">修改密码</A></li>
+                        <li><a {$Think.config.MENU_TARGET} href="__ROOT__/Account/editpass">修改密码</A></li>
                     </ul>
                 </div>
             </td>

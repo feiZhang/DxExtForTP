@@ -270,7 +270,12 @@ class DxExtCommonModel extends Model {
     public function setModelInfo($key,$val){
         $this->modelInfo[$key] = $val;
     }
-    
+
+    public function setLeftMenu($parentId){
+        //左边菜单的父ID,此菜单属于那个id的子菜单
+        $this->modelInfo["leftArea"] = "{:W('Menu',array('type'=>\$type,'parent_id'=>".$parentId."))}";
+    }
+
     /**
      * 获取需要到处的字段列表。
      */

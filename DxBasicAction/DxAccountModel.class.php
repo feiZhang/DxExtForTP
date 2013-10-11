@@ -29,7 +29,6 @@ class DxAccountModel extends DxExtCommonModel{
     );
 
     protected $modelInfo=array(
-        'leftArea' => "{:W('Menu',array('type'=>\$type,'parent_id'=>\$menu_id))}",
         "dictTable"=>"true_name",
         "title"=>'系统账号','readOnly'=>false,"helpInfo"=>"请谨慎删除账号，通畅禁用账号即可!",
         'searchHTML'=>"

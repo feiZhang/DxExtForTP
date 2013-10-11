@@ -11,10 +11,9 @@ class DxSysSettingModel extends DxExtCommonModel {
         "memo" => array('title' => '参数说明',"width"=>"3000",),
         "val" => array ('title' => '参数值','width'=>"3000",),
     );
-    
+
     protected $modelInfo=array(
         "title"=>'系统设置','readOnly'=>true,"enablePage"=>false,
-        'leftArea' => "{:W('Menu',array('type'=>\$type,'parent_id'=>\$menu_id))}",
         'searchHTML'=>"
                 <span class='add-on'>参数说明:</span>
                 <input id='memo' size='20' class='dataOpeSearch likeLeft likeRight' value='' type='text' />
@@ -23,17 +22,17 @@ class DxSysSettingModel extends DxExtCommonModel {
         ",
         "helpInfo"=>"请勿轻易修改此数据，不了解的参数修改前，请咨询开发商!",
     );
-    
+
     protected function _after_update($data, $options){
         parent::_after_update($data, $options);
         $this->reSetSetingCache();
     }
-    
+
     protected function _after_insert($data, $options){
         parent::_after_insert($data, $options);
         $this->reSetSetingCache();
     }
-    
+
     protected function _after_delete($data, $options){
         parent::_after_delete($data, $options);
         $this->reSetSetingCache();

@@ -4,8 +4,8 @@ return array (
     'DX_PUBLIC' => "/DxInfo/DxWebRoot",//DxInfo的Web目录地址,目前wpickdate插件不支持跨域引用
     'APP_DEBUG' => false, // 是否开启调试模式
     'UPLOAD_BASE_PATH' => dirname(APP_PATH)."/userUploadFiles",
-    //控制data_list的默认是否加载菜单
     'HAVE_HEADER_MENU' => true,
+    //控制data_list的默认是否加载菜单
     'USER_AUTH_KEY' => 'login_user_id',
     'LOGIN_USER_NICK_NAME' => "true_name", // 用户昵称字段名
     'DP_NOT_CHECK_ACTION' => array ("Public" => 1,"DataSync" => 1 ), // 不进行数据权限控制的Action

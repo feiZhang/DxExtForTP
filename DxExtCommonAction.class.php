@@ -10,6 +10,7 @@
 class DxExtCommonAction extends Action {
     protected $model            = null;
     protected $theModelName     = "";
+    private $cacheActionList    = array();  //系统action的缓存，对应menu表
 
     function __construct() {
         parent::__construct();
@@ -23,7 +24,6 @@ class DxExtCommonAction extends Action {
         }
     }
 
-    private $cacheActionList    = array();  //系统action的缓存，对应menu表
     function _initialize() {
         $log_id =   $this->writeActionLog();
 

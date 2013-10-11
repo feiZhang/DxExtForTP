@@ -4,12 +4,6 @@
  * 用户管理， 目前只有一个密码修改功能
  */
 class DxAccountAction extends DataOpeAction {
-    public function __construct(){
-        parent::__construct();
-        $menu_id = D('Menu')->where(array('menu_name'=>'系统管理','parent_id'=>0))->getField('id');
-        $this->assign('menu_id',$menu_id);
-    }
-
     function editpass() {
        if ($_REQUEST["subEditPass"] == "修改") {
             $m = $this->model;
