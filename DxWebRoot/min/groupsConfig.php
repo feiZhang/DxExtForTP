@@ -45,7 +45,7 @@ return array(
     'dataListCss'    => array(
         $groupBasePath."/public/sigma_grid/gt_grid.css",
         $groupBasePath."/public/sigma_grid/skin/default/skinstyle.css",
-        //$groupBasePath."/basic/css/sigma_grid.css",
+        $groupBasePath."/basic/css/sigma_grid.css",
         $groupBasePath."/public/validate/css/validationEngine.jquery.css"
         ),
     'dataListJs'    => array(

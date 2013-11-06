@@ -37,6 +37,7 @@ class DxDataSync{
     }
     
     protected function getMessageEngine(){
+        require_once (DXINFO_PATH."/Vendor/httpsqs.class.php");
         $sqs    = new httpsqs($this->messageHost,$this->messagePort,$this->messageAuth);
         return $sqs;
     }
@@ -72,23 +73,24 @@ class DxDataSync{
             $data   = $m->field( implode(",",$myFields) )->find($data);
         }
         if(empty($data)) return;
-        
+
         $dataNode       = $this->getDataNodeForModel($standerModelName);
         $t              = array();
         $t[$standerModelName]   = $data;
         $putData        = array("sourceNodeName"=>$this->myNodeName,'dataType'=>$data_type,"data"=>$t);
-//      dump($this->myNodeName);dump($data_type);dump($t);
+        dump($this->myNodeName);dump($data_type);dump(sizeof($data));
         foreach ($dataNode as $dataN){
+            dump($dataN);
             $this->getMessageEngine()->put($dataN,json_encode($putData));
         }
-        
+
         return true;
-    } 
+    }
     //重置队列的内容，清空
     public function reset(){
         $this->getMessageEngine()->reset($this->myNodeName);
     }
-    
+
     protected function putResultToMC($nodeURL,$data){
         $putData        = array('dataType'=>self::SYNC_TYPE_RESULT,"data"=>$data);
         $this->getMessageEngine()->put($nodeURL,json_encode($putData));

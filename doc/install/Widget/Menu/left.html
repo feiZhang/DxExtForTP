@@ -1,0 +1,96 @@
+<style>
+div.statanayLeftMenuArea {
+    width:170px;
+    float:left;
+}
+div#container {
+    width:170px;
+}
+div.content{
+    width:170px;
+    background:#ffffff;
+}
+div.content ul,div.content ul{
+    list-style-type:none;
+    padding:0px;margin:0px;
+}
+div.content ul{
+    padding-left: 10px;
+}
+
+div#container div.content li a{
+    background: url(__PUBLIC__/images/icon.gif) no-repeat scroll 10px center transparent;
+    color: #333333;
+    display: block;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 12px;
+    height: 25px;
+    line-height: 25px;
+    padding-left: 20px;
+    text-decoration: none;
+}
+
+/*样式 two */
+div#container h1 {
+    font-size:12px;
+    width:170px;
+    margin:0px;
+    padding:0px;
+    cursor: pointer;
+    background:url(__PUBLIC__/images/left_menu_bg.png) repeat-x;
+}
+div#container h1 p {
+    display: block;
+    width:140px;
+    padding-left:25px;
+    height:27px;
+    color:#ffffff;
+    line-height:27px;
+    text-align:left;
+    margin:0;
+}
+</style>
+<script>
+function changeclass(obj){
+    jQuery.each($("a.thisclass"),function(idx,item){
+        //把所有选中样式去掉，然后把当前选中
+        jQuery(this).removeClass("thisclass");        
+    });
+    jQuery(obj).addClass('thisclass');
+}
+function hideAllDD(){
+    $.each($('.content'),function(idx,item){
+        //把所有选中样式去掉，然后把当前选中
+        $(this).hide('normal');
+    });
+}
+</script>
+<div id="container">
+    <?php
+    $dataLen    = sizeof($list);
+    for($i=0;$i<$dataLen;++$i){
+        $menuD      = $list[$i];
+        $menu_path  = __APP__."/".$menuD["module_name"]."/".$menuD["action_name"].$menuD["args"];
+        if($menuD["parent_id"]==$root_id){
+            if(empty($menuD["module_name"])){
+                printf("<h1 class=\"type\"><p>%s</p></h1>\n",$menuD["menu_name"]);
+                $parent_id  = $menuD["menu_id"];
+            }else{
+                printf("<h1 class=\"type\"><a href=\"%s\" target=\"orgMain\">%s</a></h1>\n",$menu_path,$menuD["menu_name"]);
+                $parent_id  = $menuD["menu_id"];
+            }
+        }else{
+        if($menuD["parent_id"]==$parent_id){
+            printf("<div class='content'><ul>\n");
+            while($menuD["parent_id"]==$parent_id && $i<$dataLen){
+                $menu_path  = __APP__."/".$menuD["module_name"]."/".$menuD["action_name"].$menuD["args"];
+                printf("<li><a href=\"%s\" target=\"_self\" onclick=\"javascript:changeclass(this);\">%s</a></li>\n",$menu_path,$menuD["menu_name"]);
+                $menuD      = $list[++$i];
+            }
+            --$i;
+            printf("</ul></div>\n");
+        }
+        }
+    }
+?>
+</div>

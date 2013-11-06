@@ -1,0 +1,38 @@
+<extend name="$dx_data_edit" />
+
+<block name="dataEditFormTable">
+
+<table class="table table-bordered">
+    <tr>
+        <td class="text-right">{$listFields.canton_fdn.title}：</td>
+        <td><?php echo DxFunction::createFieldInput($listFields["canton_fdn"]);?></td>
+        <td class="text-right">{$listFields.role_id.title}：</td>
+        <td><?php echo DxFunction::createFieldInput($listFields["role_id"]);?></td>
+    </tr>
+    <tr>
+        <td class="text-right">{$listFields.login_username.title}：</td>
+        <td><?php echo DxFunction::createFieldInput($listFields["login_username"]);?></td>
+        <td class="text-right">{$listFields.login_pwd.title}：</td>
+        <td><?php echo DxFunction::createFieldInput($listFields["login_pwd"]);?></td>
+    </tr>
+    <tr>
+        <td class="text-right">{$listFields.true_name.title}：</td>
+        <td><?php echo DxFunction::createFieldInput($listFields["true_name"]);?></td>
+        <td class="text-right">{$listFields.tel.title}：</td>
+        <td><?php echo DxFunction::createFieldInput($listFields["tel"]);?></td>
+    </tr>
+    <tr>
+        <td class="text-right">{$listFields.email.title}：</td>
+        <td colspan="3"><?php echo DxFunction::createFieldInput($listFields["email"]);?></td>
+    </tr>
+    <tr>
+        <td class="text-right">{$listFields.address.title}：</td>
+        <td colspan="3"><?php echo DxFunction::createFieldInput($listFields["address"]);?></td>
+    </tr>
+    <tr>
+        <td class="text-right">{$listFields.status.title}：</td>
+        <td colspan="3"><?php echo DxFunction::createFieldInput($listFields["status"]);?></td>
+    </tr>
+</table>
+</block>
+

@@ -23,15 +23,17 @@ CREATE TABLE IF NOT EXISTS `canton` (
 DROP TABLE IF EXISTS `sys_dic`;
 CREATE TABLE IF NOT EXISTS `sys_dic` (
   `dic_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `code` varchar(45) NOT NULL COMMENT '关键字',
-  `name` varchar(45) DEFAULT NULL COMMENT '所示意思',
+  `parent_id` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '父类型的ID',
+  `name` varchar(45) NOT NULL DEFAULT '' COMMENT '所示意思',
   `type` varchar(45) NOT NULL COMMENT '字典类型(唯一)',
-  `memo` varchar(100) DEFAULT NULL COMMENT '备注',
-  `order` int(11) DEFAULT NULL COMMENT '排序，用于在页面上显示顺序',
-  `other_info` varchar(100) DEFAULT NULL COMMENT '其他信息，比如：房间数量',
-  `is_show` char(1) DEFAULT '1' COMMENT '是否显示在用户编辑页面，1显示0不显示',
-  `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1已删除0正常',
-  `sync_status` tinyint(1) NOT NULL DEFAULT '1',
+  `memo` varchar(100) DEFAULT '' NOT NULL COMMENT '备注',
+  `order` int(11) unsigned DEFAULT 0 NOT NULL COMMENT '排序，用于在页面上显示顺序',
+  `other_info` varchar(100) DEFAULT '' NOT NULL COMMENT '其他信息，比如：房间数量',
+  `show_type` tinyint(1) unsigned DEFAULT '1' NOT NULL COMMENT '是否显示在用户编辑页面，1显示 0不显示 2显示但不能编辑',
+  `is_del` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1已删除0正常',
+  `creater_user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建人',
+  `create_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `sync_status` tinyint(1) unsigned NOT NULL DEFAULT '1',
   PRIMARY KEY (`dic_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='字典表';
 
@@ -51,16 +53,17 @@ CREATE TABLE IF NOT EXISTS `sys_setting` (
 DROP TABLE IF EXISTS `menu`;
 CREATE TABLE IF NOT EXISTS `menu` (
   `menu_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `parent_id` smallint(5) unsigned DEFAULT '0' COMMENT '上级菜单编号',
-  `order_no` int(10) unsigned DEFAULT '0' COMMENT '序号,等于:父亲的order_no+自己的显示order_no*power(32,6-order_level)',
-  `order_level` int(1) unsigned DEFAULT '0' COMMENT 'order层次',
+  `parent_id` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '上级菜单编号',
+  `order_no` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '序号,等于:父亲的order_no+自己的显示order_no*power(32,6-order_level)',
+  `order_level` int(1) unsigned NOT NULL DEFAULT '0' COMMENT 'order层次',
+  `click_times` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '被点击的次数',
   `fdn` varchar(31) NOT NULL DEFAULT '' COMMENT 'fdn值',
   `menu_name` varchar(45) NOT NULL DEFAULT '' COMMENT '菜单名称',
   `module_name` varchar(45) NOT NULL DEFAULT '' COMMENT '模块名称',
   `action_name` varchar(31) NOT NULL DEFAULT '' COMMENT 'Action名称',
   `args` varchar(127) NOT NULL DEFAULT '' COMMENT '参数,某些菜单提供默认参数',
-  `type` enum('quick_menu','menu','action','hide_action') NOT NULL DEFAULT 'action' COMMENT '菜单类型：快捷菜单、菜单、显示动作、后台动作',
-  `is_desktop` tinyint(4) NOT NULL DEFAULT '0',
+  `type` enum('quick_menu','sub_quick_menu','menu','action','hide_action') NOT NULL DEFAULT 'action' COMMENT '菜单类型：快捷菜单、菜单、显示动作、后台动作',
+  `is_desktop` tinyint(4) unsigned NOT NULL DEFAULT '0',
   `desktop_url` varchar(31) NOT NULL COMMENT '桌面菜单URL',
   `other_info` varchar(127) NOT NULL COMMENT '附加信息',
   PRIMARY KEY (`menu_id`)
@@ -88,6 +91,7 @@ CREATE TABLE IF NOT EXISTS `account` (
   `login_pwd` varchar(200) NOT NULL DEFAULT '' COMMENT '登录密码',
   `true_name` varchar(45) NOT NULL DEFAULT '' COMMENT '用户本人实际姓名',
   `tel` varchar(12) NOT NULL DEFAULT '' COMMENT '联系电话',
+  `email` varchar(52) NOT NULL DEFAULT '' COMMENT 'Email',
   `address` varchar(45) NOT NULL DEFAULT '' COMMENT '本人地址',
   `role_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '角色id',
   `shorcut_ids` varchar(1000) NOT NULL DEFAULT '' COMMENT '快捷操作id串',

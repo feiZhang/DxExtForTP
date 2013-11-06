@@ -7,7 +7,7 @@ if(!empty($field["editor"])){
     case "uploadFile":
         if(empty($fieldSet['upload']['buttonValue'])) $uploadButtonValue = "新增文件";
         else $uploadButtonValue = $fieldSet['upload']['buttonValue'];
-        $uploadFileType = empty($fieldSet["upload"]["filetype"])?C("SysSet.UPLOAD_IMG_FILETYPE"):$fieldSet["upload"]["filetype"];
+        $uploadFileType = empty($fieldSet["upload"]["filetype"])?C("SysSetting.UPLOAD_IMG_FILETYPE"):$fieldSet["upload"]["filetype"];
         $uploadFileNums	= intval($fieldSet["upload"]["maxNum"])<0?1:intval($fieldSet["upload"]["maxNum"]);
         if($uploadFileNums>1){
             $uploadButtonValue .= "最多".$uploadFileNums."个";
@@ -52,26 +52,12 @@ $fieldSet["name"],$uploadButtonValue,$uploadFileType,DxFunction::escapeJson($upl
             <input type="text" ng-hide="true" name="old_%1$s" value="" />',
             $fieldSet["name"]);
         break;
-    case "date":
-        //设置弹出的格式及限制条件
-        if(empty($fieldSet["valFormat"])) $dateFormat = array("dateFmt"=>"yyyy-MM-dd");
-        else $dateFormat = array("dateFmt"=>$fieldSet['valFormat']);
-        if(!empty($fieldSet['maxvalue'])){
-            $dateFormat['maxDate'] = $fieldSet['maxvalue'];
-        }
-        if(!empty($fieldSet['minvalue'])){
-            $dateFormat['minDate'] = $fieldSet['minvalue'];
-        }
-        $inputWidth = strlen($dateFormat["dateFmt"])*8+10;
-        printf('<input style="width:%4$dpx" type="text" ng-model="dataInfo.%1$s" name="%1$s" id="%1$s" value="" placeholder="%2$s" onfocus="%3$s" class="Wdate" />%5$s',
-            $fieldSet["name"],$fieldSet["note"],DxFunction::escapeHtmlValue("WdatePicker(".json_encode($dateFormat).")"),$inputWidth,$fieldSet["danwei"]);
-        break;
     case "canton":
         if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo" textTo="%s',$fieldSet['textTo']);
         else $inputAddr = "";
 
         printf('
-<select class="autowidth cantonSelect%2$s" ng-show="cantonTree[canton_id].length" ng-model="selectedCanton.%1$s" ng-change="cantonChange(selectedCanton.%1$s,\'dataInfo.%1$s\')" ng-repeat="canton_id in dataInfo.%1$s | cantonFdnToArray:\'dataInfo.%1$s\'">
+<select ng-disabled="!isEdit" class="autowidth cantonSelect%2$s" ng-show="cantonTree[canton_id].length" ng-model="selectedCanton.%1$s" ng-change="cantonChange(selectedCanton.%1$s,\'dataInfo.%1$s\')" ng-repeat="canton_id in dataInfo.%1$s | cantonFdnToArray">
     <option ng-repeat="canton in cantonTree[canton_id]" ng-selected="dataInfo.%1$s|cantonOptionSelected:canton.val" key="{{canton.canton_id}}" value="{{canton.val}}">{{canton.title}}</option>
 </select>
 <input type="text" ng-hide="true" name="%1$s" id="%1$s" ng-model="dataInfo.%1$s" value="" class="dataOpeSearch likeRight" />'
@@ -94,47 +80,80 @@ $fieldSet["name"],$uploadButtonValue,$uploadFileType,DxFunction::escapeJson($upl
          */
         break;
     case "enum":
-    case "set":
-        switch($fieldSet["type"]){
-        case "set":
-            $inputType = "checkbox";
-            break;
-        default:
-            $inputType = "radio";
-            break;
-        }
+        $inputType = "radio";
         if(!empty($fieldSet["textTo"])) $inputType = sprintf("%s\" class=\"textTo\" textTo=\"%s",$inputType,$fieldSet["textTo"]);
+        printf('<span ng-show="isEdit">');
         foreach($fieldSet["valChange"] as $key => $val){
-            printf("<input type=\"%s\" name=\"%s%s\" id=\"%s\" value=\"%s\" text=\"%6\$s\" ng-model=\"dataInfo.%2\$s\" />%6\$s",
-                $inputType,$fieldSet["name"],$inputType=="checkbox"?"[]":"",$fieldSet["name"],$key,DxFunction::escapeHtmlValue($val));
+            printf("<input type=\"%1\$s\" name=\"%2\$s\" id=\"%2\$s\" value=\"%3\$s\" text=\"%4\$s\" ng-model=\"dataInfo.%2\$s\" ng-class=\"{ '%6\$s':isEdit,'%5\$s':isAdd}\" />%4\$s",
+                $inputType,$fieldSet["name"],$key,DxFunction::escapeHtmlValue($val),$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
         }
-
+        printf('</span>');
         break;
-        case "select":
-            $inputAddr = empty($fieldSet["multiple"])?"":" multiple";
-            if(!empty($fieldSet["textTo"])) $inputAddr = sprintf('%s class="textTo" textTo="%s">',$inputAddr,$fieldSet['textTo']);
-            printf('<select name="%s" id="%s" class_add="%s" class_edit="%s" class="autowidth" ng-model="dataInfo.%1$s"%s>',$fieldSet["name"],$fieldSet["name"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputAddr);
-            printf('<option value="">请选择</option>');
-            foreach($fieldSet["valChange"] as $key => $val){
-                printf("<option value=\"%s\">%s</option>",$key,DxFunction::escapeHtmlValue($val));
-            }
-            printf('</select>');
-            break;
-        case "password":
-            $inputType = "password";
-        case "string":
-            $inputType = "text";
-        case "text":
-        default:
-            $inputType = "text";
-            if($fieldSet["width"]<1000){
-                printf('<input ng-model="dataInfo.%1$s" style="width:%7$dpx" type="%6$s" name="%1$s" id="%1$s" placeholder="%3$s" class="dataOpeSearch likeRight likeLeft" class_add="%4$s" class_edit="%5$s" value="" />%2$s',
-                    $fieldSet["name"],$fieldSet["danwei"],$fieldSet["note"],$fieldSet["vaild"][MODEL::MODEL_INSERT],$fieldSet["vaild"][MODEL::MODEL_UPDATE],$inputType,$fieldSet["width"]);
-            }else{
-                printf('<textarea ng-model="dataInfo.%1$s" rows="%2$d" style="width:200px" name="%1$s" id="%1$s" placeholder="%3$s" class="dataOpeSearch likeRight likeLeft" class_add="%4$s" class_edit="%5$s"></textarea>',
-                    $fieldSet["name"],round(intval($fieldSet["width"])/1000),$fieldSet["note"],$fieldSet["vaild"][MODEL::MODEL_INSERT],$fieldSet["vaild"][MODEL::MODEL_UPDATE],$inputType);
-            }
-            break;
+    case "set":
+        $inputType = "checkbox";
+        if(!empty($fieldSet["textTo"])) $inputType = sprintf("%s\" class=\"textTo\" textTo=\"%s",$inputType,$fieldSet["textTo"]);
+        printf('<span ng-show="isEdit">');
+        foreach($fieldSet["valChange"] as $key => $val){
+            printf("<input type=\"%1\$s\" name=\"%2\$s[]\" id=\"%2\$s\" value=\"%3\$s\" text=\"%4\$s\" ng-checked=\"dataInfo.%2\$s | checkBoxChecked:'%3\$s'\" ng-class=\"{ '%6\$s':isEdit,'%5\$s':isAdd}\" />%4\$s",
+                $inputType,$fieldSet["name"],$key,DxFunction::escapeHtmlValue($val),$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
+;
+        }
+        printf('</span>');
+        printf("<span ng-hide=\"isEdit\" ng-bind=\"dataFields.%1\$s.valChange[dataInfo.%1\$s]\"></span>",$fieldSet["name"]);
+        break;
+    case "date":
+        //设置弹出的格式及限制条件
+        $dateFormat = array("dateFmt"=>$fieldSet['valFormat']);
+        $fieldSet["width"] = intval($fieldSet["width"]) + strlen($fieldSet['valFormat']);//由于列表页面和修改页面的字体大小不同，所以这里要作个微调
+        if(!empty($fieldSet['maxvalue'])){
+            $dateFormat['maxDate'] = $fieldSet['maxvalue'];
+        }
+        if(!empty($fieldSet['minvalue'])){
+            $dateFormat['minDate'] = $fieldSet['minvalue'];
+        }
+        printf('<input style="width:%4$dpx" type="text" ng-show="isEdit" ng-model="dataInfo.%1$s" name="%1$s" id="%1$s" value="" placeholder="%2$s" onfocus="%3$s" class="Wdate" ng-class="{ \'%6$s\':isEdit,\'%5$s\':isAdd}" />',
+            $fieldSet["name"],$fieldSet["note"],DxFunction::escapeHtmlValue("WdatePicker(".json_encode($dateFormat).")"),$fieldSet["width"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
+        printf("<span ng-hide=\"isEdit\" ng-bind=\"dataInfo.%1\$s\"></span>",$fieldSet["name"]);
+        break;
+    case "select":
+        $inputAddr = empty($fieldSet["multiple"])?"":" multiple";
+        if(!empty($fieldSet["textTo"])) $textTo = sprintf(' textTo" textTo="%s',$fieldSet['textTo']);
+        else $textTo = "";
+        printf('<select ng-disabled="!isEdit" name="%1$s" id="%1%s" ng-class="{ \'%3$s\':isEdit,\'%2$s\':isAdd}" ng-model="dataInfo.%1$s"%4$s class="autowidth%5$s" ng-show="isEdit">',
+            $fieldSet["name"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputAddr,$textTo);
+        printf('<option value="">请选择</option>');
+        foreach($fieldSet["valChange"] as $key => $val){
+            printf("<option value=\"%s\">%s</option>",$key,DxFunction::escapeHtmlValue($val));
+        }
+        printf('</select>');
+        break;
+    case "password":
+        printf('<input style="width:120px" type="password" name="%1$s" id="%1$s" placeholder="%2$s" ng-show="isEdit" class="dataOpeSearch likeRight likeLeft" class_add="%3$s" class_edit="%4$s" value="" />',
+            $fieldSet["name"],$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
+        printf("<span ng-hide=\"isEdit\">******</span>");
+        break;
+    case "string":
+    case "text":
+    case "tel":
+        if(empty($inputType)) $inputType = "text";
+    case "int":
+        if(empty($inputType)) $inputType = "number";
+    case "email":
+        if(empty($inputType)) $inputType = "email";
+    case "url":
+        if(empty($inputType)) $inputType = "url";
+    default:
+        if(empty($inputType)) $inputType = "text";
+        if($fieldSet["width"]<1000){
+            printf('<input ng-model="dataInfo.%1$s" style="width:%6$dpx" type="%5$s" name="%1$s" id="%1$s" placeholder="%2$s" ng-show="isEdit" ng-class="isEdit | validClass:isAdd:\'%4$s\':\'%3$s\'" value="" />',
+                $fieldSet["name"],$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputType,$fieldSet["width"]);
+        }else{
+            printf('<textarea ng-model="dataInfo.%1$s" rows="%2$d" style="width:200px" name="%1$s" id="%1$s" placeholder="%3$s" ng-class="{ \'%5$s\':isEdit,\'%4$s\':isAdd}" ng-show="isEdit"></textarea>',
+                $fieldSet["name"],round(intval($fieldSet["width"])/1000),$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputType);
+        }
+        printf("<span ng-hide=\"isEdit\" ng-bind=\"dataInfo.%1\$s\"></span>",$fieldSet["name"]);
+        break;
     }
 }
+if(!empty($fieldSet["danwei"])) printf("<span class=\"help-inline\">%s</span>",$fieldSet["danwei"]);
 

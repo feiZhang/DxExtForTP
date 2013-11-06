@@ -1,0 +1,21 @@
+<include file="Public:header" />
+<eq name="haveHeaderMenu" value='true'>
+    <include file="Public:menu" />
+</eq>
+
+<div class="dataListLeftMenuArea">
+{:W('Menu',array("type"=>"one","parent_id"=>7))}
+</div>
+
+<div class="dataListDataArea">
+        <div style='font-size: 22px;font-weight: bold;'>区域信息</div>
+        <div id="dataListCon" class="cen_pg">
+            {:W('CantonTree',array("clickJs"=>""))}
+        </div>
+        <div class="z-bott">
+            <p id="ico01">该区域部分不能修改删除，只能查看。</p>
+        </div>
+</div>
+
+<include file="Public:footer" />
+

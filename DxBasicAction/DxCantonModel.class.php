@@ -2,8 +2,10 @@
 class DxCantonModel extends DxExtCommonModel {
     //put your code here
     protected $modelInfo=array(
-            "title"=>'行政区域','readOnly'=>true,
-            "dictTable"=>array("fdn","text_name")
+        "title"=>'行政区域','readOnly'=>true,
+        "dictTable"=>array("fdn","text_name"),
+        //"leftArea"=>"{:W('Menu',array('type'=>'one','parent_id'=>100))}",
+        "helpInfo"=>"该区域部分不能修改删除，只能查看。"
     );
 
     public function getSelectSelectSelect($fdn=""){
@@ -18,7 +20,7 @@ class DxCantonModel extends DxExtCommonModel {
                 S("Cache_SELECT_SELECT_SELECT_Canton",$list);
             }
         }else
-            $list = $this->where(array("fdn"=>array( 'like', $fdn."%")))->field("id,name title,parent_id,fdn val")->select();
+            $list = $this->where(array("fdn"=>array( 'like', $fdn."%")))->field("canton_id,name title,parent_id,fdn val")->select();
 
         $data = array();
         if($list) $data = $list;

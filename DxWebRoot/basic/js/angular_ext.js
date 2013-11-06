@@ -2,23 +2,14 @@
  * angularJs的代码
  */
 var dxAngularM = angular.module("dxApp",[]);
-var cantonFdnTree = false;
-if(cantonFdnTree===false){
-    cantonFdnTree = new Array();
-    $.get(APP_URL+"/Canton/getSelectSelectSelect",function(data){
-        var cantonLength = data.length;
-        for (i=0;i<cantonLength;++i) {
-            if (undefined == cantonFdnTree[data[i].parent_id]) {
-                cantonFdnTree[data[i].parent_id] = new Array();
-            }
-            cantonFdnTree[data[i].parent_id].push(data[i]);
-        };
-    },"json");
-}
 
 dxAngularM.controller("dataEditCtrl",function($scope){
+    $scope.isEdit = true;//新增页面也是修改页面，只不过id=0而已
+    if(recordDataInfo.id == "0")
+        $scope.isAdd = true;  //要区分新增和修改，使用不同的js数据验证规则
     $scope.cantonTree = cantonFdnTree;
     $scope.dataInfo = recordDataInfo;
+    $scope.dataFields = recordDataFields;
 
     //设置文件上传组件
     angular.element("input[alt='uploadFile']").each(function(i,input){
@@ -42,19 +33,27 @@ dxAngularM.controller("dataEditCtrl",function($scope){
         angular.element("div#"+obj.attr("id")).fileupload(opt);
     });
 
+    $("#itemAddForm").validationEngine({
+        //ajaxFormValidationMethod: 'post',
+        onValidationComplete:formSubmitComplete
+    });
+
     $scope.cantonChange = function(selectCanton,cantonFdn,textTo){
         if(selectCanton!=undefined && selectCanton!=null && selectCanton!=0) eval("$scope." + cantonFdn + "= selectCanton;");
+    };
+    $scope.editTheData = function(){
+        $scope.isEdit = !$scope.isEdit;
     };
 });
 
 dxAngularM.filter('cantonFdnToArray', function() {
-    return function(fdn,cantonFdnName) {
-        if(fdn==undefined || fdn==0){
+    return function(fdn) {
+        if(fdn==undefined || fdn==null || fdn==0){
             return new Array();
         }
         var ta = fdn.split(".");
         ta.pop();
-        angular.forEach(ta,function(val,key){ta[key]=parseInt(val);});
+        angular.forEach(ta,function(val,key){ta[key]=parseInt(val,10);});
         return ta;
     }
 });
@@ -63,6 +62,21 @@ dxAngularM.filter('cantonOptionSelected', function() {
     return function(selectedFdn,optionFdn) {
         if(selectedFdn==undefined) return false;
         return selectedFdn.substr(0,optionFdn.length)==optionFdn;
+    }
+});
+
+dxAngularM.filter('checkBoxChecked', function() {
+    return function(selectVal,theVal) {
+        if(selectVal==0 || selectVal=="" || selectVal==undefined) return false;
+        selectVal = "," + selectVal + ",";
+        return selectVal.indexOf(","+theVal+",")!=-1;
+    }
+});
+
+dxAngularM.filter('validClass', function() {
+    return function(isEdit,isAdd,editClass,addClass) {
+        if(isEdit) return editClass;
+        if(isAdd) return addClass;
     }
 });
 

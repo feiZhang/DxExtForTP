@@ -1,0 +1,100 @@
+<style>
+<!--
+body > .navbar {font-size:14px;margin:0;}
+/* Subnav */
+.subnav {
+    background-image:linear-gradient(to bottom, #0088cc 0%, #045c9e 100%);
+    border: 1px solid #e5e5e5;width: 100%;background-repeat: repeat-x;
+}
+.subnav-fixed {z-index: 1020;  border-color: #045c9e;border-width: 0px; -webkit-border-radius: 0; -moz-border-radius: 0; border-radius: 0; -webkit-box-shadow: inset 0 1px 0 #d9edf7, 0 1px 5px rgba(0, 0, 0, .1); -moz-box-shadow: inset 0 1px 0 #d9edf7, 0 1px 5px rgba(0, 0, 0, .1);box-shadow: inset 0 1px 0 #d9edf7, 0 1px 5px rgba(0, 0, 0, .1); filter: progid:DXImageTransform.Microsoft.gradient(enabled=false); }
+.navbar-inverse .navbar-inner {min-height:
+    40px;padding:0;background:url(__DXPUBLIC__/basic/images/bg_menu_dongtai.png) #FFFFFF;border:none;-webkit-border-radius:0px;-moz-border-radius: 0px;border-radius: 0px;}
+.old-top li{ line-height:28px;}
+.old-top{ vertical-align:middle; text-align:right; margin-top:0px;}
+.subnav-fixed .nav { margin: 0 auto; padding: 0 20px;}
+.subnav .nav > li > a {margin: 0;color: #d9edf7;padding-top:11px;padding-bottom:11px;margin-top:1px; -webkit-border-radius: 0;-moz-border-radius: 0;border-radius: 0;}
+.subnav .nav > li > a:hover {
+    margin-top:1px;
+    color: #054b6e;
+    background-color: #d9edf7;
+    border-right-color: #d9edf7;
+}
+.old-top li a{ padding:0 10px;}
+.subnav .nav > .active > a, .subnav .nav > .active > a:hover {
+    padding-left: 13px;
+    color: #054b6e;
+    margin-top:1px;
+    background-color: #A8D4F3;
+    border-right-color: #d9edf7;
+    border-left: 0;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .05);
+    -moz-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .05);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .05);
+}
+.subnav .nav > li > a .caret, .subnav .nav > li > a:hover .caret, .subnav .nav > .active > a .caret, .subnav .nav > .active > a:hover .caret {
+        border-top-color: #FFFFFF;
+}
+div.menu-bar{
+    font-size:16px;
+}
+-->
+</style>
+<body data-spy="scroll" data-target=".bs-docs-sidebar">
+<div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container-fluid">
+      <button data-target=".nav-collapse" data-toggle="collapse" class="btn btn-navbar collapsed" type="button"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+      <div class="nav-collapse collapse" style="height: 0px;">
+        <ul class="nav pull-left">
+          <!--<li class=""> <a class="xst-tlog" href="#"><img src="images/logo.png" /></a> </li>-->
+          <li class="">
+            <h2><a class="xst-tlog" href="__ROOT__">{$Think.config.SysSetting.SITE_NAME}</a></h2>
+          </li>
+        </ul>
+        <ul class="unstyled old-top pull-right">
+          <li class="mini">
+            <i class="icon-home"></i><a href="__APP__/Home/index" target="_top">首页</a> 
+            <i class="icon-off"></i><a href="__APP__/Public/logout" target="_top">安全退出</a>
+          </li>
+          <li>登陆者：<a href="#">{$Think.session.true_name}</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!--top end-->
+
+<div class="subnav subnav-fixed menu-bar">
+    <ul class="nav nav-pills">
+        <?php
+        $menu_args = $_GET;
+        unset($menu_args["_URL_"]);
+        if(sizeof($menu_args)>0){
+            $menu_args_str = array();
+            foreach($menu_args as $k => $v)
+                $menu_args_str[] = $k."=".$v;
+            $menu_args_str = "?".implode("&",$menu_args_str);
+        }else{
+            $menu_args_str = "";
+        }
+
+
+        $menu = D("Menu")->getMyMenuList();
+        $menu_size = sizeof($menu);
+        if($menu_size>10) $max = 10;
+        else $max = $menu_size;
+        for($i=0;$i<$max;++$i){
+            if($menu[$i]['module_name'] == MODULE_NAME && $menu[$i]['action_name']==ACTION_NAME && ($menu[$i]["args"]=="" || $menu[$i]["args"]==$menu_args_str)) $active = "active";
+            else $active = "";
+            printf('<li class="%s"><a href="__APP__/%s/%s%s">%s</a></li>',$active,$menu[$i]["module_name"],$menu[$i]["action_name"],$menu[$i]["args"],$menu[$i]["menu_name"]);
+        }
+        if($menu_size>10){
+            printf('<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">其他<b class="caret"></b></a><ul class="dropdown-menu">');
+            for($i=$max;$i<$menu_size;++$i){
+                printf('<li><a href="__APP__/%s/%s%s">%s</a></li>',$menu[$i]["module_name"],$menu[$i]["action_name"],$menu[$i]["args"],$menu[$i]["menu_name"]);
+            }
+            printf('</ul></li>');
+        }
+        ?>
+    </ul>
+</div>

@@ -1,7 +1,7 @@
 <?php
 return array (
     //--需要配置变动的
-    'DX_PUBLIC' => "/DxInfo/DxWebRoot",//DxInfo的Web目录地址,目前wpickdate插件不支持跨域引用
+    'DX_PUBLIC' => DX_PUBLIC,//DxInfo的Web目录地址,目前wpickdate插件不支持跨域引用
     'APP_DEBUG' => false, // 是否开启调试模式
     'UPLOAD_BASE_PATH' => dirname(APP_PATH)."/userUploadFiles",
     'HAVE_HEADER_MENU' => true,
@@ -18,7 +18,7 @@ return array (
     'NOT_AUTH_ACTION' => array ("Public" => 1,"Web" => 1 ), // 无需权限认证的Action
     'REQUIST_AUTH_ACTION' => array (), // 必须权限认证的Action
     'LOGIN_MD5' => false, // 是否md5加密密码
-    'ROOT_CANTON_FDN' => "03520.", // 是否md5加密密码
+    'ROOT_CANTON_FDN' => "03520.",
 
     //--偶尔需要变动的
     'DELETE_TAGS' => array ("delete_status" => "1" ),
@@ -58,5 +58,9 @@ return array (
             "_overlay" => true
         ),
     ),
+
+    'LOG_RECORD' => true, // 进行日志记录
+    'LOG_EXCEPTION_RECORD' => true, // 是否记录异常信息日志
+    'LOG_LEVEL' => 'EMERG,ALERT,CRIT,ERR,WARN,INFO,DEBUG,SQL', // 允许记录的日志级别
 );
 

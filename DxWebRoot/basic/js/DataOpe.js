@@ -18,18 +18,18 @@
         _this.dsOption      = {
                                 fields:[],
                                 data : [],
-                                uniqueField : 'id',
+                                uniqueField : 'pkId',
                                 recordType : 'object'
                                 };
         _this.colsOption        = [];
         _this.gridOption        = {
                                 id      : _this.grid_id,
                                 width   : "100%",
-                                height  : "320",
+                                height  : "500",
                                 minHeight:'150',
                                 loadURL :   "",
                                 container : 'dataList',
-                                replaceContainer    : false, 
+                                replaceContainer    : false,
                                 toolbarContent      : 'state',
                                 pageSize            : 20,
                                 loadURL             : "",
@@ -57,6 +57,10 @@
                             };
         //init
         _this.init  = function(gridArgs){
+            if(gridArgs.pkId != undefined && gridArgs.pkId != 0){
+                _this.dsOption.uniqueField = gridArgs.pkId;
+            }
+
             if(gridArgs.enablePage=="1"){
                 //ie9下不支持  goto生成，本质不支持：gt_base.js   234行 el = Sigma.doc.createElement(el);  的写法 ，，el为字符串   <input type="text"》
                 _this.gridOption.toolbarContent = "nav | goto | pagesize | " + _this.gridOption.toolbarContent;
@@ -123,37 +127,43 @@
                 _this.gridOption.exportURL  = _this.urladd(data,"export=xls");
             }
         };
-        _this.showGrid          = function(excludeHeight){
+        _this.showGrid          = function(config){
+            var excludeHeight = config.excludeHeight;
             var gridOption  = _this.gridOption;
             //如果有头容器，则使用自动以头
             if($("#gridHeader").html().length>100) gridOption.customHead    = "gridHeader";
-            
-            //自动计算grid的合适高度
-            var max = $(window).height();
-            //计算exclude 中指定元素的高度
-            Sigma.$each(excludeHeight, function(idn){
-                if (idn.constructor == Number) {
-                    max = max - idn;
-                    //console.log(idn);
+
+            if(excludeHeight != null && excludeHeight != undefined){
+                if(excludeHeight.constructor == Number){
+                    gridOption.height   = excludeHeight;
                 }else{
-                    if(Sigma.$(idn)!=null){
-                        max     = max - Sigma.U.getHeight(Sigma.$(idn));
-                        //console.log(Sigma.U.getHeight(Sigma.$(idn)));
+                    //自动计算grid的合适高度
+                    var max = $(window).height();
+                    //计算exclude 中指定元素的高度
+                    Sigma.$each(excludeHeight, function(idn){
+                        if (idn.constructor == Number) {
+                            max = max - idn;
+                        }else{
+                            if($(idn).length>0){
+                                max     = max - $(idn).outerHeight();
+                            }
+                        }
+                    });
+                    if($.browser.msie && ($.browser.version=="6.0")){
+                        max     = max - 20;
                     }
+                    gridOption.height   = max-7;
                 }
-            });
-            if($.browser.msie && ($.browser.version=="6.0")){
-                max     = max - 20;
             }
-            gridOption.height   = max-7;
             //根据高度，自动计算grid的合适行数，，如果已经设定不分页显示，则不再计算每页行数
             if(_this.gridOption.pageSize < 9000){
                 var pageSize    = (gridOption.height-50)/23;
                 if(pageSize>gridOption.pageSize) gridOption.pageSize = parseInt(pageSize);
                 gridOption.pageSizeList.unshift(gridOption.pageSize);
             }
-            
+
             _this.mygrid    = new Sigma.Grid( gridOption );
+            if(config.onComplete != undefined) _this.mygrid.onComplete = config.onComplete;
             _this.mygrid.render();
         };
         //查询数据
@@ -186,7 +196,7 @@
             _this.mygrid.destroy();
             $("#"+_this.parentGridDiv).append("<div id=\"" + _this.gridOption.container + "\"></div>");
             _this.mygrid    = new Sigma.Grid( _this.gridOption );
-            _this.mygrid.render("dataList");
+            _this.mygrid.render(_this.gridOption.container);
         };
     }
 })(jQuery);

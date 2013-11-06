@@ -20,7 +20,7 @@ function dataOpeEdit(config){
         title:dialogTitle,
         content:'正在加载页面!<img src="' + DX_PUBLIC + '/public/loading.gif" />',
         esc:true,
-        padding:"0",
+        padding:0,
         lock:true,
         ok:function(){
             if($("form#itemAddForm").length<1) return true;
@@ -75,6 +75,44 @@ function dataOpeDelete(config){
         okValue:"确定",
         cancel:function(){},
         cancelValue:"取消"
+    });
+}
+function dataOpeListDialog(config){
+    $.dialog({
+        id:"dataOpeListDialog",
+        title:config.title || "列表",
+        lock:true,
+        content:'正在加载页面!<img src="' + DX_PUBLIC + '/public/loading.gif" />',
+        padding:0,
+        ok:function(){
+            if(config.ok != undefined) config.ok(this);
+        },
+        okValue:"确定",
+        cancel:function(){},
+        cancelValue:"取消",
+        initialize:function(){
+            var theThis     = this;
+            var this_post_url   = URL_URL;
+            var moduleName = config.moduleName;
+            if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url  = APP_URL + "/" + moduleName;
+            var html = "<div id='dataListConDialog' style='width:600px;height:500px;'><div id='dataListDialog'></div></div>";
+            if(config.html != undefined) html = html + config.html;
+
+            $.get(this_post_url + "/get_model",function(data){
+                theThis.content(html);
+
+                var dxGridList = new $.dxGrid();
+                dxGridList.init({ "gridDiv":"dataListDialog",",loadUrl":"","gridFields":data.gridFields,"datasetFields":data.datasetFields,"parentGridDiv":"dataListConDialog",
+                        "enablePage":0,"enableExport":0,"enablePrint":0,
+                        "customRowAttribute":"",
+                        "stripeRows":"","pkId":data.pkId
+                });
+                dxGridList.setBaseURL(this_post_url);
+                if(config.dataUrl != undefined) dxGridList.setData(this_post_url + "/" + config.dataUrl);
+                dxGridList.showGrid({"excludeHeight":config.excludeHeight,"onComplete":config.onComplete});
+            });
+        }
+
     });
 }
 
@@ -258,7 +296,7 @@ function formSubmitComplete(form, r){
                     $("input" + "#" + toId).val($(this).find('option:selected').attr('key'));
                 }
             }else
-                $("input" + "#" + toId).val($(this).text());
+                $("input" + "#" + toId).val($(this).find('option:selected').text());
         });
 
         //触发savedata事件,用于支持fckeditor保存数据.

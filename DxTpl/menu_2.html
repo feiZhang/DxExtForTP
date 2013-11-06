@@ -1,0 +1,112 @@
+<style>
+<!--
+body > .navbar {font-size:14px;margin:0;}
+/* Subnav */
+.subnav {background-image: -moz-linear-gradient(top, #0088cc 0%, #045c9e 100%);border: 1px solid #e5e5e5;width: 100%;background-repeat: repeat-x;}
+.subnav-fixed {z-index: 1020;  border-color: #045c9e;border-width: 0px; -webkit-border-radius: 0; -moz-border-radius: 0; border-radius: 0; -webkit-box-shadow: inset 0 1px 0 #d9edf7, 0 1px 5px rgba(0, 0, 0, .1); -moz-box-shadow: inset 0 1px 0 #d9edf7, 0 1px 5px rgba(0, 0, 0, .1);box-shadow: inset 0 1px 0 #d9edf7, 0 1px 5px rgba(0, 0, 0, .1); filter: progid:DXImageTransform.Microsoft.gradient(enabled=false); }
+.navbar-inverse .navbar-inner {min-height: 40px;padding:0;background:url(../images/bg_b.png) #FFFFFF;border:none;-webkit-border-radius:0px;-moz-border-radius: 0px;border-radius: 0px;}
+.old-top li{ line-height:28px;}
+.old-top{ vertical-align:middle; text-align:right; margin-top:0px;}
+.subnav-fixed .nav { margin: 0 auto; padding: 0 20px;}
+.subnav .nav > li > a {margin: 0;color: #d9edf7;padding-top:11px;padding-bottom:11px;margin-top:1px; -webkit-border-radius: 0;-moz-border-radius: 0;border-radius: 0;}
+.subnav .nav > li > a:hover {
+    margin-top:1px;
+    color: #054b6e;
+    background-color: #d9edf7;
+    border-right-color: #d9edf7;
+}
+.old-top li a{ padding:0 10px;}
+.subnav .nav > .active > a, .subnav .nav > .active > a:hover {
+    padding-left: 13px;
+    color: #054b6e;
+    margin-top:1px;
+    background-color: #A8D4F3;
+    border-right-color: #d9edf7;
+    border-left: 0;
+    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .05);
+    -moz-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .05);
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, .05);
+}
+.subnav .nav > li > a .caret, .subnav .nav > li > a:hover .caret, .subnav .nav > .active > a .caret, .subnav .nav > .active > a:hover .caret {
+        border-top-color: #FFFFFF;
+}
+-->
+</style>
+<?php
+$userTrueName = session(C("LOGIN_USER_NICK_NAME"));
+$arr_menu = D("Menu")->getMyAction();
+foreach($arr_menu as $key=>$value){
+    $arrmenu[$value['menu_id']]=$value;
+}
+foreach($arrmenu as $key=>$value){
+    if($value['parent_id']==0){
+        $menu[$value['menu_id']]=$value;
+    } else {
+        if($arrmenu[$value['parent_id']]['parent_id']==0)
+            $menu[$value['parent_id']]['child'][$value['menu_id']]=$value;
+        else{
+            $menu[$arrmenu[$value['parent_id']]['parent_id']]['child'][$value['parent_id']]['child'][$value['menu_id']]=$value;
+        }
+    }
+}
+?>
+<body data-spy="scroll" data-target=".bs-docs-sidebar">
+<div class="navbar navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container-fluid">
+      <button data-target=".nav-collapse" data-toggle="collapse" class="btn btn-navbar collapsed" type="button"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </button>
+      <div class="nav-collapse collapse" style="height: 0px;">
+        <ul class="nav pull-left">
+          <!--<li class=""> <a class="xst-tlog" href="#"><img src="images/logo.png" /></a> </li>-->
+          <li class="">
+            <h2><a class="xst-tlog" href="#">居家养老业务管理系统</a></h2>
+          </li>
+        </ul>
+        <ul class="unstyled old-top pull-right">
+          <li class="mini">
+            <button class="btn btn-mini btn-primary" type="button">模拟弹屏</button>
+            <button class="btn btn-mini btn-danger" type="button">示忙/示闲</button>
+            <button class="btn btn-mini btn-success" type="button">排队(0)</button>
+            &nbsp;&nbsp; <i class="icon-home"></i><a href="__APP__/Home/index" target="_top">登录首页</a> <i class="icon-comment"></i><a href="#">最新消息</a> <i class="icon-off"></i><a href="__APP__/Public/logout" target="_top">安全退出</a></li>
+          <li>登陆者：<a href="#">{$Think.session.true_name}</a> 部门：<a href="#">综合部</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<!--top end-->
+
+<div class="subnav subnav-fixed">
+        <ul class="nav nav-pills">
+            <volist name="menu" id="menu">
+                <notempty name="menu.child">
+                <if condition="$menu['module_name'] eq MODULE_NAME">
+                    <li class="dropdown active"><a href="__APP__/{$menu['module_name']}/{$menu['action_name']}{$menu['args']}" data-toggle="dropdown" class="dropdown-toggle">{$menu.menu_name}<b class="caret"></b></a>
+                <else />
+                    <li class="dropdown"><a href="__APP__/{$menu['module_name']}/{$menu['action_name']}{$menu['args']}" data-toggle="dropdown" class="dropdown-toggle">{$menu.menu_name}<b class="caret"></b></a>
+                 </if>
+                        <ul class="dropdown-menu">
+                          <volist name="menu['child']" id="child">
+                            <notempty name="child.child">
+                               <li class="dropdown-submenu"><a href="__APP__/{$child['module_name']}/{$child['action_name']}{$child['args']}" tabindex="-1">{$child.menu_name}</a>
+                                 <ul class="dropdown-menu">
+                                   <volist name="child['child']" id="childs">
+                                      <li><a href="__APP__/{$childs['module_name']}/{$childs['action_name']}{$childs['args']}">{$childs.menu_name}</a></li>
+                                   </volist>
+                                 </ul>
+                            <else />
+                                <li><a href="__APP__/{$child['module_name']}/{$child['action_name']}{$child['args']}">{$child.menu_name}</a></li>
+                            </notempty>
+                         </volist>
+                        </ul>
+                    </li>
+                <else />
+                <if condition="$menu['module_name'] eq MODULE_NAME">
+                    <li class="active"><a href="__APP__/{$menu['module_name']}/{$menu['action_name']}{$menu['args']}">{$menu.menu_name}</a></li>
+                <else />
+                    <li ><a href="__APP__/{$menu['module_name']}/{$menu['action_name']}{$menu['args']}">{$menu.menu_name}</a></li>
+                </if>
+                </notempty>
+            </volist>
+        </ul>
+    </div>

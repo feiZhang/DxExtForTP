@@ -52,7 +52,6 @@ class DxExtCommonModel extends Model {
         parent::__construct($name,$connection);
 
         $this->initListFields();
-
         //自动填充默认字段create_time 和 update
         $myFields   = $this->getDbFields();
         if(in_array("create_time", $myFields,true)){
@@ -61,7 +60,7 @@ class DxExtCommonModel extends Model {
         if(in_array("update_time", $myFields,true)){
             $this->_auto = array_merge($this->_auto,array(array('update_time','DxFunction::getMySqlNow',self::MODEL_BOTH,'function')));
         }
-         
+
         // 如果这个 Model 有创建人，创建部门，创建人所属区域，最后修改人 等字段时，
         // 自动追加这些属性到 __auto 中,用Session对应的值，进行填充。
         // 将这些数据打标签为 隶属于某人、某部门 。数据域权限控制时要用这些标签。
@@ -115,7 +114,9 @@ class DxExtCommonModel extends Model {
     public function getListFieldDefault(){
         $default = array();
         foreach($this->getListFields() as $name=>$field){
-            $default[$name] = $field["default"];
+            if(array_key_exists("default",$field)){
+                $default[$name] = $field["default"];
+            }
         }
         return $default;
     }
@@ -154,8 +155,8 @@ class DxExtCommonModel extends Model {
         //转换Model的自动验证规则为formValidation形式
         $tempValid  = $this->convertValid($this->_validate);
         foreach($tempValid as $fld =>$vvvv){
-            $tListFields[$fld]["valid"][self::MODEL_INSERT] = implode(" ",$vvvv[self::MODEL_INSERT]);
-            $tListFields[$fld]["valid"][self::MODEL_UPDATE] = implode(" ",$vvvv[self::MODEL_UPDATE]);
+            $tListFields[$fld]["valid"][self::MODEL_INSERT] = "validate[".implode(",",$vvvv[self::MODEL_INSERT])."]";
+            $tListFields[$fld]["valid"][self::MODEL_UPDATE] = "validate[".implode(",",$vvvv[self::MODEL_UPDATE])."]";
         }
 
         F($cacheFile,$tListFields);
@@ -163,11 +164,24 @@ class DxExtCommonModel extends Model {
     }
     private function getOneListField($key,$field){
         if(!isset($field["name"])) $field["name"]   = $key;
-        if($field["type"]=="canton"){
-            $field["width"] = "180";
-            $field["default"] = session("canton_fdn");
-            if(empty($field["default"])) $field["default"] = C("ROOT_CANTON_FDN");
-            if(empty($field["valChange"])) $field["valChange"] = array("model"=>"Canton");
+        switch($field["type"]){
+            case "canton":
+                $field["width"] = "180";
+                $field["default"] = session("canton_fdn");
+                if(empty($field["default"])) $field["default"] = C("ROOT_CANTON_FDN");
+                $field["valChange"] = "";
+                $data_change    = $this->getModelInfo("data_change");
+                $data_change[$field["name"]] = "cantonFdnToText";
+                $this->setModelInfo("data_change",$data_change);
+                break;
+            case "date":
+                if(empty($field["valFormat"])) $field["valFormat"] = "yyyy-MM-dd";
+                if(empty($field["width"])) $field["width"] = strlen($field["valFormat"])*6+10;
+                $start = strpos("yyyy-MM-dd HH:mm:ss",$field["valFormat"]);
+                if(empty($field["renderer"]) && $start!==false){
+                    $field["renderer"] = sprintf("var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){if(value==null) return '';else if(value.replace(/[:0\- ]*/,'','gi')=='') return '';return value.substr(%d,%d);}",$start,strlen($field["valFormat"]));
+                }
+                break;
         }
         if(intval($field["width"])<1) $field["width"] = "80";
 
@@ -368,31 +382,33 @@ class DxExtCommonModel extends Model {
     /**
      * 使用相套sql语句，代替视图
      * 1.请勿将where条件写在  函数的参数中，请使用where进行where参数传递
+     * 2.Model在select后，进行update或者delete操作，需要恢复table值，否则操作失败
      */
     public function find($options = array()) {
         if(!empty($this->viewTableName)){
-            $orgTableName    = $options["table"];
+            //$orgTableName    = $options["table"];
             $options["table"]   = $this->viewTableName;
             $this->viewTableIsSelect = true;
             $res  = parent::find($options);
             $this->viewTableIsSelect = false;
-            $options["table"]   = $orgTableName;
+            //$options["table"]   = $orgTableName;
         }else
             $res  = parent::find($options);
         return $res;
     }
     public function select($options=array()){
         if(!empty($this->viewTableName)){
-            $orgTableName    = $options["table"];
+            //$orgTableName    = $options["table"];
             $options["table"]   = $this->viewTableName;
             $this->viewTableIsSelect = true;
             $res  = parent::select($options);
             $this->viewTableIsSelect = false;
-            $options["table"]   = $orgTableName;
+            //$options["table"]   = $orgTableName;
         }else
             $res  = parent::select($options);
         return $res;
     }
+
     //3.1.2居然删除了配置 DB_FIELDTYPE_CHECK ，这里只能恢复他。
     protected function _parseOptions($options=array()) {
         if(is_array($options))
@@ -552,6 +568,19 @@ class DxExtCommonModel extends Model {
         return $opWhere;
     }
 
+    //将Model数据作为缓存进行存储,目前用于SysSetting的设置
+    public function cacheData($reset=false){
+        $modelName = $this->getModelName();
+        $sysSetData     = S("Cache_Global_".$modelName);
+        if(empty($sysSetData) || $reset || C("APP_DEBUG")){
+            $sysSetData = $this->select();
+            S("Cache_Global_".$modelName,$sysSetData);
+        }
+        foreach($sysSetData as $set){
+            C($modelName.".".$set["name"],$set["val"]);
+        }
+    }
+
     public function getCacheDictTableData(){
         $userId = intval(session(C("USER_AUTH_KEY")));
         //如果没有初始化
@@ -582,7 +611,35 @@ class DxExtCommonModel extends Model {
         }
         return 0;
     }
-
+    
+    /**
+     * 更新与此model保持textTo关系的数据
+     * @param {array} $data $isdel=true:要删除的数据查询条件   $isdel=false,要更新的数据内容，即data
+     * @param {bool} $isdel 是不是删除出发的更新，删除触发的更新，会将id也进行清除
+     * @return  bool   更新是否完成。
+     */
+    protected function updateTextTo($data,$isdel=false){
+        $textTo = $this->getModelInfo("textTo");
+        if(empty($textTo) || !is_array($textTo)) return true;
+        foreach($textTo as $modelN => $fields){
+            if($isdel===true){
+                $idValues = $this->where($data)->getField($fields["fromid"],true);
+                D($modelN)->where(array($fields["toid"]=>array("in"=>$idValues)))->save(array($fields["textto"]=>'',$fields["toid"]=>0));
+            }else{
+                D($modelN)->where(array($fields["toid"]=>array($data[$fields["fromid"]])))->save(array($fields["textto"]=>$data[$fields["fromtextto"]]));
+            }
+        }
+    }
+    //关联删除。类似于updateTextTo
+    protected function relationDelete($where){
+        $relationDelete = $this->getModelInfo("relationDelete");
+        if(empty($relationDelete) || !is_array($relationDelete)) return true;
+        foreach($relationDelete as $modelN => $fields){
+            $idValues = $this->where($where)->getField($fields["fromid"],true);
+            D($modelN)->where(array($fields["toid"]=>array("in"=>$idValues)))->delete();
+        }
+    }
+    
     /**
      * 将数据操作记录保存到表 DataChangeLog 中
      * **/
@@ -595,26 +652,22 @@ class DxExtCommonModel extends Model {
                 "event"=>$event,'user_id'=>$_SESSION[C('USER_AUTH_KEY')],'user_name'=>$_SESSION[C('LOGIN_USER_NICK_NAME')]));
         }
     }
-    //where 条件并不是单一的 一维数组，可能会有And组合，所以需要，递归数组获取到。
-    protected function getPkIdFromWhere($options){
-        $pkId   = $this->getPk();
-        foreach ($options as $key=>$val){
-            if($key===$pkId){
-                return $val;
-            }else{
-                if(is_array($val)){
-                    return $this->getPkIdFromWhere($val);
-                }
-            }
-        }
-        return 0;
+    /**
+     * 从where条件中找点主键的值
+     * where 条件并不是单一的 一维数组，可能会有And组合，所以需要，递归数组获取到。
+     */
+    protected function getPkIdFromWhere($where){
+        $pkName = $this->getPk();
+        if(empty($pkName)) return array(0);
+        return $this->where($where)->getField($pkName,true);
     }
     protected function _after_delete($data, $options){
         $this->save_data_data_change_log($data,$options, "delete");
         if(C("FULLTEXT_SEARCH") && $this->getModelInfo("toString")!=""){
             $m  = D("FulltextSearch");
-            $m->where(array("object"=>$this->name,"pkid"=>$this->getPkIdFromWhere($options)))->delete();
+            $m->where(array("object"=>$this->name,"pkid"=>array("in",$this->getPkIdFromWhere($options["where"]))))->delete();
         }
+        $this->setCacheDictTableData();
     }
     protected function _before_update(&$data, $options) {
         parent::_before_update($data, $options);
@@ -623,6 +676,8 @@ class DxExtCommonModel extends Model {
     }
     protected function _after_update($data, $options){
         $this->save_data_data_change_log($data,$options, "update");
+        //更新textTo数据
+        $this->updateTextTo($data,false);
         //更新字典表缓存
         $this->setCacheDictTableData();
         //更新全文检索表
@@ -630,7 +685,8 @@ class DxExtCommonModel extends Model {
             $m          = D("FulltextSearch");
             //更新数据提交过来的数据，并不一定是数据库的所有字段，比如：卡号不能修改，则提交过来的数据将不会包含卡号，所以，需要重新从数据库获取新数据。
             $pkId       = $this->getPkIdFromWhere($options);
-            $saveState  = $m->where(array("object"=>$this->name,"data_id"=>$this->getPkIdFromWhere($options)))->save(
+            $pkId       = $pkId[0];
+            $saveState  = $m->where(array("object"=>$this->name,"data_id"=>$pkId))->save(
                 array("content"=>$this->toString($pkId),
                 "message_state"=>$this->fullTextState,
                 "object_title"=>$this->getModelInfo("title"))
@@ -721,6 +777,8 @@ class DxExtCommonModel extends Model {
         return parent::delete($options);
     }
     protected function _before_delete($options){
+        $this->updateTextTo($options["where"],true);
+        $this->relationDelete($options["where"]);
     }
     public function delete($options=array()) {
         $deleteStatus   = false;
@@ -813,9 +871,8 @@ class DxExtCommonModel extends Model {
 
     /**
      * TP save方法的bug，应该，将_parseOptions($options) 放在 id判定之后。看delete方法就是这样。
-     * 否则，再 _parseOptions 中调整where内容，会影像数据更新。
-     * 判定已经有查询条件时，元save方法，未检查 $this->options,,实际应该更进一步，违背编码实现数据的一致性。所有的update，如果data中有主键，则直接将主键作为条件
-     * **/
+     * 否则，再 _parseOptions 中调整的 where 内容，将被忽略掉。
+     */
     public function save($data='',$options=array()) {
         if(empty($data)) {
             // 没有传递数据，获取当前数据对象的值
@@ -980,7 +1037,9 @@ class DxExtCommonModel extends Model {
             else $oneValid = array($vtime=>$oneValid);
             //一个字段，可能会定义多个验证规则。这里将验证规则 合并。
             if(isset($ret[$fld])){
-                $ret[$fld]  = array_unique(array_merge($ret[$fld], $oneValid));
+                $ret[$fld]  = array(
+                    self::MODEL_INSERT=>array_unique(array_merge($ret[$fld][self::MODEL_INSERT], $oneValid[self::MODEL_INSERT])),
+                    self::MODEL_UPDATE=>array_unique(array_merge($ret[$fld][self::MODEL_UPDATE], $oneValid[self::MODEL_UPDATE])));
             }else{
                 $ret[$fld]  = $oneValid;
             }
@@ -990,25 +1049,12 @@ class DxExtCommonModel extends Model {
 
     /**
      * @param       $rule       验证规则
-     * @param       $error      
+     * @param       $error
      * @param       $cond       TP的验证条件
      * @param       $vrule      TP的附加验证规则
      */
     protected function genValidate( $rule, $cond,  $vrule){
         $ret    = array();
-        // 判断验证条件,根据验证条件，附加第一层次验证;; noempty 和 existed 是不存在的前台规则，前台只要不是 required 则空值不验证
-        switch($cond) {
-            case Model::MUST_VALIDATE:      // 必须验证 不管表单是否有设置该字段
-            case Model::EXISTS_VALIDATE:    //存在字段就验证
-                $ret[]='required';
-                break;
-            case Model::VALUE_VALIDATE:    // 值不为空的时候才验证
-                $ret[]='noempty';
-                break;
-            default:    // 默认表单存在该字段就验证
-                $ret[]='existed';
-                break;
-        }
         //根据验证规则，生成第二批验证信息，空 或 其他情况,需要使用附加验证信息进行构建。
         $enable_rule    = false;
         switch($rule){
@@ -1028,7 +1074,6 @@ class DxExtCommonModel extends Model {
                 $ret[]='custom[integer]';
                 break;
             default:
-                //other rule
                 $enable_rule    = true;
                 break;
         }
@@ -1039,7 +1084,7 @@ class DxExtCommonModel extends Model {
          *      $ret[]="funcCall[showFieldMessage,$error]";
          * }
          * **/
-        
+
         if($enable_rule){
             switch($vrule){
                 case "regex":
@@ -1124,110 +1169,98 @@ class DxExtCommonModel extends Model {
         }
         return $ret;
     }
+
     /**
-     * 根据创建文件名称
-     * 属性：
-     * default:字段默认值
-     * pk     ：true 该字段为主键，递增。
-     * type   : 字段的类型，包括：（int,varchar,canton,upload,date,datetime,y-m,y)
-     * size   : 字段的长度。
+     * 根据Model定义，生成大致的表创建SQL语句
      */
     public function fnCreateTable(){
-        $thModel = new Model();
-        $tszTableName        = parse_name($this->name);
-        //组织字符串
-        //$tszCreateTableSql    = sprintf('create table if not exists  %s (',$tszTableName);
-        $thFieldList        = $this->listFields;
-        foreach ($thFieldList as $key=>$thFieldInfo){
-            $tszFieldName        = $key;
-            $thTableFieldInfo    =  $this->fnTableFieldInfo($tszFieldName);
+        $tszTableName       = parse_name($this->name);
+        foreach ($this->listFields as $tszFieldName=>$thFieldInfo){
+            $thTableFieldInfo    =  $this->fnTableFieldInfo($thFieldInfo);
             if(!empty($thTableFieldInfo)){
-                $tszSize = sprintf('(%s)',$thTableFieldInfo['size']);
-                $thFieldSql[$tszFieldName]        = sprintf('`%s` %s %s comment "%s"',$tszFieldName,$thTableFieldInfo['type'],empty($thTableFieldInfo['size'])?"":$tszSize,$thTableFieldInfo['comment']);
-                if(!empty($thFieldInfo['default'])){
-                    $thFieldSql[$tszFieldName]    = sprintf('%s default "%s"',$thFieldSql[$tszFieldName],$thFieldInfo['default']);
-                }
+                if(empty($thTableFieldInfo['size'])) $tszSize = "";
+                else $tszSize = sprintf('(%d)',$thTableFieldInfo['size']);
                 if($thFieldInfo['pk']){
-                    $thFieldSql[$tszFieldName]    = sprintf('%s AUTO_INCREMENT,PRIMARY KEY (`%s`)',$thFieldSql[$tszFieldName],$tszFieldName);
+                    $thFieldSql[$tszFieldName]    = sprintf('    `%s` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT "%s%s",PRIMARY KEY (`%1$s`)',
+                                                            $tszFieldName,$thFieldInfo['title'],$thFieldInfo['note']);
+                }else{
+                    $thFieldSql[$tszFieldName]    = sprintf('    `%s` %s%s NOT NULL DEFAULT "%s" COMMENT "%s%s"',
+                                                            $tszFieldName,$thTableFieldInfo['type'],$tszSize,
+                                                            $thFieldInfo['default'],$thFieldInfo['title'],$thFieldInfo['note']);
                 }
             }
         }
-        $tszCreateTableSql    = sprintf('create table if not exists  %s ( %s)ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT="%s"',$tszTableName,implode($thFieldSql, ','),$this->modelInfo['title']);
-        $thModel->query($tszCreateTableSql);
+        $sql = array();
+        $sql[] = "DROP TABLE IF EXISTS `".$tszTableName."`;";
+        $sql[] = "CREATE TABLE IF NOT EXISTS `".$tszTableName."` (";
+        $sql[] = implode(",\n",$thFieldSql);
+        $sql[] = ')ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT="'.$this->modelInfo["title"].'";';
+        //$this->query($tszCreateTableSql);
+        echo implode("\n",$sql);
     }
-    /**
-     * @param string $field_name 类型
-     */
-    public function fnTableFieldInfo($field_name){
-        $tszFieldName        = $field_name;
-        if(empty($tszFieldName)||!is_string($tszFieldName)){
+    public function fnTableFieldInfo($thFieldInfo){
+        if(empty($thFieldInfo) || !is_array($thFieldInfo)){
             return false;
         }else{
-            if($thFieldInfo    = $this->listFields[$tszFieldName]){
                 if(empty($thFieldInfo['type'])){
                     $thFieldInfo['type']    = 'string';
-                }elseif ($thFieldInfo['type']=='float' && empty($thFieldInfo['size'])){
+                }else if($thFieldInfo['type']=='float' && empty($thFieldInfo['size'])){
                     $thFieldInfo['size']    = "9,2";
-                }
-                if($thFieldInfo['pk']){
-                    $thFieldInfo['type']    ='int';
                 }
                 //默认情况下按照
                 switch ($thFieldInfo['type']) {
                     case 'canton':
-                        $tszType     = 'varchar';
-                        $tiTsize     = '45';
+                        $tszType     = 'VARCHAR';
+                        $tiTsize     = 64;
                         break;
-                    case 'date' :
-                    case 'y_m' :
-                    case 'datetime':
-                        $tszType     = 'datetime';
+                    case 'date':
+                        $tszType     = 'TIMESTAMP';
+                        if(strlen($thFieldInfo["valFormat"])<11){
+                            if(strpos($thFieldInfo["valFormat"],"yyyy")){
+                                $tszType     = 'date';
+                            }else{
+                                $tszType     = 'time';
+                            }
+                        }
                         break;
                     case 'uploadFile':
-                        $tszType     = 'varchar';
-                        $tiTsize     = 1000;
-                        break;
-                    case 'y':
-                        $tszType     = 'year';
+                        $tszType     = 'VARCHAR';
+                        $tiTsize     = 2048*8;
                         break;
                     case 'int':
-                        $tszType     = 'int';
-                        $tiTsize     = ($thFieldInfo['size'])?$thFieldInfo['size']:11;
+                        $tiTsize     = ($thFieldInfo['size'])?intval($thFieldInfo['size']):11;
+                        if($tiTsize<4) $tszType = "unsigned TINYINT";
+                        else if($tiTsize<6) $tszType = "unsigned SMALLINT";
+                        else $tszType     = 'unsigned INT';
                         break;
                     case 'select':
-                        $tszType     = 'int';
+                        if(empty($thFieldInfo["multiple"])){
+                            $tszType     = 'unsigned TINYINT';
+                            $tiTsize     = 4;
+                        }else{
+                            $tszType     = 'VARCHAR';
+                            $tiTsize     = 128;
+                        }
+                        break;
+                    case 'set':
+                        $tszType     = 'VARCHAR';
+                        $tiTsize     = 128;
+                        break;
+                    case 'enum':
+                        $tszType     = 'unsigned TINYINT';
                         $tiTsize     = 4;
                         break;
-                    case 'enum' :
-                    case 'select':
-                        $valChange   = $thFieldInfo['valChange'];
-                        //如果值根据Model转换，或者转换的值中含有中文字符，那么不作为枚举型存在，否则用枚举性处理
-                        if(array_key_exists('model',$valChange)||preg_match("/([\x81-\xfe][\x40-\xfe])/",implode('', $valChange))){
-                            $tszType ='int';
-                            $tiTsize = ($thFieldInfo['size'])?$thFieldInfo['size']:3;
-                        }
-                        else {
-                            $tszType = sprintf("enum('%s')",implode('\',\'', array_values($thFieldInfo['valChange'])));
-                        }
-                        break;
                     case 'string' :
-                    case 'varchar':
                     case 'password':
                     case "cutPhoto":
-                        $tszType    = 'varchar';
-                        $tiTsize    = ($thFieldInfo['size'])?$thFieldInfo['size']:245;
-                        break;
                     default:
-                        $tszType    = $thFieldInfo['type'];//dump($thFieldInfo);dump(($thFieldInfo['size']));
-                        $tiTsize    = $thFieldInfo['size'];
+                        $tszType    = 'VARCHAR';
+                        $tiTsize    = 256;
                         break;
                 }
                 $thFieldInfo['type'] = $tszType;
                 $thFieldInfo['size'] = $tiTsize;
-                $thFieldInfo['comment'] = $thFieldInfo['title'];
                 return $thFieldInfo;
-            }
-            else return false;
         }
     }
     /**
@@ -1254,6 +1287,17 @@ class DxExtCommonModel extends Model {
             $dataPowerFieldDelete = implode(" AND ", $dataPowerFieldDelete);
         }
         return $dataPowerFieldDelete;
+    }
+
+    /**
+     * 记录系统日志
+     * @param       string      $msg     日志内容
+     * @param       array       $data    日志相关的业务数据
+     * @param       string      $type    日志类型
+     * @return      bool                 存储日志是否成功
+     */
+    public function log($msg,$data,$type=LOG::ERR){
+        $data = array_merge($data,array("_REQUEST"=>$_REQUEST));
     }
 }
 

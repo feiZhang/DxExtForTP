@@ -29,7 +29,7 @@ class DataOpeAction extends DxExtCommonAction{
             $pageSize       = ($pageSize==0?20:$pageSize);
         }
         if($start<0) $start = 0;
-        
+
         $where          = array_merge($this->defaultWhere,$this->_search());
         //使用Model连贯操作时，每一个连贯操作，都会往Model对象中赋值，如果嵌套使用Model的连贯操作，会覆盖掉原来已经存在的值，导致bug。
         if(isset($_REQUEST['export']) && !empty($_REQUEST['export'])){
@@ -67,7 +67,7 @@ class DataOpeAction extends DxExtCommonAction{
             }
             $data_list[] = $total;
         }
-        
+
         if ($_REQUEST ["print"] == "1"){
             $this->ajaxReturn(array("data"=>$data_list,"fields"=>$model->getPrintFields()));
         }else if(isset($_REQUEST['export']) && !empty($_REQUEST['export'])){
@@ -171,34 +171,8 @@ class DataOpeAction extends DxExtCommonAction{
         $model  = $this->model;
         if(empty($model)) die();
 
-        //支持通过url传递过来的ModelTitle
-        $enablePage     = $model->getModelInfo("enablePage");
-        $enablePrint    = $model->getModelInfo("enablePrint");
-        $enableImport   = $model->getModelInfo("enableImport");
-        $enableExport   = $model->getModelInfo("enableExport");
-        if($_REQUEST["print"]=="1") $enablePage = false;
-        if($enablePage!==false) $enablePage = true;
-        if($enableExport!==false) $enableExport = true;
-        //因为要在新增修改界面中显示，model的标题，所以需要保存在session中，随后根据情况清楚掉。
-        $modelTitle = empty($_REQUEST["modelTitle"])?$model->getModelInfo("title"):$_REQUEST["modelTitle"];
-        $addTitle   = $model->getModelInfo("addTitle");
-        if(empty($addTitle)) $addTitle  = "新增".$modelTitle;
-        $importTitle    = $model->getModelInfo("importTitle");
-        if(empty($importTitle)) $importTitle    = "导入exl文件";
-        $editTitle  = $model->getModelInfo("editTitle");
-        if(empty($editTitle)) $editTitle    = "修改".$modelTitle;
-        $this->assign ( "modelInfo", array_merge ( $model->getModelInfo(),array (
-            "modelTitle" => $modelTitle,
-            "addTitle" => $addTitle,
-            "editTitle" => $editTitle,
-            "importTitle"=>$importTitle,
-            "readOnly" => $model->getModelInfo ( "readOnly" ) ? $model->getModelInfo ( "readOnly" ) : false,
-            "enablePage" => $enablePage ? "1" : "0",
-            "enablePrint" => $enablePrint ? "1" : "0",
-            "enableImport"=>$enableImport?"1":"0",
-            "enableExport"=>$enableExport?"1":"0",
-        ) ) );
-
+        $this->assign ( "pkId", $model->getPk());
+        $this->assign ( "modelInfo", $this->getModelInfo());
         $gridField  = $model->fieldToGridField();
         //因为Think模板引擎强制将所欲的{}认为是标签，进行解析，而在preg_**函数解析的过程中，会给所有的"加上\，则TP需要对解析出的函数执行 stripslashes，一切导致 \n变成了n，从而导致字段的js代码出错
         $this->assign("gridFields",str_replace("{","{ ",json_encode($gridField["gridFields"])));
@@ -218,6 +192,43 @@ class DataOpeAction extends DxExtCommonAction{
         $this->assign('dx_data_list', DXINFO_PATH."/DxTpl/data_list.html");
         $this->dxDisplay("data_list");
     }
+    private function getModelInfo(){
+        $model = $this->model;
+        //支持通过url传递过来的ModelTitle
+        $enablePage     = $model->getModelInfo("enablePage");
+        $enablePrint    = $model->getModelInfo("enablePrint");
+        $enableImport   = $model->getModelInfo("enableImport");
+        $enableExport   = $model->getModelInfo("enableExport");
+        if($_REQUEST["print"]=="1") $enablePage = false;
+        if($enablePage!==false) $enablePage = true;
+        if($enableExport!==false) $enableExport = true;
+        //因为要在新增修改界面中显示，model的标题，所以需要保存在session中，随后根据情况清楚掉。
+        $modelTitle = empty($_REQUEST["modelTitle"])?$model->getModelInfo("title"):$_REQUEST["modelTitle"];
+        $addTitle   = $model->getModelInfo("addTitle");
+        if(empty($addTitle)) $addTitle  = "新增".$modelTitle;
+        $importTitle    = $model->getModelInfo("importTitle");
+        if(empty($importTitle)) $importTitle    = "导入exl文件";
+        $editTitle  = $model->getModelInfo("editTitle");
+        if(empty($editTitle)) $editTitle    = "修改".$modelTitle;
+
+        return array_merge ( $model->getModelInfo(),array (
+            "modelTitle" => $modelTitle,
+            "addTitle" => $addTitle,
+            "editTitle" => $editTitle,
+            "importTitle"=>$importTitle,
+            "readOnly" => $model->getModelInfo ( "readOnly" ) ? $model->getModelInfo ( "readOnly" ) : false,
+            "enablePage" => $enablePage ? "1" : "0",
+            "enablePrint" => $enablePrint ? "1" : "0",
+            "enableImport"=>$enableImport?"1":"0",
+            "enableExport"=>$enableExport?"1":"0",
+        ) ); 
+    }
+    public function get_model(){
+        $gridField  = $this->model->fieldToGridField();
+        $gridField["modelInfo"] = $this->getModelInfo();
+        $gridField["pkId"] = $this->model->getPk();
+        $this->ajaxReturn($gridField,"JSON");
+    }
 
     /* 追加数据 **/
     public function add(){
@@ -232,7 +243,8 @@ class DataOpeAction extends DxExtCommonAction{
             $pkId     = intval($_REQUEST["id"]);
 
         //列出字段列表
-        $this->assign( "listFields",$model->getEditFields($pkId));
+        $listFields = $model->getEditFields($pkId);
+        $this->assign( "listFields",$listFields);
         $this->assign ( "modelInfo", $model->getModelInfo());
         $this->assign ( "modelName", $model->getModelName());
 //      dump($model->getEditFields($pkId));

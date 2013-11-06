@@ -3,16 +3,6 @@
     <include file="Public:menu" />
 </eq>
 
-<eq name="modelInfo.enablePrint" value="1">
-<script language="javascript" src="__DXPUBLIC__/public/Lodop6.010/LodopFuncs.js"></script>
-<object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0 style="display:none"> 
-    <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 pluginspage="install_lodop32.exe"></embed>
-</object> 
-</eq>
-
-<link href="__DXPUBLIC__/min/g=dataListCss" rel="stylesheet" type="text/css" />
-<script src="__DXPUBLIC__/public/DatePicker/WdatePicker.js" type="text/javascript"></script>
-
 <notempty name="modelInfo.leftArea">
 <div class="dataListLeftMenuArea">
     {$modelInfo.leftArea}
@@ -53,38 +43,51 @@
         print($modelInfo["otherManageAction"]);
       }
       ?>
-
-  </div>
-  </notempty>
-  <div id="dataListCon">
-    <div id="dataList"></div>
-    <div id="grid-help-info">
-      {$modelInfo["helpInfo"]}
     </div>
-  </div>
-</div>
+    </notempty>
+<block name="dataListContent">
 
-<script src="__DXPUBLIC__/public/sigma_grid/gt_grid_all.js" type="text/javascript"></script>
+    <div id="grid-help-info">
+        {$modelInfo["helpInfo"]}
+    </div>
 
-<eq name="Think.config.APP_DEBUG" value="true">
+    <!-- 如果有选择框，则此处可以填充选择框已选定的内容 -->
+    <notempty name="modelInfo.hasCheckBox">
+    <div id="checkdDatas">
+    </div>
+    </notempty>
+
+    <div id="dataListCon">
+        <div id="dataList"></div>
+    </div>
+    <!-- grid的辅助代码-->
+    <eq name="Think.config.APP_DEBUG" value="true">
+    <link href="__DXPUBLIC__/min/g=dataListCss&debug=1" rel="stylesheet" type="text/css" />
+    <else/>
+    <link href="__DXPUBLIC__/min/g=dataListCss" rel="stylesheet" type="text/css" />
+    </eq>
+    <script src="__DXPUBLIC__/public/DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script src="__DXPUBLIC__/public/sigma_grid/gt_grid_all.js" type="text/javascript"></script>
+
+    <eq name="Think.config.APP_DEBUG" value="true">
     <script src="__DXPUBLIC__/public/sigma_grid/src/gt_base.js" type="text/javascript"></script>
     <script src="__DXPUBLIC__/public/sigma_grid/src/gt_grid.js" type="text/javascript"></script>
     <script src="__DXPUBLIC__/public/sigma_grid/src/gt_column.js" type="text/javascript"></script>
     <script src="__DXPUBLIC__/public/sigma_grid/src/gt_tool.js" type="text/javascript"></script>
-</eq>
+    </eq>
 
-<!--数据修改和新增的js 因为ajax加载js会出现异常，所以在这里进行加载-->
-<script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/load-image.min.js"></script>
-<script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/tmpl.min.js"></script>
+    <!--数据修改和新增的js 因为ajax加载js会出现异常，所以在这里进行加载-->
+    <script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/load-image.min.js"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/tmpl.min.js"></script>
 
-<eq name="Think.config.APP_DEBUG" value="true">
-<script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs&debug=1"></script>
-<script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs&debug=1"></script>
-<else/>
-<script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs"></script>
-<script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs"></script>
-</eq>
-<script type="text/javascript" src="__PUBLIC__/js/dataope_ext.js"></script>
+    <eq name="Think.config.APP_DEBUG" value="true">
+    <script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs&debug=1"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs&debug=1"></script>
+    <else/>
+    <script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs"></script>
+    </eq>
+    <script type="text/javascript" src="__PUBLIC__/js/dataope_ext.js"></script>
 <script>
 <!--
 var dxGrid  = null;
@@ -95,20 +98,29 @@ $(function(){
     dxGrid.init({ "gridDiv":"dataList",",loadUrl":"","gridFields":gridFields,"datasetFields":datasetFields,"parentGridDiv":"dataListCon",
         "enablePage":"{$modelInfo['enablePage']}","enableExport":"{$modelInfo['enableExport']}","enablePrint":"{$modelInfo['enablePrint']}",
         "customRowAttribute":"{$modelInfo['customRowAttribute']}",
-        "stripeRows":"{$modelInfo['stripeRows']}"
+        "stripeRows":"{$modelInfo['stripeRows']}","pkId":"{$pkId}"
         });
     dxGrid.setBaseURL("__URL__");
     dxGrid.setData(dxGrid.urladd("__URL__/get_datalist","{\\$InitSearchPara}"));
     <notempty name="ignoreInitSearch">
     dxGrid.setOrginURL("__URL__/get_datalist");
     </notempty>
-    dxGrid.showGrid(['header_title','data_add','query_items','grid-help-info','Copyright',<?php echo intval(C("DATAOPE_LIST_HEIGHT"));?>,<?php echo empty($modelInfo["exclude_data_list_height"])?0:$modelInfo["exclude_data_list_height"];?>]);
-
-<block name="dataListGridExt">
-</block>
+    dxGrid.showGrid({"excludeHeight":['.menu-top-and-menu','.top-menu-list','#header_title','#grid-help-info','#Copyright',<?php echo intval(C("DATAOPE_LIST_HEIGHT"));?>,<?php echo empty($modelInfo["exclude_data_list_height"])?0:$modelInfo["exclude_data_list_height"];?>]});
 });
 -->
 </script>
+    <eq name="modelInfo.enablePrint" value="1">
+    <script language="javascript" src="__DXPUBLIC__/public/Lodop6.010/LodopFuncs.js"></script>
+    <object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0 style="display:none"> 
+    <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 pluginspage="install_lodop32.exe"></embed>
+    </object>
+    </eq>
+
+</block>
+<block name="dataListGridExt">
+</block>
+
+</div>
 
 
 <include file="Public:footer"/>

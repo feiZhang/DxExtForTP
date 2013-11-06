@@ -29,15 +29,13 @@ class DxExtCommonAction extends Action {
 
         if(C("DISABLE_ACTION_AUTH_CHECK")!==true){
             $this->cacheActionList  = DxFunction::getModuleActionForMe();
-            //dump($_SESSION);dump($this->cacheActionList["myAction"]);die();
 
             if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
-                //为了不验证公共方法，不如：public、web等，所以将session验证放在里面。
+                //为了不验证公共方法，比如：public、web等，所以将session验证放在里面。
                 if(0 == intval(session(C("USER_AUTH_KEY")))) {
                     $url    =   C("LOGIN_URL");
                     if($url[0]!="/") $url = U($url);
                     redirect($url,0,"");
-                    //redirect($url,2,"登录超时，请重新登录!");
                 }
                 //判断用户是否有当前动作操作权限
                 $privilege = $this->check_action_privilege();
@@ -51,17 +49,11 @@ class DxExtCommonAction extends Action {
                 }
             }
         }
-        
+
         //将系统变量加载到config中，供系统使用。
-        $sysSetData     = S("Cache_Global_SysSeting");
-        if(empty($sysSetData)){
-            $sysSet     = D("SysSetting");
-            $sysSetData = $sysSet->select();
-            S("Cache_Global_SysSeting",$sysSetData);
-        }
-        foreach($sysSetData as $set){
-            C("SysSet.".$set["name"],$set["val"]);
-        }
+        D("SysSetting")->cacheData();
+        //Canton的缓存数据,用于生成 selectselectselect 
+        $this->assign("CantonData",str_replace("{","{ ",json_encode(D("Canton")->getSelectSelectSelect())));
     }
 
     /**
@@ -310,6 +302,9 @@ class DxExtCommonAction extends Action {
         $model->module      = empty($moduleName)?MODULE_NAME:$moduleName;
         $action_name        = $this->cacheActionList["allAction"][$model->module][$model->action];
 
+        //更新菜单的点击次数
+        D("Menu")->where(array("module_name"=>$model->module,"action_name"=>$model->action))->save(array("click_times"=>array("exp","click_times+1")));
+
         if(sizeof($action_name)>1){
             $action_name    = argsInRequest($action_name,$_REQUEST);
         }else{
@@ -331,6 +326,9 @@ class DxExtCommonAction extends Action {
         $model = D('OperationLog');
         $model ->over_pri =1;
         $model->where(array('id'=>$log_id))->save();
+    }
+    public function createTable(){
+        $this->model->fnCreateTable();
     }
     
     /**

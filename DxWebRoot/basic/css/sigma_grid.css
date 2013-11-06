@@ -1,0 +1,48 @@
+/* =================修改  css=================== */
+.gt-head-div, .gt-panel-head {
+	background-color: #0e90d2;
+	background-image: -moz-linear-gradient(top, #149bdf, #0480be);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#149bdf), to(#0480be));
+	background-image: -webkit-linear-gradient(top, #149bdf, #0480be);
+	background-image: -o-linear-gradient(top, #149bdf, #0480be);
+	background-image: linear-gradient(to bottom, #149bdf, #0480be);
+	background-repeat: repeat-x;
+ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff149bdf', endColorstr='#ff0480be', GradientType=0);
+}
+.gt-hd-row .gt-hd-row-over {
+	color: #ffffff;
+	background-image: -moz-linear-gradient(top, #0088cc 0%, #045c9e 100%); /* FF3.6+ */
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #0088cc), color-stop(100%, #045c9e)); /* Chrome,Safari4+ */
+	background-image: -webkit-linear-gradient(top, #0088cc 0%, #045c9e 100%); /* Chrome 10+,Safari 5.1+ */
+	background-image: -ms-linear-gradient(top, #0088cc 0%, #045c9e 100%); /* IE10+ */
+	background-image: -o-linear-gradient(top, #0088cc 0%, #045c9e 100%); /* Opera 11.10+ */
+ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0088cc', endColorstr='#045c9e', GradientType=0 ); /* IE6-9 */
+	background-image: linear-gradient(top, #0088cc 0%, #045c9e 100%);
+}
+.gt-hd-row td {
+	color: #ffffff;
+	background-color: #0e90d2;
+	background-image: -moz-linear-gradient(top, #149bdf, #0480be);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#149bdf), to(#0480be));
+	background-image: -webkit-linear-gradient(top, #149bdf, #0480be);
+	background-image: -o-linear-gradient(top, #149bdf, #0480be);
+	background-image: linear-gradient(to bottom, #149bdf, #0480be);
+	background-repeat: repeat-x;
+ filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff149bdf', endColorstr='#ff0480be', GradientType=0);
+	border-right:1px solid #D6D6D6;
+	border-bottom:1px solid #D6D6D6;
+	height:26px;
+	line-height:26px;
+}
+.gt-toolbar-box {
+	background:#a2cef6;
+}
+.gt-hd-row td .gt-inner {
+	color:#ffffff;
+}
+.gt-hd-row td .gt-inner{padding-top:0;}
+.gt-inner {
+    height:26px;
+    line-height:26px;
+}
+

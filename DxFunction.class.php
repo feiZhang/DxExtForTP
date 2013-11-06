@@ -267,6 +267,7 @@ class DxFunction{
 
         if(empty($menuM)) $menuM = D('Menu');
         $action_list    = $menuM->getMyAction();
+
         $myAction       = array();
         foreach($action_list as $l){
             if(!empty($l["module_name"]) && !empty($l["action_name"])){
@@ -334,9 +335,11 @@ class DxFunction{
     }
     
     /**
-     * 将上传的多文件字符串json解析，以适用于grid展示
-     * */
-    function uploadFilesToGrid($dataList,$fieldName){
+     * 将data数据转换grid显示的数据
+     * 1.将上传的多文件字符串json解析，以适用于grid展示
+     * 2.将fdn转换为字符串，不需要valChange传递过的字符到客户端
+     */
+    function uploadFilesToGrid(&$dataList,$fieldName){
         foreach($dataList as $kk=>$vv){
             $t  = array();
             $fs = json_decode($vv[$fieldName],true);
@@ -349,7 +352,7 @@ class DxFunction{
                 $dataList[$kk][$fieldName]  = implode("<br \>",$t);
         }
     }
-    function fdnToFullName($dataList,$fieldName){
+    function cantonFdnToText(&$dataList,$fieldName){
         $canton = D("Canton")->getCacheDictTableData();
         foreach($dataList as $kk=>$vv){
             $dataList[$kk][$fieldName]  = $canton[$vv[$fieldName]];

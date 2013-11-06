@@ -5,7 +5,7 @@ class DxBasicAction extends DataOpeAction {
         $this->success("清除完成!",__ROOT__);
         DxFunction::deleteDir(RUNTIME_PATH,false);
     }
-    
+
     /**
      * 下载文件
      */
@@ -211,8 +211,6 @@ class DxBasicAction extends DataOpeAction {
                 dump($o->getLastSql());
             }
         }
-        //[{"url":"\/OlderInfo\/2013_01\/1359126220\u5c4f\u5e55\u5feb\u7167 2013-01-16 \u4e0a\u534811.29.03.png","thumbnail_url":"\/OlderInfo\/2013_01\/thumbnail_1359126220\u5c4f\u5e55\u5feb\u7167 2013-01-16 \u4e0a\u534811.29.03.png"}]
     }
 }
 
-?>

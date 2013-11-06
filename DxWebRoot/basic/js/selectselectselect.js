@@ -126,7 +126,7 @@ var cantonInit          = false;
                         defaultKey[i]   = v;
                     });
                 }
-                
+
                 if (defaultKey.constructor == Array) {
                     $.each(defaultKey, function(i, item){
                         $("#"+containerDomId+" select[type='canton']").each(function(j){
@@ -135,7 +135,7 @@ var cantonInit          = false;
                                 selectItem.attr("selected", true);
                                 $(this).change();
                             }
-                        });                                                
+                        });
                     });
                 } else if (defaultKey.constructor == Number) {
                     if(defaultKey!=0 && $("select[type='canton']").length>0){
@@ -143,9 +143,9 @@ var cantonInit          = false;
                             $(this).find("option[key='"+defaultKey+"']").attr("selected", true);
                             if($(this).find("option[key='"+defaultKey+"']").length>0)$(this).change();
                         });
-                    }   
+                    }
                 }
-            }        
+            }
         }
 
         _this.initData(data,rootKey);

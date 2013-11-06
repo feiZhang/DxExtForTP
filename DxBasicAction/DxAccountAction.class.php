@@ -1,5 +1,4 @@
 <?php
-
 /**
  * 用户管理， 目前只有一个密码修改功能
  */
@@ -33,3 +32,4 @@ class DxAccountAction extends DataOpeAction {
         }
     }
 }
+

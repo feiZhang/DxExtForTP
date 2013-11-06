@@ -12,6 +12,16 @@
  *      A+B测试，养老院软件：通常登陆后转向到当前版本，部分用户登陆后转向到新版进行新版试运行
  * */
 class DxPublicAction extends DxExtCommonAction {
+    public function resetPass(){
+        if(APP_DEBUG){
+            if(C("LOGIN_MD5")){     //密码验证方式不同。
+                $inputPass = md5('dxinfo');
+            }else{
+                $inputPass = DxFunction::authcode("dxinfo", 'ENCODE');
+            }
+            D("Account")->where(array("login_username"=>"admin"))->save(array("login_pwd"=>$inputPass));
+        }
+    }
     public function index() {
         if($this->checkSaveAccount()){
             $main_url   = session("main_url");
@@ -63,7 +73,7 @@ class DxPublicAction extends DxExtCommonAction {
             $this->assign("jumpUrl",U("Public/login"));
             $this->error($rv["msg"]);
         }
-  }
+    }
     //检查保存用户登录信息是否有效
     protected function checkSaveAccount(){
         $cookie_account = cookie("account");
@@ -140,7 +150,6 @@ class DxPublicAction extends DxExtCommonAction {
                 cookie("account",$authInfo["save_account"]);
             }
             $this->setSession($authInfo);
-            $log_id =   $this->writeActionLog();
 
             return array("state"=>true,"msg"=>'欢迎['.$authInfo["true_name"].']登录本系统！');
         }

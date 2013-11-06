@@ -3,14 +3,13 @@ body{
     margin: 0;
     padding: 0;
 }
-/* 将必填字段标志改为红色 */
-span.field_required{
-    color:red;
-}
 
 /* bootstrap 的 select默认太宽了 */
 select.autowidth{
     width:auto;
+}
+#grid-help-info div.alert{
+    margin-bottom:0px;
 }
 
 /* data_list的样式 */
@@ -22,12 +21,12 @@ div.dataListHeader{
     min-height: 20px;
 }
 div.dataListLeftMenuArea{
-	float:left;
-	width:170px;
+    float:left;
+    width:170px;
 }
 
 div.dataListDataArea{
-	overflow:hidden;
+    overflow:hidden;
 }
 
 div.clearBoth{
@@ -36,3 +35,40 @@ div.clearBoth{
     margin-top:-1px;
     overflow:hidden;
 }
+
+/* artDialog中内有table时，总是底部有白边。。需要设置此值 */
+td.d-main{
+    line-height:20px;
+}
+td.d-main table.table-bordered{
+    border-style:none;
+    border-collapse:collapse;
+}
+td.d-main table.table-bordered td{
+    height:30px;
+    vertical-align: middle;
+}
+td.d-main table.table-bordered td.text-right{
+    text-align:right;
+}
+
+/* 文件上传的所需要的样式  从 jquer.fileupload-ui.css 中精简出来的 */
+.fileinput-button {
+  position: relative;
+  overflow: hidden;
+  float: left;
+  margin-right: 4px;
+}
+.fileinput-button input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  transform: translate(-300px, 0) scale(4);
+  font-size: 23px;
+  direction: ltr;
+  cursor: pointer;
+}
+

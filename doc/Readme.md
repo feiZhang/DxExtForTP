@@ -17,6 +17,7 @@
 6. DatePicker 日期选择组件
 7. jquery-upload-file 带进度条的文件上传
 8. zTree 树
+9. angularJs js框架（这个比较难懂一点，本系统的新增、修改功能使用了此框架，请先了解基本用法之后才进行代码修改）
 
 ## 使用
 1. 将组件复制到Web服务器，并将DxWebRoot配置到Web服务器某目录
@@ -42,7 +43,11 @@
 ### TP auto功能扩展 ###
 效果：将用户登录的Session值自动添加到某个字段，比如：create\_userid
 
-原理：在 DxExtCommonModel 的构造函数中，解析配置，将有效配置添加到TP的 _auto 中，如果Model有配置的字段，自动加到_auto中，如果没有则忽略
+原理：
+
+1. 在 DxExtCommonModel 的构造函数中，解析配置，将有效配置添加到TP的 \_auto 中，如果Model有配置的字段，自动加到_auto中，如果没有则忽略
+2. `TP原来的auto只在create方法中执行，此框架将它复制到\_before_update 和 \_before_insert 中也执行`
+
 
 例子：
     
@@ -128,7 +133,10 @@ listFields属性详解：
 5. pk:重定义主键字段。
 6. width:输入框宽度，查询框的宽度
 7.
-textTo:将某个字典关联字段的id值对应的数据保存到某字段，比如：设置到org\_id上的textTo="org\_name",表示，存储org\_id对应的机构名称到org\_name，org\_name为冗余字段，主要方便实现，通过机构名称 模糊查询,功能在dataope_ext中实现，绑定数据的change方法
+textTo:将某个字典关联字段的id值对应的数据保存到某字段，比如：设置到org\_id上的textTo="org\_name",表示，存储org\_id对应的机构名称到org\_name，org\_name为冗余字段，主要方便实现，通过机构名称 模糊查询,功能在dataope_ext中实现，绑定数据的change方法..org\_name字段设置为隐藏字段
+	
+		与字段的textTo对应的是modelInfo的textTo，在id对应的数据改变时，更新关联的数据。
+		
 8. valChange:数据转换，将表存储的key转换为对应的vaule，将userid转换显示为username，[固定转换\关联表转换\SQL语句转换]，比如：
 
 	     "valChange"=>array("1"=>"客户",'4'=>'超级管理员')  将1显示为客户，4显示为超级管理员
@@ -220,6 +228,8 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 17. leftArea:左边增加的内容，比如：左边可以加一个区域树等，此变量为html代码
 18. enableImport:允许导入数据
 19. addPageColumnNum:新增、修改页面的列数，默认为1.
+20. textTo：格式 array("modelName"=>array("fromid"=>"","toid"=>"","fromtextto"=>"","textto"=>""))，modelName是关联的Model名称，例如：EmployeeModel的textTo设置为：array("ServiceList"=>array("fromid"=>"pk_id","toid"=>"employee_id","fromtextto"=>"name","textto"=>"employee_name"))，其中pk_id、name是employee表的字段，employee_id、employee_name是service_list的字段；功能在model的 _after_update 和 _before_delete 中实现。
+21. relationDelete：关联删除，删除一个数据后，同时删除其附属的数据，比如：删除老人后，同时删除老人所属的各种服务组。格式 array("modelName"=>array("fromid"=>"","toid"=>"")) 参考 textTo的定义
 	
 ### 全文索引 ###
 效果：通过一个查询框，能够查询多个Model的主要属性，比如：机构名称、老人名称、员工名称等。类似google的效果。
@@ -272,7 +282,7 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 ### 数据过滤
 通过URL传递过滤项，比如：SysDic的实现，通过在URL（SysDic/index/type/SubsidyRank/modelTitle/补贴类型）增加type（过滤数据） modelTitle（改变页面标题：SysDic对应的标题应该是数据字典），可以将一个Model分隔为不同的功能：员工类型管理、房间类型管理等。
 
-系统支持，一次性过滤（默认），固定化过滤（url增加此参数InitSearchPara=1）
+系统支持，终身过滤（默认,grid的数据一直收到此参数的影响），临时过滤（url增加此参数ignoreInitSearch=1）
 
 ## 其他功能扩展
 原理：在组件中实现基础的功能Action和Model，让项目去继承使用，比如：角色管理、用户管理、登录等。
@@ -281,6 +291,20 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 在Action中使用 $this->success("消息内容","showmsg");会出现提示信息，并不跳转页面。注意：如果需要结束执行代码，则在此语句随后增加 exit; 语句
 
 *die显示的内容，会因为编码问题，在浏览器上显示为乱码
+
+## 全局数据缓存
+DxModel方法cacheData(false)对此表进行全局数据缓存，通过Think.config.modelName.key获取数据.(目前仅缓存SysSetting表，使用name，val字段作为key和数据,若需扩展功能，可借鉴DictCache的方法)
+
+## 对话框显示数据列表
+增加了js函数：dataOpeListDialog，［居家业务的客户购买服务对话框使用到下面的所有参数］其参数config的值定义
+
+1. title：对话框的标题
+2. ok：对话框点击ok按钮时执行的方法（一般通过jQuery解析对话框内容，ajax提交到服务器）
+3. html：对话框显示html的附加内容（除数据列表外的其他业务所需的数据值）
+4. moduleName：显示那个Module的数据列表（注意不是model）
+5. dataUrl：显示列表的数据来源Url（数据格式为grid默认格式）
+6. excludeHeight：显示数据列表的高度
+7. onComplete：数据列表的grid数据加载完成后要执行的函数，（参数为grid本身，比如：将grid的checkbox选中，就需要此函数协助）
 
 ## 常见问题
 1. Model:getCacheDictTableData您所请求的方法不存在！ 原因：1.没有定义字典表的Model 2.使用的model中的"valChange"=>array("model"=>"Role")中的model要使用大写，例如Role，不能写作role。
@@ -298,3 +322,4 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 1. 0.1版:为了实现简单代码重用和客户自定义界面，构建了FormAuto
 2. 0.2版:将功能限定为简单代码重用，构建DxExtForTP雏形
 3. 0.3版:将分散的各个模块文件集中在一个独立的项目中，与实际项目隔离（1.对模块实现源码控制 2.简单的项目引用 3.简单的代码升级）
+4. 0.4版:引入angularJs，增加modelInfo的textTo，relation_delete属性

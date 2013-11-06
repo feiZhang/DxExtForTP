@@ -1,0 +1,214 @@
+<link rel="stylesheet" href="__DXPUBLIC__/public/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
+<script type="text/javascript" src="__DXPUBLIC__/public/zTree/js/jquery.ztree.all-3.5.min.js"></script>
+<SCRIPT type="text/javascript">
+<!--
+function zTreeOnClick(event, treeId, treeNode) {
+    {$clickUrl}
+};
+
+var setting = {
+    canton_id:'canton_id',
+    data: {
+        simpleData: {
+            enable: true,
+            idKey: "canton_id",
+            pIdKey: "parent_id",
+            rootPId: 0
+        },
+        key:{
+            name:'name',
+            title:'text_name'
+        }
+    },
+    view:{
+        addDiyDom: addDiyDom
+    },
+    callback: {
+        onClick: zTreeOnClick
+    }
+};
+function addDiyDom(treeId, treeNode) {
+        //增加增删改操作
+    var aObj = $("#" + treeNode.tId + "_a");
+    if ($("#diyBtn_"+treeNode.id).length>0) return;
+    if(treeNode.layer==4){
+        var editStr = "<a style='color:#336699;'  class='diyBtn3' id='addBtn_" + treeNode.canton_id
+        + "' title='"+treeNode.title+"' onfocus='this.blur();' >增加下级区域</a>";
+    }
+    if(treeNode.layer>4){
+        var editStr = "<span id='diyBtn_space_" +treeNode.canton_id+ "' > </span>"
+        + "<a style='color:#336699;'  class='diyBtn1' id='delBtn_" + treeNode.canton_id
+        + "' title='"+treeNode.text_name+"' onfocus='this.blur();' >删除</a>"
+        + "<a style='color:#336699;'  class='diyBtn2' id='editBtn_" + treeNode.canton_id
+        + "' title='"+treeNode.text_name+"' onfocus='this.blur();' >编辑</a>"
+        + "<a style='color:#336699;'  class='diyBtn3' id='addBtn_" + treeNode.canton_id
+        + "' title='"+treeNode.text_name+"' onfocus='this.blur();' >增加子节点</a>";
+    }
+    aObj.append(editStr);
+    var editBtn = $("#editBtn_"+treeNode.canton_id);
+    if (editBtn) editBtn.bind("click", function(e){edit(e,treeNode)});
+    var addBtn = $("#addBtn_"+treeNode.canton_id);
+    if (addBtn) addBtn.bind("click",{isParent:false}, function(e){add(e,treeNode)});
+    var delBtn = $("#delBtn_"+treeNode.canton_id);
+    if (delBtn) delBtn.bind("click", function(e){delNode(e,treeNode)});
+};
+function delNode(e,treeNode){
+    var treeObj = $.fn.zTree.getZTreeObj("treeContainer");
+    if(typeof treeNode !='object'){
+        var nodes = zTree.getSelectedNodes();
+        if(nodes.length == 0){
+            alert('请选择一个区域');
+            return;
+        }
+        else
+            treeNode = nodes[0];
+    }
+    showDealDialog({url:'__URL__/delete/'+treeNode.canton_id,beforemsg:'确定要删除本区域以及其子区域？',afterfunction:function(data){
+        if(data.status){
+            treeObj.removeNode(treeNode);
+        }else{
+            showDialog("提示",data.info);
+        }   
+    }});
+}
+function edit(e,treeNode){
+    var treeObj = $.fn.zTree.getZTreeObj("treeContainer");
+    if(typeof treeNode !='object'){
+        var nodes = zTree.getSelectedNodes();
+        if(nodes.length == 0){
+            alert('请选择一个节点');
+            return;
+        }
+        else{
+            treeNode = nodes[0];
+        }
+    }
+    var initData = 'layer= '+(parseInt(treeNode.layer)+1);
+    $.dialog({
+        id:"editObject",
+        title:'编辑节点',
+        esc:true,
+        lock:true,
+        padding:"0",
+        ok:function(){
+           var theThis      = this;
+           $.ajax({
+               type : "POST",
+               url:'__URL__/save',
+               data:$('#itemAddForm').serialize(),
+               success :function(data,returnD){
+                   var ReturnData = data.data;
+                   if(data.status==1){
+                       treeNode.name        = $('input[name=name]').val();
+                       treeObj.updateNode(treeNode)
+                       theThis.content(data['info']);
+                       theThis.time(3000);
+                       theThis.button({
+                             id: 'ok',
+                             disabled: true
+                       },{
+                           id:'cancel',
+                            value:'关闭'
+                       });
+                   }else{
+                       showDialog("提示",data.info);
+                   }
+               },
+               dataType : "json"    
+            });
+           return false;
+        },
+        okValue:"确定",
+        cancelValue:"取消",
+        cancel:function(){},
+        initialize:function(){
+            var theThis     = this;
+            $.get(URL_URL + "/edit/" +treeNode.canton_id+'?'+ initData,function(html){
+                theThis.content(html);
+                //需要排除日期类型的输入框(日期类型的输入框在获得焦点后不能弹出日期选择框.)
+                $(theThis.dom.main).contents().find(":input:visible").not(".Wdate").eq(0).focus();
+            });
+        }
+     });
+}
+function add(e,treeNode) {
+    var zTree = $.fn.zTree.getZTreeObj("treeContainer"),
+    isParent = e.data.isParent,initData="";
+    if(typeof treeNode !='object'){
+        var nodes = zTree.getSelectedNodes();
+        treeNode = nodes[0];
+    }
+    if(treeNode){
+        initData = 'layer= '+(parseInt(treeNode.layer)+1)+'&parent_id='+treeNode.canton_id;
+    }else{
+        initData = 'parent_id = 0&layer=1';
+    }
+    $.dialog({
+        id:"addObject",
+        title:'添加下级区域',
+        content:'',
+        esc:true,
+        lock:true,
+        padding:"0",
+        ok:function(){
+           var theThis      = this;
+           $.ajax({
+               type : "POST",
+               url:'__URL__/save',
+               data:$('#itemAddForm').serialize(),
+               success :function(data,returnD){
+                   var ReturnData = data.data;
+                   if(data.status==1){
+                       var TreeData=$('#itemAddForm').serializeObject();
+                       if (treeNode) {
+                            treeNode = zTree.addNodes(treeNode, $.extend(TreeData,{ parent_id:treeNode.canton_id,canton_id:ReturnData.id,text_name:treeNode['text_name']+'|'+TreeData['name']}));
+                       } else {
+                            treeNode = zTree.addNodes(null, $.extend(TreeData,{ parent_id:0,canton_id:ReturnData.id}));
+                       }
+                       theThis.content(data['info']);
+                       theThis.time(3000);
+                       theThis.button({
+                             id: 'ok',
+                             disabled: true
+                       },{
+                           id:'cancel',
+                            value:'关闭'
+                       });
+                   }else{
+                       showDialog("提示",data.info);
+                   }
+               },
+               dataType : "json"    
+            });
+           return false;
+        },
+        okValue:"确定",
+        cancelValue:"取消",
+        cancel:function(){},
+        initialize:function(){
+            var theThis     = this;
+            $.get(URL_URL + "/add?" + initData,function(html){
+                theThis.content(html);
+                //需要排除日期类型的输入框(日期类型的输入框在获得焦点后不能弹出日期选择框.)
+                $(theThis.dom.main).contents().find(":input:visible").not(".Wdate").eq(0).focus();
+            });
+        }
+     });
+}
+
+var zNodes = {$treeData};
+$(document).ready(function(){
+    var treeObj = $.fn.zTree.init($("#cantonTree"), setting, zNodes);
+    var nodes   = treeObj.getNodes();
+    if(zNodes.length<30){
+        treeObj.expandAll(true);
+    }else{
+        treeObj.expandNode(nodes[0]);
+    }
+});
+//-->
+</SCRIPT>
+<div>
+    <ul id="cantonTree" class="ztree"></ul>
+</div>
+
