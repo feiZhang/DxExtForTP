@@ -7,7 +7,8 @@
  * 4.数据唯一性验证
  * */
 class DataOpeAction extends DxExtCommonAction{
-    protected $defaultWhere      = array();
+    protected $defaultWhere = array();
+    private $disableDxTplCache = false;
 
     /* 数据列表 for Grid **/
     public function get_datalist(){
@@ -151,10 +152,12 @@ class DataOpeAction extends DxExtCommonAction{
      * @param string $templateFile 模板名称
      */
     protected function dxDisplay($templateFile){
-        $cacheAliaName = "_".$this->model->getModelInfoMd5()."_".$this->model->getListFieldsMd5();
+        //一个Model可能被两个Module使用，但是显示的界面不同。。:机构管理－》监测指标
+        //一个Module的同一个页面，不同用户显示的界面不同。。:机构管理－》监测指标
+        $cacheAliaName = "_".$this->model->getModelInfoMd5()."_".$this->model->getListFieldsMd5()."_".session('role_id');
         //$cacheAliaName .= "_".md5(json_encode($_REQUEST));
-        $tempFile   = TEMP_PATH.'/'.$this->theModelName.'_'.ACTION_NAME.$cacheAliaName.C('TMPL_TEMPLATE_SUFFIX');
-        if(C("APP_DEBUG") || !file_exists($tempFile)){
+        $tempFile   = TEMP_PATH.'/'.MODULE_NAME.'_'.ACTION_NAME.$cacheAliaName.C('TMPL_TEMPLATE_SUFFIX');
+        if(C("APP_DEBUG") || $this->disableDxTplCache===true || !file_exists($tempFile) ){
             if(C("TOKEN_ON")){
                 //多次编译会导致生成多个TOKEN
                 C("TOKEN_ON",false);
@@ -165,6 +168,9 @@ class DataOpeAction extends DxExtCommonAction{
             file_put_contents($tempFile, $tempT);
         }
         $this->display($tempFile);
+    }
+    public function setDxTplCacheDisable(){
+        $this->disableDxTplCache = true;
     }
     /* 显示页面内容 **/
     public function index(){

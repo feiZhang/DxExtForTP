@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `sys_dic` (
   `dic_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `parent_id` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '父类型的ID',
   `name` varchar(45) NOT NULL DEFAULT '' COMMENT '所示意思',
-  `type` varchar(45) NOT NULL COMMENT '字典类型(唯一)',
+  `type` varchar(45) NOT NULL DEFAULT '' COMMENT '字典类型(唯一)',
   `memo` varchar(100) DEFAULT '' NOT NULL COMMENT '备注',
   `order` int(11) unsigned DEFAULT 0 NOT NULL COMMENT '排序，用于在页面上显示顺序',
   `other_info` varchar(100) DEFAULT '' NOT NULL COMMENT '其他信息，比如：房间数量',
@@ -41,11 +41,11 @@ CREATE TABLE IF NOT EXISTS `sys_dic` (
 DROP TABLE IF EXISTS `sys_setting`;
 CREATE TABLE IF NOT EXISTS `sys_setting` (
   `set_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(45) DEFAULT NULL COMMENT '参数名称',
-  `val` varchar(255) DEFAULT NULL COMMENT '参数值',
-  `type` enum('sys','user') DEFAULT NULL COMMENT '参数类型（sys系统参数，user用户参数）,系统参数不在页面上显示，不允许用户修改',
-  `memo` varchar(1000) DEFAULT NULL COMMENT '备注',
-  `order` int(11) DEFAULT NULL COMMENT '顺序值，',
+  `name` varchar(45) DEFAULT '' COMMENT '参数名称',
+  `val` varchar(255) DEFAULT '' COMMENT '参数值',
+  `type` enum('sys','user') DEFAULT '' COMMENT '参数类型（sys系统参数，user用户参数）,系统参数不在页面上显示，不允许用户修改',
+  `memo` varchar(1000) DEFAULT '' COMMENT '备注',
+  `order` int(11) DEFAULT '' COMMENT '顺序值，',
   PRIMARY KEY (`set_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统设置表';
 
@@ -73,10 +73,10 @@ CREATE TABLE IF NOT EXISTS `menu` (
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE IF NOT EXISTS `role` (
   `role_id` int(11) unsigned NOT NULL DEFAULT 0,
-  `name` varchar(45) DEFAULT NULL COMMENT '角色名',
-  `menu_ids` varchar(1000) DEFAULT NULL COMMENT '菜单ID',
-  `shortcut_ids` varchar(1000) DEFAULT NULL COMMENT '快捷方式ids',
-  `desk_ids` varchar(1000) DEFAULT NULL COMMENT '桌面菜单ids',
+  `name` varchar(45) NOT NULL DEFAULT '' COMMENT '角色名',
+  `menu_ids` varchar(1000) NOT NULL DEFAULT '' COMMENT '菜单ID',
+  `shortcut_ids` varchar(1000) NOT NULL DEFAULT '' COMMENT '快捷方式ids',
+  `desk_ids` varchar(1000) NOT NULL DEFAULT '' COMMENT '桌面菜单ids',
   `level` int(11) NOT NULL DEFAULT '1' COMMENT '角色的级别等级，默认为1',
   PRIMARY KEY (`role_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='角色信息表';
@@ -158,9 +158,9 @@ CREATE TABLE `fulltext_search` (
 DROP TABLE IF EXISTS `share_file`;
 CREATE TABLE IF NOT EXISTS `share_file` (
   `sf_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) DEFAULT NULL COMMENT '本次上传标题',
+  `title` varchar(255) DEFAULT '' COMMENT '本次上传标题',
   `file_name` varchar(10240) NOT NULL DEFAULT '' COMMENT '原始文件名,用于检索',
-  `notes` varchar(1000) DEFAULT NULL COMMENT '上传描述',
+  `notes` varchar(1000) DEFAULT '' COMMENT '上传描述',
   `creater_user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '发布人',
   `creater_user_name` varchar(30) NOT NULL DEFAULT '' COMMENT '发布人',
   `creater_canton_fdn` varchar(255) NOT NULL DEFAULT '' COMMENT '所属区域',

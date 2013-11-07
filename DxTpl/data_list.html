@@ -16,19 +16,18 @@
     <div id="header_title" class="dataListHeader" style="margin-bottom: 0px;">
         <span style="vertical-align: middle;font-size: 22px;font-weight: bold;">{$modelInfo.modelTitle}</span>
 
-      <?php
+<literal>
+      <php>
+      //searchHtml中可以存放动态的数据，比如：员工组
       if(!empty($modelInfo["searchHTML"])){
-      ?>
-      <span id='query_items' style="margin: 0 10px 0 10px;" class="input-prepend input-append">
-          <?php
+          printf('<span id="query_items" style="margin: 0 10px 0 10px;" class="input-prepend input-append">');
           if(!empty($modelInfo["searchHTML"])){
             print($modelInfo["searchHTML"]);
           }
-          ?>
-      </span>
-      <?php
+          printf("</span>");
       }
-      ?>
+      </php>
+</literal>
 
       <?php if (!$modelInfo["readOnly"]) { ?>
       <button class="btn" id='item_add' onclick="javascript:dataOpeAdd({ 'data':'{\\$InitSearchPara}','title':'{$modelInfo['addTitle']}','modelName':'{$Think.const.MODULE_NAME}'});">{$modelInfo['addTitle']}</button>

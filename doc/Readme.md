@@ -38,7 +38,6 @@
 5. Vendor 框架引入的第三方PHP组件
 6. php文件，框架的基本文件，通过TP的 alias.php，别名自动引入，所以一般都以 .class.php 为扩展名
 
-
 ## 组件基本功能 ##
 ### TP auto功能扩展 ###
 效果：将用户登录的Session值自动添加到某个字段，比如：create\_userid
@@ -283,6 +282,9 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 通过URL传递过滤项，比如：SysDic的实现，通过在URL（SysDic/index/type/SubsidyRank/modelTitle/补贴类型）增加type（过滤数据） modelTitle（改变页面标题：SysDic对应的标题应该是数据字典），可以将一个Model分隔为不同的功能：员工类型管理、房间类型管理等。
 
 系统支持，终身过滤（默认,grid的数据一直收到此参数的影响），临时过滤（url增加此参数ignoreInitSearch=1）
+
+### 关闭特定 Module 的 Dx 框架模版缓存
+见dxDisplay方法代码，调用module的 setDxTplCacheDisable() 方法，仅用DxExtForTP的二次编译缓存。大多数情况下，可以通过修改代码避免此操作，特定条件下可使用。在执行dxDisplay前执行。
 
 ## 其他功能扩展
 原理：在组件中实现基础的功能Action和Model，让项目去继承使用，比如：角色管理、用户管理、登录等。
