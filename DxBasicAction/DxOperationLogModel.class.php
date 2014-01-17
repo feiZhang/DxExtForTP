@@ -13,20 +13,20 @@ class DxOperationLogModel extends DxExtCommonModel {
                                     }",'width'=>180,
                                 ),
         "options" => array ('name'=> 'options','title'=>'参数',"width"=>"1100",'type'=>"list","hide"=>7),
-        "over_pri" => array ('title'=>'是否越权',"width"=>"80",'valChange'=> array(0=>"是",1=>"否")),
+        "over_pri" => array ('title'=>'是否越权',"width"=>"80",'valChange'=> array(1=>"是",0=>"否")),
         "other_info" => array ('title'=>'其他信息',"width"=>"80"),
     );
     protected $modelInfo=array(
         "title"=>'系统操作日志','readOnly'=>true,"order"=>"create_time DESC",
         'searchHTML'=>"
-        <span class='add-on'>操作人</span>
-          <input id='create_user_name' size='10' class='dataOpeSearch likeLeft likeRight span2' value='' type='text' />
-        <span class='add-on'>从</span>
-          <input id='egt_create_time' class='dataOpeSearch span2' value='' type='text' />
-        <span class='add-on'>到</span>
-          <input id='elt_create_time' class='dataOpeSearch span2' value='' type='text' />
-          <button onclick='javascript:dataOpeSearch(true);' class='btn' id='item_query_items'>查询</button>
-          <button onclick='javascript:dataOpeSearch(false);' class='btn' id='item_query_all' />全部数据</button>
+                <span class='add-on'>操作人:</span>
+                <input size='5' placeholder='操作人' type='text' class='z_input' name='%creater_user_name%' id='creater_user_name' value=''/>
+                <span class='add-on'>从:</span>
+                <input size='18' placeholder='开始时间' type='text' class='Wdate' name='egt_create_time' id='egt_create_time' value='' onfocus='WdatePicker({\"dateFmt\":\"yyyy-MM-dd HH:mm\"})' />
+                <span class='add-on'>到:</span>
+                <input size='18' placeholder='结束时间' type='text' class='Wdate' name='elt_create_time' id='elt_create_time' value='' onfocus='WdatePicker({\"dateFmt\":\"yyyy-MM-dd HH:mm\"})' />
+                <button onclick='javascript:dataOpeSearch(\"dataListSearch\");' class='btn btn-info btn-sm' id='item_query_items'>查询</button>
+                <button onclick='javascript:dataOpeSearch(\"\");' class='btn btn-info btn-sm' id='item_query_all' />全部数据</button>
         "
     );
 }

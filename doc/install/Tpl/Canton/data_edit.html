@@ -1,0 +1,15 @@
+<form id="itemAddForm" name="itemAddForm">
+    <div class="tablezhig" style="margin: 0 auto; padding: 15px;"></div>
+    <notempty name="pkId.0"> <input name="{$pkId[0]}"
+        value='{$pkId[1]}' style='display: none' type='hidden' class="pk" />
+    </notempty>
+    <input type="hidden" name="parent_id" value="{$objectData.parent_id}" />
+    <input type="hidden" name="layer" value="{$objectData.layer}" />
+    <table width="100%">
+        <tr bgcolor="#ffffff">
+            <td><label><span>区域名称</span>:</label></td>
+            <td><input type="text" name="name" value="{$objectData.name}" />
+            </td>
+        </tr>
+    </table>
+</form>

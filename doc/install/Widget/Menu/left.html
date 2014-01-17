@@ -54,7 +54,7 @@ div#container h1 p {
 function changeclass(obj){
     jQuery.each($("a.thisclass"),function(idx,item){
         //把所有选中样式去掉，然后把当前选中
-        jQuery(this).removeClass("thisclass");        
+        jQuery(this).removeClass("thisclass");
     });
     jQuery(obj).addClass('thisclass');
 }

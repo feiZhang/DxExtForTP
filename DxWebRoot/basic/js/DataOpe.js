@@ -13,7 +13,6 @@
          * 2.填充字段列表
          */
         _this.mygrid            = null;
-        _this.grid_id           = "theDataOpeGrid";
         _this.parentGridDiv = "dataListCon";    //grid容器的父容器，因为刷新grid时，要摧毁grid容器，所以需要在父容器中重新创建容器
         _this.dsOption      = {
                                 fields:[],
@@ -23,7 +22,7 @@
                                 };
         _this.colsOption        = [];
         _this.gridOption        = {
-                                id      : _this.grid_id,
+                                id      : "theDataOpeGrid",
                                 width   : "100%",
                                 height  : "500",
                                 minHeight:'150',
@@ -74,10 +73,14 @@
                 _this.gridOption.toolbarContent = _this.gridOption.toolbarContent + " | print"
             }
             if(gridArgs.customRowAttribute != undefined && gridArgs.customRowAttribute != 0){
-                eval(gridArgs.customRowAttribute);
-                _this.gridOption.customRowAttribute = customRowAttribute;
+                _this.gridOption.customRowAttribute = gridArgs.customRowAttribute;
             }
-            
+            if(gridArgs.gridId != undefined && gridArgs.gridId != 0){
+                _this.gridOption.id = gridArgs.gridId;
+            }else{
+                _this.gridOption.id = "sigma_grid_" + Math.random()*10000;
+            }
+
             _this.gridOption.columns        = _this.colsOption;
             _this.gridOption.dataset        = _this.dsOption;
 

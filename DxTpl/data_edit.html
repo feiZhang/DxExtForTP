@@ -48,6 +48,7 @@
 </style>
 <script>
 <!--
+var dataIsEdit = '{\\$Think.request.isEdit}';
 var recordDataInfo = {\\$recordDataInfo};
 <php>
 printf("var recordDataFields = %s;\\n",str_replace("{","{ ",json_encode($listFields)));
@@ -58,27 +59,35 @@ printf("var recordDataFields = %s;\\n",str_replace("{","{ ",json_encode($listFie
 <include file="Public:upload_file_tmpl" />
 
 <form id="itemAddForm" ng-controller="dataEditCtrl" class="form-inline">
+<input type='text' style="display:none" ng-model='isEdit' value='' id='dataIsEdit' />
+    <?php
+        //将display_none的分离开，否则display_none都在数组末尾会出现空行。
+        $showFields = array();
+        $hideFields = array();
+        foreach($listFields as $kkk => $vvv){
+            if($vvv["display_none"]){
+                $hideFields[$kkk] = $vvv;
+            }else{
+                $showFields[$kkk] = $vvv;
+            }
+        }
+    ?>
+
 <block name="dataEditFormTable">
     <table class="table table-bordered">
         <?php
-        $display_none_field = "";
         if(empty($modelInfo["addPageColumnNum"])) $modelInfo["addPageColumnNum"] = 1;
-        $fieldSize = sizeof($listFields);$fieldIndex = 0;
-        reset($listFields);
-        $field = current($listFields);
+        $fieldSize = sizeof($showFields);$fieldIndex = 0;
+        reset($showFields);
+        $field = current($showFields);
         while($field!==false){
             $fieldInput="";
             printf("<tr class=\"itemAddTr\">\\n");
             for($i=$modelInfo["addPageColumnNum"];$i>0;--$i){
                 if($fieldIndex<$fieldSize){
-                    if($field["display_none"]){
-                        $display_none_field .= DxFunction::createFieldInput($field);
-                        ++$i;
-                    }else{
-                        printf("<td class='text-right'>%s:</td>\\n",$field["title"]);
-                        printf("<td>%s</td>\\n",DxFunction::createFieldInput($field));
-                    }
-                    $field = next($listFields);
+                    printf("<td class='text-right'>%s:</td>\\n",$field["title"]);
+                    printf("<td>%s</td>\\n",DxFunction::createFieldInput($field));
+                    $field = next($showFields);
                 }else{
                     $field = false;
                     printf("<td class='text-right'></td>\\n");
@@ -90,11 +99,15 @@ printf("var recordDataFields = %s;\\n",str_replace("{","{ ",json_encode($listFie
         }
         ?>
     </table>
-    <div style="display:none">
-        <?php echo $display_none_field;?>
-    </div>
 </block>
 <div style="display:none">
+    <?php
+    $display_none_field = "";
+    foreach($hideFields as $field){
+        $display_none_field .= DxFunction::createFieldInput($field);
+    }
+    echo $display_none_field;
+    ?>
     <input id="modelName" name="modelName" value='{$modelName}' type='hidden' />
     <literal>
     <notempty name="pkId">
@@ -107,4 +120,3 @@ printf("var recordDataFields = %s;\\n",str_replace("{","{ ",json_encode($listFie
 <notempty name="Think.get.haveHeader">
     <include file="Public:footer" />
 </notempty>
-

@@ -13,7 +13,7 @@
     类似google的自动提示的jquery插件：html的datalist
     中文转拼音的插件。。
     
-*2.sigma grid扁平化。目前太丑，已加入新的样式表。
+#2.sigma grid扁平化。目前太丑，已加入新的样式表。
 
 3.增加html5验证  pattern
     邮箱：[^ @]*@[^ @]*\.[^ @]*
@@ -47,3 +47,6 @@ http://mtsoftware.v053.gokao.net/download.html
 10. 用户姓名的标签云,通过点击性，显示备选的名字。点击后显示详细内容   1.一个标签云的插件(姓,数量) 2.点击标签后显示的列表 3.PHP端，一个将姓名生成标签云所需数据的函数
 
 11.search与datalist的关联，search根据参数自动填充
+
+#12.在datalist页面弹出datalist页面之后，修改数据无法刷新页面。(禁止在一个页面中使用两个girdlist列表。。)
+#新增修改界面，增加js自定义验证功能

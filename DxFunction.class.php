@@ -2,7 +2,7 @@
 class DxFunction{
     /**escape json data, prevent from thinkphp template convert*/
     function escapeJson($data){
-        $ret=htmlentities(str_replace("{","{ ", json_encode($data)));
+        $ret=str_replace("{","{ ", json_encode($data));
         return $ret;
     }
     /**
@@ -47,10 +47,12 @@ class DxFunction{
      * 移动文件到新目录中,,公共函数
      * */
     function move_file($orig_file,$base_path,$sub_path="",$newFile=""){
+        if($base_path[0] != "/") $base_path = "/".$base_path;
         $to_path    = C("UPLOAD_BASE_PATH").$base_path."/";
         if(!file_exists(C("UPLOAD_BASE_PATH"))){
             mkdir(C("UPLOAD_BASE_PATH"));
         }
+        if(empty($sub_path)) $sub_path = "dateYmd";
         if(substr($sub_path,0,4)=="date"){
             $sub_path   = "/".date(substr($sub_path,4),time());
         }
@@ -296,6 +298,7 @@ class DxFunction{
         }else
             return true;
     }
+    
     /**
      * 权限验证的辅助功能，用于处理Module、Action相同，但是args不同的权限验证。
      * 此函数只能判断简单的参数信息，复杂的参数无法正确判断，比如：
@@ -385,16 +388,9 @@ class DxFunction{
              */
     //代码来源于Widget的randFile方法。
     function createFieldInput($fieldSet){
-        ob_start();
-        ob_implicit_flush(0);
-
-        $var = array("fieldSet"=>$fieldSet);
-        $tplFile = dirname(__FILE__) . "/DxFieldInput.php";
-        if(!empty($var)) extract($var, EXTR_OVERWRITE);
-        include $tplFile;
-
-        $content = ob_get_clean();
-        return $content;
+        $tplFile = dirname(__FILE__) . "/DxFieldInput.class.php";
+        import($tplFile);
+        return DxFieldInput::create($fieldSet);
     }
 
     /**
@@ -531,9 +527,14 @@ class DxFunction{
         for($i=0;$i<$c;$i++) //处理整数部分
         {
             $bit_num = substr($num, $i, 1); //逐字读取 左->右
-            if($bit_num!=0 || substr($num, $i+1, 1)!=0) //当前是零 下一位还是零的话 就不显示
+
+            if($bit_num==0 && $i==$c-5){
+                //106783  时应该为一十万，而不是一十零万
+            }else if($bit_num!=0 || substr($num, $i+1, 1)!=0) //当前是零 下一位还是零的话 就不显示
                 @$low2chinses = $low2chinses.$d[$bit_num];
             if($bit_num || $i==$c-1)
+                @$low2chinses = $low2chinses.$e[$c-$i-1];
+            else if($bit_num==0 && $i==$c-5)    //万位是0的时候，必须填上万
                 @$low2chinses = $low2chinses.$e[$c-$i-1];
         }
         for($j=$len_pointdigit; $j>=1; $j--) //处理小数部分

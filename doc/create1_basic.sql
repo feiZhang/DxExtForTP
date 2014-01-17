@@ -43,9 +43,9 @@ CREATE TABLE IF NOT EXISTS `sys_setting` (
   `set_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(45) DEFAULT '' COMMENT '参数名称',
   `val` varchar(255) DEFAULT '' COMMENT '参数值',
-  `type` enum('sys','user') DEFAULT '' COMMENT '参数类型（sys系统参数，user用户参数）,系统参数不在页面上显示，不允许用户修改',
+  `type` enum('sys','user') DEFAULT 'sys' COMMENT '参数类型（sys系统参数，user用户参数）,系统参数不在页面上显示，不允许用户修改',
   `memo` varchar(1000) DEFAULT '' COMMENT '备注',
-  `order` int(11) DEFAULT '' COMMENT '顺序值，',
+  `order` int(11) DEFAULT 0 COMMENT '顺序值，',
   PRIMARY KEY (`set_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统设置表';
 
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `menu` (
   `module_name` varchar(45) NOT NULL DEFAULT '' COMMENT '模块名称',
   `action_name` varchar(31) NOT NULL DEFAULT '' COMMENT 'Action名称',
   `args` varchar(127) NOT NULL DEFAULT '' COMMENT '参数,某些菜单提供默认参数',
-  `type` enum('quick_menu','sub_quick_menu','menu','action','hide_action') NOT NULL DEFAULT 'action' COMMENT '菜单类型：快捷菜单、菜单、显示动作、后台动作',
+  `type` enum('menu','sub_menu','hide_sub_menu','action','hide_action') NOT NULL DEFAULT 'action' COMMENT '菜单类型：菜单、子菜单、对动态隐藏的子菜单、显示动作、后台动作',
   `is_desktop` tinyint(4) unsigned NOT NULL DEFAULT '0',
   `desktop_url` varchar(31) NOT NULL COMMENT '桌面菜单URL',
   `other_info` varchar(127) NOT NULL COMMENT '附加信息',
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `account` (
 DROP TABLE IF EXISTS `data_change_log`;
 CREATE TABLE IF NOT EXISTS `data_change_log` (
   `dcl_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `model_name` varbinary(63) NOT NULL COMMENT '模块名称',
+  `model_name` varchar(63) NOT NULL COMMENT '模块名称',
   `event` varchar(8) NOT NULL COMMENT '事件：insert、update、delete',
   `options` varchar(1024) NOT NULL COMMENT '操作的选项',
   `options_ser` varchar(1024) NOT NULL COMMENT 'options的序列化值',

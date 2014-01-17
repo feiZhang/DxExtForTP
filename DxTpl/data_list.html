@@ -10,31 +10,32 @@
 </notempty>
 
 <div class="dataListDataArea">
+<block name="dataListContent">
     <input id="modelInfo_editTitle" value="{$modelInfo.editTitle}" type="hidden" />
     <table id="gridHeader" style="display:none">{$modelInfo['gridHeader']}</table>
     <notempty name="modelInfo.modelTitle">
     <div id="header_title" class="dataListHeader" style="margin-bottom: 0px;">
         <span style="vertical-align: middle;font-size: 22px;font-weight: bold;">{$modelInfo.modelTitle}</span>
 
-<literal>
+        <form id="dataListSearch">
       <php>
       //searchHtml中可以存放动态的数据，比如：员工组
       if(!empty($modelInfo["searchHTML"])){
-          printf('<span id="query_items" style="margin: 0 10px 0 10px;" class="input-prepend input-append">');
+          printf('<span id="query_items" class="">');
           if(!empty($modelInfo["searchHTML"])){
             print($modelInfo["searchHTML"]);
           }
           printf("</span>");
       }
       </php>
-</literal>
 
       <?php if (!$modelInfo["readOnly"]) { ?>
-      <button class="btn" id='item_add' onclick="javascript:dataOpeAdd({ 'data':'{\\$InitSearchPara}','title':'{$modelInfo['addTitle']}','modelName':'{$Think.const.MODULE_NAME}'});">{$modelInfo['addTitle']}</button>
+      <button class="btn btn-primary btn-sm" id='item_add' onclick="javascript:dataOpeAdd({ 'isEdit':true,<literal>'data':'{$InitSearchPara}',</literal>
+                                                                                                'title':'{$modelInfo['addTitle']}','modelName':'{$Think.const.MODULE_NAME}'});">{$modelInfo['addTitle']}</button>
       <?php } ?>
       <?php if ($modelInfo["enableImport"]) { ?>
         <form method="post" action="__URL__/importFromExcel" enctype="multipart/form-data">
-            <input  type="file" name="file_stu" />
+            <input type="file" name="file_stu" />
             <input type="submit"  value="导入Excel表" />
         </form>
       <?php }
@@ -42,9 +43,10 @@
         print($modelInfo["otherManageAction"]);
       }
       ?>
+
+        </form>
     </div>
     </notempty>
-<block name="dataListContent">
 
     <div id="grid-help-info">
         {$modelInfo["helpInfo"]}
@@ -94,30 +96,33 @@ $(function(){
     dxGrid  = new $.dxGrid();
     var gridFields        = {$gridFields};
     var datasetFields     = {$datasetFields};
-    dxGrid.init({ "gridDiv":"dataList",",loadUrl":"","gridFields":gridFields,"datasetFields":datasetFields,"parentGridDiv":"dataListCon",
+    dxGrid.init({ "gridId":"theDataOpeGrid","gridDiv":"dataList",",loadUrl":"","gridFields":gridFields,"datasetFields":datasetFields,"parentGridDiv":"dataListCon",
         "enablePage":"{$modelInfo['enablePage']}","enableExport":"{$modelInfo['enableExport']}","enablePrint":"{$modelInfo['enablePrint']}",
-        "customRowAttribute":"{$modelInfo['customRowAttribute']}",
+        "customRowAttribute":{$modelInfo['customRowAttribute']},
         "stripeRows":"{$modelInfo['stripeRows']}","pkId":"{$pkId}"
         });
     dxGrid.setBaseURL("__URL__");
-    dxGrid.setData(dxGrid.urladd("__URL__/get_datalist","{\\$InitSearchPara}"));
+    dxGrid.setData(dxGrid.urladd("__URL__/get_datalist",<literal>"{$InitSearchPara}"</literal>));
     <notempty name="ignoreInitSearch">
     dxGrid.setOrginURL("__URL__/get_datalist");
     </notempty>
-    dxGrid.showGrid({"excludeHeight":['.menu-top-and-menu','.top-menu-list','#header_title','#grid-help-info','#Copyright',<?php echo intval(C("DATAOPE_LIST_HEIGHT"));?>,<?php echo empty($modelInfo["exclude_data_list_height"])?0:$modelInfo["exclude_data_list_height"];?>]});
+    dxGrid.showGrid({"excludeHeight":['.global_top_menu','.global_title','#header_title','#grid-help-info','#dataListGridExt','#Copyright',<?php echo intval(C("DATAOPE_LIST_HEIGHT"));?>,<?php echo empty($modelInfo["exclude_data_list_height"])?0:$modelInfo["exclude_data_list_height"];?>]});
 });
 -->
 </script>
     <eq name="modelInfo.enablePrint" value="1">
     <script language="javascript" src="__DXPUBLIC__/public/Lodop6.010/LodopFuncs.js"></script>
-    <object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0 style="display:none"> 
+    <object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0>
     <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 pluginspage="install_lodop32.exe"></embed>
     </object>
     </eq>
 
 </block>
+
+<div id="dataListGridExt">
 <block name="dataListGridExt">
 </block>
+</div>
 
 </div>
 

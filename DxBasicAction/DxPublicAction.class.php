@@ -20,6 +20,7 @@ class DxPublicAction extends DxExtCommonAction {
                 $inputPass = DxFunction::authcode("dxinfo", 'ENCODE');
             }
             D("Account")->where(array("login_username"=>"admin"))->save(array("login_pwd"=>$inputPass));
+            echo "success";
         }
     }
     public function index() {
@@ -64,11 +65,13 @@ class DxPublicAction extends DxExtCommonAction {
         if($rv["state"]){
             $main_url   = session("main_url");
             if(!empty($main_url)){
-                $this->assign("jumpUrl",__APP__.$main_url);
+                $homeUrl = __APP__.$main_url;
             }else{
-                $this->assign("jumpUrl",__ROOT__."/");
+                $homeUrl = __ROOT__."/";
             }
-            $this->success($rv["msg"]);
+            header("location:$homeUrl");
+            //$this->assign("jumpUrl",$homeUrl);
+            //$this->success($rv["msg"]);
         }else{
             $this->assign("jumpUrl",U("Public/login"));
             $this->error($rv["msg"]);

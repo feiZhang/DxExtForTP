@@ -1,8 +1,23 @@
-# DXINFO for TP 基础模块 #
+title: DxExtForTP
+date: 2013-11-21 14:34:23
 
-## 功能介绍 ##
-1. 快速构建 数据列表、新增、修改、查询 等数据操作基本功能
-2. 数据权限控制
+---
+
+# [DxExtForTP](https://github.com/feiZhang/DxExtForTP) 基础模块 #
+
+## 项目目的 ##
+
+因为：
+
+1. 公司项目通常为数据增删改查类，界面较为统一
+2. 新入职的员工技术基础薄弱
+
+所有：
+
+1. 构建一个统一的增删改查的基础代码
+2. 新员工通过简单配置完成项目的基本功能，快速投入工作
+3. 各个项目，各个功能界面统一，减少同类Bug的数量
+4. 增加项目构建速度，尤其是第一个概念版本
 
 ## 总体说明 ##
 系统扩展了TP的Model类、Action类，增加了一些基础功能，来完成一些通用的功能。
@@ -10,7 +25,7 @@
 引入组件：
 
 1. sigma grid 数据列表，特色：自定义Grid头，分组显示数据，前端排序，列锁定
-2. formvalidator 字段规则验证
+2. jQuery validate 字段规则验证
 3. min js和css合并压缩，后端完成
 4. artDialog5 js对话框
 5. bootstrap 全局风格
@@ -111,8 +126,7 @@ operator：对于自动填充无效，用户数据过滤时，确定过滤的方
 
 listFields属性详解：
 
-1. type:字段类型，string、int、float、t
-2. date[日期]、enum[枚举,单选框]、select[枚举,下拉框]、set[集合]、uploadFile[文件上传]、canton[区域]、cutPhoto[剪切头像]
+1. type:字段类型，string、int、float、date[日期]、enum[枚举,单选框]、select[枚举,下拉框]、set[集合]、uploadFile[文件上传]、canton[区域]、cutPhoto[剪切头像]、idcard[身份证类型]
 
 		type用于3个地方：
 		1. grid生成时，sigma支持 string int float（排序结果不同）
@@ -122,9 +136,11 @@ listFields属性详解：
 		uploadFile的附属参数:"upload"=>array("filetype"=>".gif、.jpeg、.jpg、.png、.pdf、.doc、.xls、.mp4、.mov","maxNum"=>0,"buttonValue"=>"文件上传","maxSize"=>1024*1024)),
     	uploadFile存储的数据不能直接显示，在model中配置 'data_change'=>array("file_name"=>"uploadFilesToGrid"), 指定字段进行内容转义
     	文件上传的路径，在config中配置：UPLOAD_BASE_PATH 和 TEMP_FILE_PATH
-        set的附加参数:valFormat=json,douhao   分别表示，以json 或 逗号隔开 存储多选数据
+        set的附加参数:valFormat=json,douhao   分别表示，以json 或 逗号(默认)隔开 存储多选数据,注意：如果存储为json，则无法对此字段进行数据检索
         date的附加参数:valFormat=yyyy-MM-dd HH:mm:ss  就是js插件WdatePicker的参数格式
         canton的附加属性 canton=>array("rootCantonId"=>3520,"id_name"=>"canton_id")，即跟区域的Id，是否将选择的值赋值给id_name设定的input
+        idcard类型，附加属性idcard：'birthday':'birthday','sex':'sex','id_reg_addr':'id_reg_addr',自动根据身份证填充生日、性别、户籍地
+
 2. title:中文标题
 3. hide:是否在前台生成此字段（此值使用位运算）。见常量 HIDE\_FIELD\_*，确定字段在某个场景下不生成html 或不处理。如果在多个位置不生成，等于各个值的和。比如：列表新增都不生成则为3
 4. display\_none:是否在界面上显示，hide控制是否在前端生成此html，display\_none控制是否显示此html。有些字段，需要在新增、修改中存在，但是用户不可见
@@ -184,11 +200,10 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 5. otherManageAction:本model除新增外的其他操作
 6. searchHTML:操作框的html信息，一般为搜索框和查询按钮，搜索框支持的特性：
 	
-		1.name对应model数据字段 
-		2.class="dataOpeSearch"表示是查询条件
-		3.class="likeLeft likeRight"表示模糊查询的左相似或右相似,name增加前缀 gt_  egt_  lt_  elt_ 支持符号操作，一般应用于时间
-		4.支持radio类型input
-		5.查询按钮执行js函数触发查询 dataOpeSearch(是否使用条件)
+		1.name 对应 model数据字段 
+		3.name增加前缀 gt_  egt_  lt_  elt_  ％支持符号操作，一般应用于时间，％可以加在前后，支持like查询
+		4.支持radio、checkbox类型input
+		5.查询按钮执行js函数触发查询 dataOpeSearch(查询框所在的FromID。默认为：dataListSearch)
         6.暂时不再支持使用 createFieldInput 方法，生成查询输入框（两个Canton会互相影响）
         例子(使用bootstrap样式):
             <span class="add-on">老人姓名:</span>
@@ -219,15 +234,16 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 13. gridHeader:自定义报表的个性化表头，不要写table标签，只写TR标签即可。系统会自动追加Table标签。（sigma相关）
 14. order:默认的数据排序（sigma相关）
 15. stripeRows:grid是否交替颜色
+15. showTotal:是否在数据最后一行增加总计列。此列由上面列出的数据，计算总数获得。
 15. hasCheckBox:数据列表是否有checkbox（sigma相关）
 16. customRowAttribute:grid自定义样式，例如：
 
-		'customRowAttribute' => "var customRowAttribute = function(record,rn,grid){if(last_show_worker_id!=record.worker_id){last_show_worker_id=record.worker_id;}else{return 'style=\\\"background-color:#cccccc\\\"';}}",
+		'customRowAttribute' => "function(record,rowNo,grid){if(last_show_worker_id!=record.worker_id){last_show_worker_id=record.worker_id;}else{return 'style=\\\"background-color:#cccccc\\\"';}}",
 16. total:是否在数据最后一行，增加总计行
 17. leftArea:左边增加的内容，比如：左边可以加一个区域树等，此变量为html代码
 18. enableImport:允许导入数据
 19. addPageColumnNum:新增、修改页面的列数，默认为1.
-20. textTo：格式 array("modelName"=>array("fromid"=>"","toid"=>"","fromtextto"=>"","textto"=>""))，modelName是关联的Model名称，例如：EmployeeModel的textTo设置为：array("ServiceList"=>array("fromid"=>"pk_id","toid"=>"employee_id","fromtextto"=>"name","textto"=>"employee_name"))，其中pk_id、name是employee表的字段，employee_id、employee_name是service_list的字段；功能在model的 _after_update 和 _before_delete 中实现。
+20. textTo：当字典表的名称修改后，反修改关联此数据的数据名称，比如：修改了老人类别，修改老人信息的老人类别值。格式 array("modelName"=>array("fromid"=>"","toid"=>"","fromtextto"=>"","textto"=>""))，modelName是关联的Model名称，例如：EmployeeModel的textTo设置为：array("ServiceList"=>array("fromid"=>"pk_id","toid"=>"employee_id","fromtextto"=>"name","textto"=>"employee_name"))，其中pk_id、name是employee表的字段，employee_id、employee_name是service_list的字段；功能在model的 _after_update 和 _before_delete 中实现。
 21. relationDelete：关联删除，删除一个数据后，同时删除其附属的数据，比如：删除老人后，同时删除老人所属的各种服务组。格式 array("modelName"=>array("fromid"=>"","toid"=>"")) 参考 textTo的定义
 	
 ### 全文索引 ###
@@ -247,6 +263,8 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 	
 ### TP的数据验证规则自动转换为Js验证 ###
 效果：后台书写TP的数据验证规则，前台js自动有此验证规则。
+
+1. 新增past和future验证，rule可以是一个字段名（加#前缀）或一个固定的时间
 
 组件：http://www.position-relative.net/creation/formValidator/
 	
@@ -300,6 +318,8 @@ DxModel方法cacheData(false)对此表进行全局数据缓存，通过Think.con
 ## 对话框显示数据列表
 增加了js函数：dataOpeListDialog，［居家业务的客户购买服务对话框使用到下面的所有参数］其参数config的值定义
 
+注意：对话框不能显示直接由data_list生成的数据列表，因为：data_list代码生成的grid id相同（id作为其他操作引用的句柄，现在为固定名称，要改为动态，需要调整新增修改等代码），导致相互干扰
+
 1. title：对话框的标题
 2. ok：对话框点击ok按钮时执行的方法（一般通过jQuery解析对话框内容，ajax提交到服务器）
 3. html：对话框显示html的附加内容（除数据列表外的其他业务所需的数据值）
@@ -319,6 +339,7 @@ DxModel方法cacheData(false)对此表进行全局数据缓存，通过Think.con
 4. 由于TP项目的混乱，在LocationTemplateBehavior中有判断模板文件的函数，在 ThinkTemplate 中也有类似的函数，并且TP对tags的支持也有些混乱 (在view中调用了tags来处理模板文件，但是在处理include和模板继承中，又没有调用)，所以对于重写判定 模板文件的方法，就有些困难，目前框架支持TP3.1.2，如果要升级ThinkPHP请注意此问题。（框架在DxParseTemplateBehavior中增加了判断模板文件的函数，在TemplateDx中增加了对于include的处理，支持DxPublic和模板文件搜索）
 5. 在save方法中调用insertOrUpdate方法时，如果是修改操作，会自动将设置readOnly的Post数据unset掉，所以，如果需要在后续继续操作此数据，则请先保存数据到变量中，随后恢复之
 6. 升级TP的版本，1.测试系统功能 2.DxModel的方法 myAutoOperation 代码更新
+7. 系统自动生成查询条件使用了TP查询的 _string 处理set类型的查询，自定义代码中如果要用到_string，请注意使用字符拼接模式
 
 ## 版本历程
 1. 0.1版:为了实现简单代码重用和客户自定义界面，构建了FormAuto

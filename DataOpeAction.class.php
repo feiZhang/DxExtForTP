@@ -80,7 +80,7 @@ class DataOpeAction extends DxExtCommonAction{
             $gridHandler->printLoadResponseText();
         }
     }
-    
+
     /**
      * 处理数据导出.
      * @param $data array 要导出的数据记录集
@@ -92,7 +92,7 @@ class DataOpeAction extends DxExtCommonAction{
     protected function export($data, $type="xls", $fields_list=null, $subject=null,$customHeader=null){
         $model  = $this->model;
         if(empty($model)) die("model为空!");
-        
+
         if($fields_list===null){
             $fields_list = $model->getExportFields();
         }
@@ -198,16 +198,12 @@ class DataOpeAction extends DxExtCommonAction{
         $this->assign('dx_data_list', DXINFO_PATH."/DxTpl/data_list.html");
         $this->dxDisplay("data_list");
     }
-    private function getModelInfo(){
+    protected function getModelInfo(){
         $model = $this->model;
-        //支持通过url传递过来的ModelTitle
         $enablePage     = $model->getModelInfo("enablePage");
-        $enablePrint    = $model->getModelInfo("enablePrint");
-        $enableImport   = $model->getModelInfo("enableImport");
-        $enableExport   = $model->getModelInfo("enableExport");
         if($_REQUEST["print"]=="1") $enablePage = false;
-        if($enablePage!==false) $enablePage = true;
-        if($enableExport!==false) $enableExport = true;
+
+        //支持通过url传递过来的ModelTitle
         //因为要在新增修改界面中显示，model的标题，所以需要保存在session中，随后根据情况清楚掉。
         $modelTitle = empty($_REQUEST["modelTitle"])?$model->getModelInfo("title"):$_REQUEST["modelTitle"];
         $addTitle   = $model->getModelInfo("addTitle");
@@ -217,17 +213,16 @@ class DataOpeAction extends DxExtCommonAction{
         $editTitle  = $model->getModelInfo("editTitle");
         if(empty($editTitle)) $editTitle    = "修改".$modelTitle;
 
-        return array_merge ( $model->getModelInfo(),array (
-            "modelTitle" => $modelTitle,
-            "addTitle" => $addTitle,
-            "editTitle" => $editTitle,
-            "importTitle"=>$importTitle,
-            "readOnly" => $model->getModelInfo ( "readOnly" ) ? $model->getModelInfo ( "readOnly" ) : false,
-            "enablePage" => $enablePage ? "1" : "0",
-            "enablePrint" => $enablePrint ? "1" : "0",
-            "enableImport"=>$enableImport?"1":"0",
-            "enableExport"=>$enableExport?"1":"0",
-        ) ); 
+        return array_merge (
+            $model->getModelInfo(),
+            array (
+                "modelTitle" => $modelTitle,
+                "addTitle" => $addTitle,
+                "editTitle" => $editTitle,
+                "importTitle"=>$importTitle,
+                "enablePage" => $enablePage,
+            )
+        );
     }
     public function get_model(){
         $gridField  = $this->model->fieldToGridField();
@@ -253,12 +248,34 @@ class DataOpeAction extends DxExtCommonAction{
         $this->assign( "listFields",$listFields);
         $this->assign ( "modelInfo", $model->getModelInfo());
         $this->assign ( "modelName", $model->getModelName());
-//      dump($model->getEditFields($pkId));
 
         if($pkId>0){
             //要修改的 数据内容
             $where   = array($model->getPk()=>$pkId);
             $vo      = $model->where( $where )->find();
+            //将set、enum数据进行转换，为了显示具体的数据。。
+            foreach($listFields as $field){
+                if($field["type"]=="date"){
+                    if(substr($vo[$field["name"]],0,10)=="0000-00-00") $vo[$field["name"]] = "";
+                }else if(!empty($field["valChange"]) && empty($field["textTo"])){
+                    switch($field["type"]){
+                    case "set":
+                        if($field["valFormat"]=="json"){
+                            $tVals = json_decode($vo[$field["name"]],true);
+                        }else{
+                            $tVals = explode(",",$vo[$field["name"]]);
+                        }
+                        foreach($tVals as $tv){
+                            $vo[$field["name"]."_textTo"][] = $field["valChange"][$tv];
+                        }
+                        $vo[$field["name"]."_textTo"] = implode(",",$vo[$field["name"]."_textTo"]);
+                        break;
+                    default:
+                        $vo[$field["name"]."_textTo"] = $field["valChange"][$vo[$field["name"]]];
+                        break;
+                    }
+                }
+            }
             if($vo){
                 $this->assign('pkId',$pkId);
             }else{

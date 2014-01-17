@@ -25,11 +25,13 @@ class DxExtCommonAction extends Action {
     }
 
     function _initialize() {
-        $log_id =   $this->writeActionLog();
+        fb::log($_REQUEST);
+        $this->cacheActionList  = DxFunction::getModuleActionForMe();
+
+        if(!in_array(ACTION_NAME,array("get_datalist")))
+            $log_id =   $this->writeActionLog();
 
         if(C("DISABLE_ACTION_AUTH_CHECK")!==true){
-            $this->cacheActionList  = DxFunction::getModuleActionForMe();
-
             if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
                 //为了不验证公共方法，比如：public、web等，所以将session验证放在里面。
                 if(0 == intval(session(C("USER_AUTH_KEY")))) {
@@ -52,8 +54,6 @@ class DxExtCommonAction extends Action {
 
         //将系统变量加载到config中，供系统使用。
         D("SysSetting")->cacheData();
-        //Canton的缓存数据,用于生成 selectselectselect 
-        $this->assign("CantonData",str_replace("{","{ ",json_encode(D("Canton")->getSelectSelectSelect())));
     }
 
     /**
@@ -65,21 +65,30 @@ class DxExtCommonAction extends Action {
         //强制，将设置为readOnly的字段注销掉，防止自己构造post参数。。比如：入院时间是不允许修改的，但是用户可以自己构造post数据，提交入院时间字段，则tp的create会更新这个字段。
         //目前的Readonly只支持edit的时候，add的时候，不支持。
         foreach($m->getListFields() as $key=>$val){
+            $fieldName = $val["name"];
             if(!empty($_REQUEST[$pkId]) && (isset($val["readOnly"]) && $val["readOnly"])){
-                unset($_GET[$val["name"]]);
-                unset($_POST[$val["name"]]);
-                unset($_REQUEST[$val["name"]]);
-            }else if($val["type"]=="uploadFile" && (is_array($_REQUEST[$key]) || !empty($_REQUEST["old_".$key]))){
+                unset($_GET[$fieldName]);
+                unset($_POST[$fieldName]);
+                unset($_REQUEST[$fieldName]);
+            }else if($val["type"]=="uploadFile" && (is_array($_REQUEST[$fieldName]) || !empty($_REQUEST["old_".$fieldName]))){
                 //如果数据传递过来的是数组，则进行数据整合为json格式，比如：多文件上传.
-                $_REQUEST[$key] = $_POST[$key]  = $_GET[$key]   = $this->moveAndDelFile($key,$m->getModelName());
-            }else if($val["type"]=="set" && is_array($_REQUEST[$key])){
+                $_REQUEST[$fieldName] = $_POST[$fieldName] = $_GET[$fieldName] = $this->moveAndDelFile($fieldName,$m->getModelName());
+            }else if($val["type"]=="set" && is_array($_REQUEST[$fieldName])){
                 //如果字段是set和 mul select。则将数据整合为json
-                if($val["valFarmat"]=="douhao")
-                    $_REQUEST[$key] = $_POST[$key]  = $_GET[$key]   = json_encode($_REQUEST[$key]);
+                //注意：如果存储为json，则无法对此字段进行数据检索
+                if($val["valFarmat"]=="json")
+                    $_REQUEST[$fieldName] = $_POST[$fieldName]  = $_GET[$fieldName]   = json_encode($_REQUEST[$fieldName]);
                 else
-                    $_REQUEST[$key] = $_POST[$key]  = $_GET[$key]   = implode(",",$_REQUEST[$key]);
+                    $_REQUEST[$fieldName] = $_POST[$fieldName]  = $_GET[$fieldName]   = "0,".implode(",",$_REQUEST[$fieldName]).",0";
             }elseif ($val['type']   == 'cutPhoto'){
-                $key = DxFunction::move_file(C("TEMP_FILE_PATH").'/'.$_POST[$key],MODULE_NAME.'/');
+                if(!empty($_REQUEST[$fieldName])){
+                    if(!empty($_REQUEST["old_$fieldName"])) unlink(C("UPLOAD_BASE_PATH").$_REQUEST["old_$fieldName"]);
+                    $_REQUEST[$fieldName] = $_POST[$fieldName] = $_GET[$fieldName] = DxFunction::move_file(C("TEMP_FILE_PATH").'/'.$_REQUEST[$fieldName],MODULE_NAME);
+                }else{
+                    unset($_GET[$val["name"]]);
+                    unset($_POST[$val["name"]]);
+                    unset($_REQUEST[$val["name"]]);
+                }
             }
         }
 
@@ -92,9 +101,9 @@ class DxExtCommonAction extends Action {
             //fb::log($_REQUEST,$m);
             if(!empty($_REQUEST[$pkId])){
                 $v = $m->save();
+                if($v) $v = $_REQUEST[$pkId];
             }else{
-                $v = $m->add();
-                //$pkId = $m->getLastInsID();//当有后置操作时可能取不到值。
+                $v = $m->add(); //如果添加成功返回的就是pkId
             }
             fb::log($m->getLastSQL(),$v);
             return $v;
@@ -141,10 +150,10 @@ class DxExtCommonAction extends Action {
         }
 
         foreach($value as $tkey=>$tval){
-            if($tval["cunzai"]!==true){
-                $value[$tkey]["url"]    = DxFunction::move_file(substr(dirname($tval["url"]),2)."/".$tval["name"],"/".$modelName,"dateY_m");
+            if($tval["cunzai"]!==tre){
+                $value[$tkey]["url"]    = DxFunction::move_file(C("TEMP_FILE_PATH").dirname($tval["url"])."/".$tval["name"],"/".$modelName,"dateY_m");
                 if(!empty($tval["thumbnail_url"])){
-                    $value[$tkey]["thumbnail_url"]  = DxFunction::move_file(substr(dirname($tval["thumbnail_url"]),2)."/".$tval["name"],"/".$modelName,"dateY_m","thumbnail_".$tval["name"]);
+                    $value[$tkey]["thumbnail_url"]  = DxFunction::move_file(C("TEMP_FILE_PATH").dirname($tval["thumbnail_url"])."/".$tval["name"],"/".$modelName,"dateY_m","thumbnail_".$tval["name"]);
                 }
             }
         }
@@ -306,7 +315,7 @@ class DxExtCommonAction extends Action {
         D("Menu")->where(array("module_name"=>$model->module,"action_name"=>$model->action))->save(array("click_times"=>array("exp","click_times+1")));
 
         if(sizeof($action_name)>1){
-            $action_name    = argsInRequest($action_name,$_REQUEST);
+            $action_name    = DxFunction::argsInRequest($action_name,$_REQUEST);
         }else{
             $action_name    = array_values($action_name);
             $action_name    = $action_name[0]["menu_name"];
@@ -330,7 +339,7 @@ class DxExtCommonAction extends Action {
     public function createTable(){
         $this->model->fnCreateTable();
     }
-    
+
     /**
      +----------------------------------------------------------
      * 根据表单生成查询条件
@@ -349,11 +358,10 @@ class DxExtCommonAction extends Action {
         $model  = $this->model;
         $map    = array ();
         //支持like、大于、小于
-        $dbFields   = array_keys($model->getListFields());
-        if(APP_DEBUG) Log::write(var_export($_REQUEST,true).var_export($dbFields,true).MODULE_NAME."|".ACTION_NAME,Log::INFO);
-        //$dbFields = $model->getDbFields();
+        //有些model显示的内容是多表关联，所以不能使用getDbFields
+        $dbFields   = $model->getListFields();
         foreach($_REQUEST as $key=>$val){
-            if ($val!=0 && (empty($val) || str_replace("%","",$val)=="")) continue;
+            if (strlen($val)<1 && empty($val)) continue;
             $fieldAdd   = "";
             if( substr($key,0,4)=="egt_" ){
                 $key        = substr($key,4);
@@ -367,22 +375,48 @@ class DxExtCommonAction extends Action {
             }else if( substr($key,0,3)=="lt_" ){
                 $key        = substr($key,3);
                 $fieldAdd   = "lt";
+            }else if( strpos($key,"%")!==false ){
+                if($key[0] == '%'){
+                    $val = '%'.$val;
+                    $key = substr($key,1);
+                }
+                if($key[strlen($key)-1] == '%'){
+                    $val = $val.'%';
+                    $key = substr($key,0,-1);
+                }
+                $fieldAdd   = "like";
             }
-            
-            if (in_array($key,$dbFields,true)) {
+
+            if (array_key_exists($key,$dbFields)) {
                 if($fieldAdd == "egt" || $fieldAdd=="elt" || $fieldAdd == "gt" || $fieldAdd=="lt"){
                     if(array_key_exists($key, $map))
                         $map[$key]  = array($map[$key],array($fieldAdd,$val),"and");
                     else $map[$key] = array($fieldAdd,$val);
                 }else if(strtolower(trim($val))=="null"){
                     $map[$key] = array("exp","is null");
-                }else if($val[0]=="%" || $val[strlen($val)-1]=="%")
+                }else if($fieldAdd == "like"){
                     $map[$key] = array("like",$val);
-                else
+                }else if(is_array($val)){
+                    if($dbFields[$key]["type"]=="set"){
+                        $tempV = array();
+                        foreach($val as $vvv){
+                            $tempV[] = $key." LIKE '%,".$vvv.",%'";
+                        }
+                        if(empty($where['_string']))
+                            $map['_string'] = implode(" OR ",$tempV);
+                        else
+                            $map['_string'] .= " AND ".implode(" OR ",$tempV);
+                    }else{
+                        $map[$key] = array("in",implode(",",$val));
+                    }
+                }else{
                     $map[$key] = $val;
+                }
             }
         }
-        if(APP_DEBUG) Log::write(var_export($map,true).MODULE_NAME."|".ACTION_NAME."_Search",Log::INFO);
+        if(APP_DEBUG){
+            fb::log($map,"_search");
+        }
         return $map;
     }
 

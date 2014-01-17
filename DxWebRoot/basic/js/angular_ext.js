@@ -2,10 +2,20 @@
  * angularJs的代码
  */
 var dxAngularM = angular.module("dxApp",[]);
+//为了controller中传递数据建造的顶层controll
+dxAngularM.controller("rootController",function($scope){
+    $scope.$on("dialogSelectChange",
+               function (event, msg) {
+                   $scope.$broadcast("dialogSelectChangeFromParrent", msg);
+               });
+});
 
-dxAngularM.controller("dataEditCtrl",function($scope){
-    $scope.isEdit = true;//新增页面也是修改页面，只不过id=0而已
-    if(recordDataInfo.id == "0")
+dxAngularM.controller("dataEditCtrl",function($scope,$http,$rootScope){
+    //为了独立增加修改页面的需要。。增加此判定。
+    if(dataIsEdit!=""){
+        $scope.isEdit = dataIsEdit;
+    }
+    if(recordDataInfo.id == undefined || recordDataInfo.id == "0")
         $scope.isAdd = true;  //要区分新增和修改，使用不同的js数据验证规则
     $scope.cantonTree = cantonFdnTree;
     $scope.dataInfo = recordDataInfo;
@@ -16,7 +26,7 @@ dxAngularM.controller("dataEditCtrl",function($scope){
         obj = angular.element(input);
         var opt = angular.fromJson(obj.attr("uploadOption"));
         eval("var oldValue = recordDataInfo."+obj.attr("id"));
-        if(oldValue==undefined) oldValue = { };
+        if(oldValue==undefined || oldValue=='') oldValue = { };
         else oldValue = angular.fromJson(oldValue);
         opt  = $.extend(opt,{
             url:APP_URL + "/Basic/upload_file",
@@ -33,6 +43,13 @@ dxAngularM.controller("dataEditCtrl",function($scope){
         angular.element("div#"+obj.attr("id")).fileupload(opt);
     });
 
+    //angular的ngBlur老是不触发事件，只能在html中书写了。
+    /*
+    $scope.idcardCheck = function(thisValue){
+        checkIdCard(thisValue,{'birthday':'birthday','sex':'sex','id_reg_addr':'id_reg_addr'});
+    }
+    */
+
     $("#itemAddForm").validationEngine({
         //ajaxFormValidationMethod: 'post',
         onValidationComplete:formSubmitComplete
@@ -40,9 +57,6 @@ dxAngularM.controller("dataEditCtrl",function($scope){
 
     $scope.cantonChange = function(selectCanton,cantonFdn,textTo){
         if(selectCanton!=undefined && selectCanton!=null && selectCanton!=0) eval("$scope." + cantonFdn + "= selectCanton;");
-    };
-    $scope.editTheData = function(){
-        $scope.isEdit = !$scope.isEdit;
     };
 });
 
@@ -55,6 +69,19 @@ dxAngularM.filter('cantonFdnToArray', function() {
         ta.pop();
         angular.forEach(ta,function(val,key){ta[key]=parseInt(val,10);});
         return ta;
+    }
+});
+//将fdn转换为中文，因为cantonTree只存放的id数据，所以，还需要数据解析
+dxAngularM.filter('cantonFdnToText', function() {
+    return function(fdn) {
+        if(fdn==undefined || fdn==null || fdn==0 || fdn==""){
+            return '';
+        }
+        var ta = fdn.split(".");
+        ta.pop();
+        ta = ta.pop();
+        if(ta==undefined || ta==null || ta==0 || ta=="") return '';
+        return cantonIdValChange[parseInt(ta,10)].text_name;
     }
 });
 
@@ -75,8 +102,8 @@ dxAngularM.filter('checkBoxChecked', function() {
 
 dxAngularM.filter('validClass', function() {
     return function(isEdit,isAdd,editClass,addClass) {
-        if(isEdit) return editClass;
         if(isAdd) return addClass;
+        else if(isEdit) return editClass;
     }
 });
 

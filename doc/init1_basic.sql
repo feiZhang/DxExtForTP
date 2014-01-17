@@ -1,30 +1,31 @@
 TRUNCATE table account;
 INSERT INTO `account` (`account_id`, `login_username`, `login_pwd`, `true_name`, `tel`, `address`, `role_id`, `canton_id`, `canton_fdn`, `creater_user_id`, `create_time`, `shorcut_ids`, `menu_ids`, `desk_ids`, `status`) VALUES
-(1, 'admin', 'a3e46sYDkv8uOtYZfK4K8GBaY1/Uagy4T9igwYZuBVvv9us', '系统管理员', '186', '郑州', 1, 3520, "03520.", 0, '2013-09-29 11:03:06', '', '', '', 1);
+(1, 'admin', 'a3e46sYDkv8uOtYZfK4K8GBaY1/Uagy4T9igwYZuBVvv9us', '系统管理员', '186', '郑州', 1,1674 , "03520.01673.01674.", 0, '2013-09-29 11:03:06', '', '', '', 1);
 
 TRUNCATE table sys_setting;
 INSERT INTO `sys_setting` (`set_id`, `name`, `val`, `type`, `memo`, `order`) VALUES
-(1, 'SITE_TITLE', '机构养老业务管理平台--大象通信', 'user', '管理系统标题', 0),
-(2, 'SITE_NAME', '机构养老业务管理平台', 'user', '管理系统标题', 1),
+(1, 'SITE_TITLE', '机构养老业务管理平台--大象通信', 'user', '浏览器标题栏标题', 0),
+(2, 'SITE_NAME', '机构养老业务管理平台', 'user', '系统名称', 1),
 (3, 'SITE_COPYRIGHT', '<b>Copyright © 2012-2022 技术支持：<a href=''http://www.dxinfo.com'' target=''_blank''>郑州大象通信信息技术有限公司</a>   ', 'sys', '系统登录后底部信息展示，可内嵌html代码', 2);
 
 TRUNCATE table role;
 INSERT INTO `role` (`role_id`, `name`, `menu_ids`, `shortcut_ids`, `desk_ids`, `level`) VALUES
-(1, '超级管理员', '', NULL, NULL, 1);
+(1, '超级管理员', '', '', '', 1);
 
 -- http://192.168.0.101:9008/index.php/%E6%9D%83%E9%99%90%E7%B3%BB%E7%BB%9F
 TRUNCATE table menu;
 INSERT INTO `menu` (`menu_id`, `parent_id`, `order_no`, `order_level`, `fdn`, `menu_name`, `module_name`, `action_name`, `args`, `type`, `is_desktop`, `desktop_url`, `other_info`) VALUES 
-(100, 0, 28*power(32,5), 1, '7.', '数据字典', 'SysDic', 'main', '', 'quick_menu', 0, '', ''),
+(90, 0, 28*power(32,5), 1, '7.', '数据字典', 'SysDic', 'main', '', 'menu', 0, '', ''),
 
 -- (150, 0, 21*power(32,5), 1, '8.', '共享文件', 'ShareFile', 'index', '', 'quick_menu', 0, '', ''),
 -- (151, 150, 21*power(32,5) + 8*power(32,4), 2, '', '共享文件', 'ShareFile', 'index', '', 'menu', 0, '', ''),
 
-(120, 0, 30*power(32,5), 1, '5.', '系统管理', '', '', '', 'quick_menu', 0, '', ''),
-(121, 120, 30*power(32,5) + 6*power(32,4), 2, '', '用户管理', 'Account', 'index', '', 'sub_quick_menu', 0, '', ''),
-(122, 120, 30*power(32,5) + 7*power(32,4), 2, '', '系统参数配置', 'SysSetting', 'index', '', 'sub_quick_menu', 0, '', ''),
-(123, 120, 30*power(32,5) + 9*power(32,4), 2, '', '系统日志', 'OperationLog', 'index', '', 'sub_quick_menu', 0, '', ''),
-(124, 120, 30*power(32,5) + 29*power(32,4), 2, '', '清除缓存', 'Basic', 'clearCache', '', 'action', 0, '', '');
+(120, 0, 30*power(32,5), 1, '5.', '系统管理', 'Account', 'index', '', 'menu', 0, '', ''),
+(121, 120, 30*power(32,5) + 6*power(32,4), 2, '', '用户管理', 'Account', 'index', '', 'sub_menu', 0, '', ''),
+(122, 120, 30*power(32,5) + 7*power(32,4), 2, '', '系统参数配置', 'SysSetting', 'index', '?type=user', 'sub_menu', 0, '', ''),
+(123, 120, 30*power(32,5) + 9*power(32,4), 2, '', '系统日志', 'OperationLog', 'index', '', 'sub_menu', 0, '', ''),
+(124, 120, 30*power(32,5) + 29*power(32,4), 2, '', '清除缓存', 'Basic', 'clearCache', '', 'action', 0, '', ''),
+(125, 120, 30*power(32,5) + 30*power(32,4), 2, '', '修改密码', 'Account', 'editpass', '', 'sub_menu', 0, '', '');
 
 TRUNCATE table canton;
 INSERT INTO `canton` (`canton_id`, `name`, `parent_id`, `ordernum`, `layer`, `fdn`, `creater_user_id`, `create_time`, `canton_uniqueno`, `text_name`, `is_del`)
@@ -3556,3 +3557,4 @@ VALUES
 	(03522,'郑东新区',01674,0,4,'03520.01673.01674.03522.',0,'2012-12-14 14:01:26','410110','河南省|郑州市|郑东新区',0),
 	(03523,'经济技术开发区',01674,0,4,'03520.01673.01674.03523.',0,'2012-12-14 14:01:26','410111','河南省|郑州市|经济技术开发区',0);
 
+update canton set text_name=replace(text_name,"|","");

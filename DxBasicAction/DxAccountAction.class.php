@@ -6,16 +6,17 @@ class DxAccountAction extends DataOpeAction {
     function editpass() {
        if ($_REQUEST["subEditPass"] == "修改") {
             $m = $this->model;
-            $oldP = $m->field("login_pwd")->where(array('id'=>session(C('USER_AUTH_KEY'))))->find();
+            $oldP = $m->field("login_pwd")->where(array($m->getPk()=>session(C('USER_AUTH_KEY'))))->find();
             if ($m->verifyPassword($oldP['login_pwd'],$_REQUEST['oldpass'])) {
-                $r = $m->where(array("id" => session(C('USER_AUTH_KEY'))))->save(array("login_pwd" => $_REQUEST['newPass']));
+                $r = $m->where(array($m->getPk() => session(C('USER_AUTH_KEY'))))->save(array("login_pwd" => $_REQUEST['newPass']));
                 if (FALSE !== $r) {
                     $this->assign("message", "密码修改成功!");
                 } else {
                     $this->assign("message", "密码修改失败!");
                 }
-            }else
+            }else{
                 $this->assign("message", "旧密码不正确!");
+            }
         }
         $this->display();
     }

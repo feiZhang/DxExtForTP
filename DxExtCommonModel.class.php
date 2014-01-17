@@ -51,6 +51,26 @@ class DxExtCommonModel extends Model {
     function __construct($name='',$connection='') {
         parent::__construct($name,$connection);
 
+        //modelInfo的初试值
+        $modelInfoInit = array(
+            "customRowAttribute"=>0,
+            "enablePage"=>1,
+        );
+        $this->modelInfo = array_merge($modelInfoInit,$this->modelInfo);
+
+        //根据model配置，自动生成数据验证条件
+        if(sizeof($this->listFields) > 0){
+            foreach($this->listFields as $name => $field){
+                switch($field["type"]){
+                case "idcard":
+                    $year = substr(date("Y"),-2,1);
+                    $idcardValid = array($name,"/^[0-9]{6}([0-9]{2}|1[89][0-9]{2}|2[01][0-".$year."][0-9])(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])[0-9]{2,3}[0-9Xx]$/","身份证格式不正确",Model::VALUE_VALIDATE,"regex");
+                    $this->_validate = array_merge($this->_validate,array($idcardValid));
+                    break;
+                }
+            }
+        }
+
         $this->initListFields();
         //自动填充默认字段create_time 和 update
         $myFields   = $this->getDbFields();
@@ -72,7 +92,7 @@ class DxExtCommonModel extends Model {
                 if(intval($dp_fields["auto_type"])<1) continue; //不自动填充数据
                 $field_name = $dp_fields["field_name"];
                 $session_field_name = array_key_exists("session_field", $dp_fields)?$dp_fields["session_field"]:$field_name;
-                
+
                 if(array_search($field_name,$dbFields)){
                     if(intval($dp_fields["type"])==self::DP_TYPE_STATIC_AUTO){
                         //设置默认值
@@ -89,9 +109,10 @@ class DxExtCommonModel extends Model {
         }
         //Log::write(var_export($this->_auto,true).MODULE_NAME."|".ACTION_NAME,Log::INFO);
     }
+
     /**
      * 重新整理listFields数据，将原始的listFields转换为运行时状态。比如：valChange的转换。
-     * **/
+     */
     public function getListFields($reNew=false,$original=false){
         Log::write($this->name."->getListFields",LOG::INFO);
         if($original) return $this->listFields;
@@ -101,11 +122,10 @@ class DxExtCommonModel extends Model {
             return $this->cacheListFields;
         }
         if(empty($this->cacheListFields)){
-            $cacheFile = '_fields/'.$this->name."_listFields_".$this->getListFieldsMd5();
-            $this->cacheListFields  = F($cacheFile);
+            $this->cacheListFields  = S($cacheFile);
             //dump($this->cacheDictDatas);
             if(empty($this->cacheListFields)){
-                $this->setCacheListFields($cacheFile);
+                $this->setCacheListFields();
             }
         }
         return $this->cacheListFields;
@@ -146,20 +166,24 @@ class DxExtCommonModel extends Model {
     public function getModelInfoMd5(){
         return md5(json_encode($this->modelInfo));
     }
-    private function setCacheListFields($cacheFile){
+    private function setCacheListFields(){
+        $cacheFile = 'dict_cache_'.$this->name."_listFields_".$this->getListFieldsMd5();
         $tListFields   = array();
         foreach($this->listFields as $key=>$field){
             $tListFields[isset($field["name"])?$field["name"]:$key] = $this->getOneListField($key,$field);
         }
 
         //转换Model的自动验证规则为formValidation形式
+        //dump($this->_validate);
         $tempValid  = $this->convertValid($this->_validate);
         foreach($tempValid as $fld =>$vvvv){
             $tListFields[$fld]["valid"][self::MODEL_INSERT] = "validate[".implode(",",$vvvv[self::MODEL_INSERT])."]";
             $tListFields[$fld]["valid"][self::MODEL_UPDATE] = "validate[".implode(",",$vvvv[self::MODEL_UPDATE])."]";
+            $tListFields[$fld]["valid"]["validateMsg"] = $vvvv["validateMsg"];
+            $tListFields[$fld]["valid"]["regex"] = $vvvv["regex"];
         }
 
-        F($cacheFile,$tListFields);
+        S($cacheFile,$tListFields);
         $this->cacheListFields  = $tListFields;
     }
     private function getOneListField($key,$field){
@@ -169,7 +193,7 @@ class DxExtCommonModel extends Model {
                 $field["width"] = "180";
                 $field["default"] = session("canton_fdn");
                 if(empty($field["default"])) $field["default"] = C("ROOT_CANTON_FDN");
-                $field["valChange"] = "";
+                $field["valChange"] = "";   //因为canton的valchange内容太多，所以放到页面头部直接载入，每个field中不再体现。
                 $data_change    = $this->getModelInfo("data_change");
                 $data_change[$field["name"]] = "cantonFdnToText";
                 $this->setModelInfo("data_change",$data_change);
@@ -181,6 +205,12 @@ class DxExtCommonModel extends Model {
                 if(empty($field["renderer"]) && $start!==false){
                     $field["renderer"] = sprintf("var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){if(value==null) return '';else if(value.replace(/[:0\- ]*/,'','gi')=='') return '';return value.substr(%d,%d);}",$start,strlen($field["valFormat"]));
                 }
+            case "idcard":
+                if(empty($field["idcard"])) $field["idcard"] = "'birthday':'birthday','sex':'sex','id_reg_addr':'id_reg_addr'";
+                if(empty($field["width"])) $field["width"] = 140;
+                break;
+            case "tel":
+                if(empty($field["width"])) $field["width"] = 100;
                 break;
         }
         if(intval($field["width"])<1) $field["width"] = "80";
@@ -326,17 +356,17 @@ class DxExtCommonModel extends Model {
 
     /**
      * 将Model信息转换为前端grid的字段信息（sigma grid）
-     * ****/
+     */
     public function fieldToGridField(){
         $gridFields     = array();
         if($this->getModelInfo("hasCheckBox")){
-            $gridFields[0]  = array("id"=>"chk","isCheckColumn"=>true,"header"=>"全选");
+            $gridFields[0]  = array("id"=>"chk[]","isCheckColumn"=>true,"header"=>"全选");
         }
         $datasetFields  = array();
         $lFields        = $this->getListFields();
         foreach($lFields as $fieldNameKey   => $field){
+            $fieldName  = empty($field["name"])?$fieldNameKey:$field["name"];
             if(!($field["hide"] & self::HIDE_FIELD_LIST)){
-                $fieldName  = empty($field["name"])?$fieldNameKey:$field["name"];
                 $gridHeader = empty($field["danwei"])?$field["title"]:$field["title"]."(".$field["danwei"].")";
                 $gridField = array (
                     "id" => $fieldName,
@@ -356,10 +386,10 @@ class DxExtCommonModel extends Model {
                     }else if(is_array($field["valChange"])){
                         //set 存储的数据是json数据；
                         if($field["type"]=="set"){
-                            if($field["valFormat"]=="douhao")
-                                $valueToJson    = "if(value=='') return '';var value = value.split(',');var r='';$(value).each(function(i,v){if(valChangeDatas[v]!=undefined) r+=valChangeDatas[v]+' ';});return r;";
-                            else
+                            if($field["valFormat"]=="json")
                                 $valueToJson    = "if(value[0]=='['){value = eval(value);var r='';$(value).each(function(i,v){r+=valChangeDatas[v]+' ';});return r;}else{return value;}";
+                            else
+                                $valueToJson    = "if(value=='') return '';var value = value.split(',');var r='';$(value).each(function(i,v){if(valChangeDatas[v]!=undefined) r+=valChangeDatas[v]+' ';});return r;";
                         }
                         else $valueToJson   = "return valChangeDatas[value];";
                     }
@@ -585,7 +615,7 @@ class DxExtCommonModel extends Model {
         $userId = intval(session(C("USER_AUTH_KEY")));
         //如果没有初始化
         if(empty($this->cacheDictDatas)){
-            $this->cacheDictDatas   = F('_fields/'.$this->name."_".$userId."_dict");
+            $this->cacheDictDatas   = S('dict_cache_'.$this->name."_".$userId."_dict");
             //dump($this->cacheDictDatas);
             if(empty($this->cacheDictDatas)) $this->setCacheDictTableData();
         }
@@ -607,11 +637,11 @@ class DxExtCommonModel extends Model {
             if($tV){
                 $this->cacheDictDatas = DxFunction::arrayToArray($tV);
             }
-            return F('_fields/'.$this->name."_".$userId."_dict",$this->cacheDictDatas);
+            return S('dict_cache_'.$this->name."_".$userId."_dict",$this->cacheDictDatas);
         }
         return 0;
     }
-    
+
     /**
      * 更新与此model保持textTo关系的数据
      * @param {array} $data $isdel=true:要删除的数据查询条件   $isdel=false,要更新的数据内容，即data
@@ -623,7 +653,9 @@ class DxExtCommonModel extends Model {
         if(empty($textTo) || !is_array($textTo)) return true;
         foreach($textTo as $modelN => $fields){
             if($isdel===true){
+                $op = $this->options;
                 $idValues = $this->where($data)->getField($fields["fromid"],true);
+                $this->options = $op;
                 D($modelN)->where(array($fields["toid"]=>array("in"=>$idValues)))->save(array($fields["textto"]=>'',$fields["toid"]=>0));
             }else{
                 D($modelN)->where(array($fields["toid"]=>array($data[$fields["fromid"]])))->save(array($fields["textto"]=>$data[$fields["fromtextto"]]));
@@ -644,7 +676,7 @@ class DxExtCommonModel extends Model {
      * 将数据操作记录保存到表 DataChangeLog 中
      * **/
     protected function save_data_data_change_log($data,$options,$event){
-        if($this->getModelName()=="DataChangeLog" || $this->getModelName()=="OperationLog") return;
+        if(in_array($this->getModelName(),C("NO_SAVE_DATA_CHANGE"))) return;
         $m  = D("DataChangeLog");
         if($m){
             $m->add(array("model_name"=>$this->getModelName(),"module_name"=>MODULE_NAME,"action_name"=>ACTION_NAME,
@@ -798,9 +830,10 @@ class DxExtCommonModel extends Model {
             $this->error    = "Delete No Where";
             return false;
         }
-        
+
         $op   = $this->options;
         $this->_before_delete($op);
+        $this->options = $op; //在_before_delete中，可能回需要查询并删除其他数据。。从而导致Model的options丢失
 
         if($deleteStatus){
             return $this->deleteTag($op);
@@ -831,6 +864,7 @@ class DxExtCommonModel extends Model {
                 }
             }
             $this->options  = $tOptions;
+
             $vvv = parent::delete($options);
             return $vvv;
         }
@@ -1036,12 +1070,18 @@ class DxExtCommonModel extends Model {
             if($vtime == self::MODEL_BOTH) $oneValid = array(self::MODEL_INSERT=>$oneValid,self::MODEL_UPDATE=>$oneValid);
             else $oneValid = array($vtime=>$oneValid);
             //一个字段，可能会定义多个验证规则。这里将验证规则 合并。
-            if(isset($ret[$fld])){
-                $ret[$fld]  = array(
-                    self::MODEL_INSERT=>array_unique(array_merge($ret[$fld][self::MODEL_INSERT], $oneValid[self::MODEL_INSERT])),
-                    self::MODEL_UPDATE=>array_unique(array_merge($ret[$fld][self::MODEL_UPDATE], $oneValid[self::MODEL_UPDATE])));
-            }else{
-                $ret[$fld]  = $oneValid;
+            $tempFld = explode(",",$fld);  // callback 验证支持，多个字段验证
+            foreach($tempFld as $tfld){
+                if(isset($ret[$tfld])){
+                    $ret[$tfld]  = array(
+                        self::MODEL_INSERT=>array_unique(array_merge($ret[$tfld][self::MODEL_INSERT], $oneValid[self::MODEL_INSERT])),
+                        self::MODEL_UPDATE=>array_unique(array_merge($ret[$tfld][self::MODEL_UPDATE], $oneValid[self::MODEL_UPDATE]))
+                    );
+                }else{
+                    $ret[$tfld]  = $oneValid;
+                }
+                if(empty($ret[$tfld]["validateMsg"])) $ret[$tfld]["validateMsg"] = $error;
+                if(empty($ret[$tfld]["regex"])) $ret[$tfld]["regex"] = $rule;
             }
         }
         return $ret;
@@ -1080,34 +1120,30 @@ class DxExtCommonModel extends Model {
         /**
          * 前端验证的提示信息，是在js中指定的。来自于 rule的定义，是统一的。。此处写这个东西，虽然可以统一前后台消息内容，但是会导致消息内容重复。
          * 注释掉，则前后台提示信息不一致。。所以，尽量后台验证规则的描述语言与前台一致。
-         * if(!empty($error)){
-         *      $ret[]="funcCall[showFieldMessage,$error]";
-         * }
          * **/
 
         if($enable_rule){
             switch($vrule){
                 case "regex":
                     //php regex to javascript regex
-                    //$ret[]="funcCall[checkForm[{$error}]]";
+                    $rule = urldecode($rule);
+                    $ret[]="custom[regex]";
                     break;
                 case "function":
-                    $ret[]="ajax[checkFieldByFunction,{$rule}]";
-                    break;
                 case "callback":
-                    //php callback to javascript callback
+                case "unique":
+                    $ret[]="ajax[remoteValidataField]";
                     break;
                 case "confirm":
                     $ret[]="equals[$rule]";
                     break;
                 case "equal":
                     //必须等于某个值，则无需填入，，
-                    //$ret[]="funcCall[eq[{$rule}]]";
-                    //$ret[]="custom[eq({$rule})]";
+                    $ret[]="custom[eq,$rule]";
                     break;
                 case "in":
-                    $rule=str_replace(",", "|", $rule);
-                    $ret[]="funcCall[rangein[{$rule}]]";
+                    $rule = str_replace(",","|",$rule);
+                    $ret[]="custom[rangein,$rule]";
                     break;
                 case "length":
                     list($min,$max)   =  explode(',',$rule);
@@ -1116,33 +1152,16 @@ class DxExtCommonModel extends Model {
                     break;
                 case "between":
                     list($min,$max)   =  explode(',',$rule);
-                    if(is_numeric($min)){
-                        //integer or float
-                        $ret[]="min[{$min}]";
-                        $ret[]="max[{$max}]";
-                    }else{
-                        $min=str_replace(" ", "s", $min);
-                        $min=str_replace(":", "x", $min);
-                        $max=str_replace(" ", "s", $max);
-                        $max=str_replace(":", "x", $max);
-                        if(strpos($min, "x")!=false||strpos($max, "x")!=false){
-                            //datetime
-                            $ret[]='custom[dateTime]';
-                        }else{
-                        //date
-                            $ret[]='custom[date]';
-                        }
-                        $ret[]="future[{$min}]";
-                        $ret[]="past[{$max}]";
-                    }
+                    $ret[]="min[{$min}]";
+                    $ret[]="max[{$max}]";
+                    break;
+                case "past":
+                case "future":
+                    $ret[]=$vrule."[".$rule."]";
                     break;
                 case "ip_allow":
                     break;
                 case "ip_deny":
-                    break;
-                case "unique":
-                    //thinkphp unique have some problem, not work;
-                    $ret[]="ajax[checkFieldByUnique]";
                     break;
             }
         }
@@ -1150,24 +1169,55 @@ class DxExtCommonModel extends Model {
     }
 
     /**
-     * 验证数据是否唯一
-     * @param   $name   要验证那个字段
+     * 扩展TP的验证规则
+     */
+    public function check($value,$rule,$type='regex'){
+        switch($type){
+        case "past":
+        case "future":
+            if($rule[0] == "#"){
+                $otherValue = $_REQUEST[substr($rule,1)];
+            }else if($rule == "NOW"){
+                $otherValue = date("Y-m-d H:i:s");
+            }
+            return $type=="past"?$value<=$otherValue:$value>=$otherValue;
+            break;
+        default:
+            parent::check($value,$rule,$type);
+            break;
+        }
+    }
+
+    /**
+     * 验证数据合法性
      * @param   $data   要验证的数据，就是where条件
-     * @param   $type   INSERT、UPDATE、BOTH
+     * @param   $name   要验证的字段
      * */
-    public function checkUnique($name, $data, $type){
-        $ret    = true;
+    public function validataField($data, $name){
+        $type = intval($data[$this->getPk()])>0?self::MODEL_UPDATE:self::MODEL_INSERT;
         foreach($this->_validate as $valid){
             $when   = isset($valid[5])?$valid[5]:self::MODEL_BOTH;
-            if($valid[0]==$name && ($type & $when)>0){
-                $ret    = $this->_validationFieldItem($data, $valid);
-                if(!$ret){
-                    $this->error    = $valid[2];
-                    break;
+            $fields = explode(",",$valid[0]);
+            if(in_array($name,$fields) && ($type & $when)>0){
+                $rv = true;
+                switch($valid[3]) {
+                    case self::MUST_VALIDATE:   // 必须验证 不管表单是否有设置该字段
+                        $rv = $this->_validationField($data, $valid);
+                        break;
+                    case self::VALUE_VALIDATE:    // 值不为空的时候才验证
+                        if('' != trim($data[$name])){
+                            $rv = $this->_validationField($data, $valid);
+                        }
+                        break;
+                    default:    // 默认表单存在该字段就验证
+                        if(isset($data[$val[0]]))
+                            $rv = $this->_validationField($data, $valid);
+                        break;
                 }
+                if($rv===false) return $rv;
             }
         }
-        return $ret;
+        return true;
     }
 
     /**
@@ -1263,6 +1313,7 @@ class DxExtCommonModel extends Model {
                 return $thFieldInfo;
         }
     }
+
     /**
      * 获取标记为删除状态的字段组成的条件。
      * @param       $returnArray        是否返回条件为数组

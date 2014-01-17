@@ -34,7 +34,7 @@ body{ margin:0 }
 <script type="text/javascript" src="__DXPUBLIC__/public/artDialog5/source/artDialog.plugins.js"></script>
 <script>
 if(($.browser.msie && self.frameElement) || (!$.browser.msie && top!=this)){
-	top.location.href		= '__URL__/login';
+     top.location.href       = '__URL__/login';
 }
 </script>
         <script type="text/javascript">
@@ -43,7 +43,7 @@ if(($.browser.msie && self.frameElement) || (!$.browser.msie && top!=this)){
                 var timenow = new Date().getTime();
                 document.getElementById('verifyImg').src= '__URL__/verify/'+timenow;
             }
-            
+
             (function($){
                 $(function(){
                     /*输入框获得焦点后和其他输入框样式区别显示*/
@@ -54,7 +54,6 @@ if(($.browser.msie && self.frameElement) || (!$.browser.msie && top!=this)){
                         }else{
                             obj.addClass("log-input0");
                         }
-                        
                     }).live('blur', function(){
                         $(this).removeClass("log-input0");
                     });

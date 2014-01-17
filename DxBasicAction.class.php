@@ -1,5 +1,5 @@
 <?php
-class DxBasicAction extends DataOpeAction {
+class DxBasicAction extends Action {
     function clearCache(){
         //很奇怪的现象，如果success放在之后，则会生成的临时文件Temp权限为000，导致无法写入。。
         $this->success("清除完成!",__ROOT__);
@@ -23,7 +23,15 @@ class DxBasicAction extends DataOpeAction {
             }
         }
     }
-    
+    function showImg(){
+        $f  = $_REQUEST["f"];
+        if (!empty($_REQUEST["f"])) {
+            if($_REQUEST["p"]=="tmp")
+                readfile(C("TEMP_FILE_PATH").$f);
+            else
+                readfile(C("UPLOAD_BASE_PATH").$f);
+        }
+    }
     /**
      * 上传并剪切头像
      * */
@@ -38,7 +46,7 @@ class DxBasicAction extends DataOpeAction {
         $upload_handler = new UploadHandler(array(
             "validate"      => '/\.(gif|jpe?g|png)$/i',
             "upload_dir"    =>  C('TEMP_FILE_PATH')."/",
-            "upload_url"    =>  "/.".C('TEMP_FILE_PATH')."/",
+            "upload_url"    =>  "/",
             'image_versions' => array(
                 'thumbnail'=>array(
                     'max_width'     => 350,
@@ -53,7 +61,7 @@ class DxBasicAction extends DataOpeAction {
         if(empty($_REQUEST) || empty($_REQUEST["img"]) || empty($_REQUEST["img"]) || empty($_REQUEST["width"]) || empty($_REQUEST["height"]) || empty($_REQUEST["left"]) || empty($_REQUEST["top"])){
             $this->ajaxReturn(0,"非法数据请求!",0);
         }
-        $targ_w = intval($_REQUEST["width"]); 
+        $targ_w = intval($_REQUEST["width"]);
         $targ_h = intval($_REQUEST["height"]);
         
         $file_path  = C("TEMP_FILE_PATH")."/".$_REQUEST["img"];
@@ -90,18 +98,15 @@ class DxBasicAction extends DataOpeAction {
         $newFile    = date("YmdHis",time())."-".intval(mt_rand()*1000).".".$ext_file_name;
         if($write_image($dst_r,C("TEMP_FILE_PATH")."/".$newFile)){
             unlink($file_path);
-            $rv = array("url"=>C("TEMP_FILE_PATH")."/".$newFile,"file"=>$newFile);
+            $rv = array("url"=>"/".$newFile,"file"=>$newFile);
             $this->ajaxReturn($rv,"文件上传成功!",1);
         }else
             $this->ajaxReturn(0,"创建缩略图失败!",0);
     }
 
-    
     public function canton_fdn(){
-        //ALTER TABLE `canton` ADD `old_fdn` VARCHAR( 66 ) NOT NULL
-        //UPDATE canton SET old_fdn=fdn 
         $m  = D("Canton");
-        //$m->execute("UPDATE canton SET fdn=CONCAT(id,'.') WHERE parent_id=0");
+//      $m->execute("UPDATE canton SET fdn=CONCAT(id,'.') WHERE parent_id=0");
 //      for($i=1;$i<4;++$i){
 //          $info = $m->where(array('layer'=>$i))->field('id,fdn')->select();
 //          foreach($info as $one){
@@ -131,47 +136,19 @@ class DxBasicAction extends DataOpeAction {
 
 
     /**
-     * ajax表单验证方法.<br/>
-     * 用户函数原型:<br/>
-     * //此函数应用到ThinkPHP model的函数验证上
-     * function foo(array('val'=>'field value', 'id'=>'field_id'))<br/>
-     * 返回值:true,验证通过;false,验证不通过.
-     * function ajaxfoo(array('val'=>'field value', 'id'=>'field_id', ['pk'=>'record id']))<br/>
+     * ajax表单验证方法,对应model的callback 和 function验证
      * 返回值定义array('field_id', true, [msg])
      */
-    public function checkFieldByFunction(){
-        $func   = "ajax".$_REQUEST['func'];
-        $id     = $_REQUEST['fieldId'];
-        $ret    = array($id,false,'不能通过数据验证,请输入其它值.');
-        if(function_exists($func)){
-            $param  = array('val'=>$_REQUEST['fieldValue'], 'id'=>$id, "name"=>$_REQUEST['fieldName']);
-            if(isset($_REQUEST['pk'])){
-                $param['pk']=$_REQUEST['pk'];
-            }
-            $ret    = call_user_func($func, $param);
-        }
-        die(json_encode($ret));
-    }
-    /**
-     * 数据验证：后台验证数据的唯一性，比如：用户登录名
-     * */
-    public function checkFieldByUnique(){
-        $ret    = array($_REQUEST['fieldId'],false,'非法验证!');
+    public function remoteValidataField(){
+        $ret = array($_REQUEST['fieldId'],false,'数据不可用!');
         if(array_key_exists("modelName",$_REQUEST)){
-            $m      = D($_REQUEST["modelName"]);
-            $name   = $_REQUEST['fieldId'];
-            if(empty($m) || empty($name)) die(json_encode($ret));
-            $data   = array($name=>$_REQUEST['fieldValue']);
-            $type   = Model::MODEL_INSERT;
-            if(!empty($_REQUEST["pkId"])){
-                $data[$m->getPk()]    = $_REQUEST["pkId"];
-                $type       = Model::MODEL_UPDATE;
-            }
-            if($m->checkUnique($name,$data,$type)){
-                $ret[1] = true;
-                $ret[2] = "";
+            $m = D($_REQUEST["modelName"]);
+            if(empty($m)) die(json_encode($ret));
+            $data = array($m->getPk()=>$_REQUEST["pkId"],$_REQUEST["fieldId"]=>$_REQUEST["fieldValue"]);
+            if($m->validataField($data,$_REQUEST["fieldId"])){
+                $ret = array($_REQUEST['fieldId'],true,'数据可用');
             }else{
-                $ret[2] = $m->getError();
+                $ret = array($_REQUEST['fieldId'],false,$m->getError());
             }
         }
         die(json_encode($ret));
@@ -194,23 +171,27 @@ class DxBasicAction extends DataOpeAction {
             }
         }
     }
-    
+
     /**
-     * 整理用户身份证信息
-     * */
-    public function card_path(){
-        $o  = D("OlderInfo");
-        $v  = $o->where(1)->select();
-        foreach($v as $one){
-            if(strlen($one["older_img"])>10 && substr($one["older_img"],2,7)!="Uploads"){
-                $agreement_img  = str_replace("/Uploads","",$one["older_img"]);
-                //$agreement_img    = str_replace("/thumbnail","",$agreement_img);
-                //$nnn  = array(array("url"=>$agreement_img,"thumbnail_url"=>dirname($agreement_img)."/thumbnail/".basename($agreement_img)));
-                //$agreement_img    = json_encode($nnn);
-                $tt = $o->where(array("id"=>$one["id"]))->save(array("older_img"=>$agreement_img));
-                dump($o->getLastSql());
-            }
+     * 显示数据选择对话框，比如：新增投诉，选择投诉人、被投诉人的对话框
+     */
+    public function dialogSelect(){
+        if(empty($_REQUEST["model"])){
+            $this->ajaxReturn(array("msg"=>"错误的请求！","status"=>0));
+        }else{
+            $this->model  = D($_REQUEST["model"]);
+            $v  = $this->model->field($_REQUEST["fields"])->where($this->_search())->select();
+            $this->ajaxReturn(array("dataList"=>$v,"status"=>1,"showFields"=>$showFields));
         }
+    }
+
+    /**
+     * 将首页得区域js内容整合到一个文件中，否则首页太大，看代码不方便
+     */
+    public function globalJs(){
+        //Canton的缓存数据,用于生成 selectselectselect 
+        $this->assign("CantonData",str_replace("{","{ ",json_encode(D("Canton")->getSelectSelectSelect())));
+        $this->display("global");
     }
 }
 

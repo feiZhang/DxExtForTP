@@ -15,19 +15,25 @@ class DxMenuModel extends  DxExtCommonModel{
         "desktop_url"  => array('type'=>'varchar','size'=>31, 'default' =>'','comment'=>'桌面菜单URL'),
         "other_info"   => array('type'=> 'varchar','size'=>127,'default' =>'','comment'=>'附加信息')
     );
-    public function getMyMenuList(){
-        return $this->where(array("action_name"=>array("neq",""),"type"=>array('in',"sub_quick_menu,quick_menu"),$this->getPk()=>array('in',D("Role")->getMenuID())))->order("click_times desc,order_no asc")->select();
+    public function getDongTaiMenu(){
+        return $this->where(array("type"=>array('in',"menu,sub_menu"),$this->getPk()=>array('in',D("Role")->getMenuID())))->order("click_times desc,order_no asc")->select();
     }
+    public function getAllMenu(){
+        $data	= $this->where(array("type"=>array('in',"hide_sub_menu,sub_menu,menu"),'menu_id'=>array('in',D("Role")->getMenuID())))->order("order_no asc")->select();
+        //die($this->getLastSQL());
+        return $data;
+    }
+    public function getMenu(){
+        $data	= $this->where(array("type"=>array('in',"menu"),'menu_id'=>array('in',D("Role")->getMenuID())))->order("order_no asc")->select();
+        //die($this->getLastSQL());
+        return $data;
+    }
+
     public function getAllAction(){
         return $this->order("order_no")->select();
     }
     public function getMyAction(){
         $data = $this->where(array('menu_id'=>array('in',D("Role")->getMenuID())))->order("order_no asc")->select();
-        return $data;
-    }
-    public function getMyQuickMenu(){
-        $data	= $this->where(array("type"=>"quick_menu",'menu_id'=>array('in',D("Role")->getMenuID())))->order("order_no asc")->select();
-        //die($this->getLastSQL());
         return $data;
     }
     public function getRoleDeskTop(){
@@ -41,7 +47,7 @@ class DxMenuModel extends  DxExtCommonModel{
         $my = $this->where(array("menu_id"=>$parent_id))->find();
         $len        = 5*(6-intval($my["order_level"]));
         $order_no   = intval($my["order_no"])>>$len;
-        $data   = $this->where(array("_string"=>"`order_no`>>".$len."=".$order_no." AND menu_id<>".$my["menu_id"],'menu_id'=>array('in',D("Role")->getMenuID()),'type'=>'menu'))->order("order_no asc")->select();
+        $data   = $this->where(array("_string"=>"`order_no`>>".$len."=".$order_no." AND menu_id<>".$my["menu_id"],'menu_id'=>array('in',D("Role")->getMenuID()),'type'=>array('in','sub_menu,hide_sub_menu')))->order("order_no asc")->select();
         return $data;
     }
 }

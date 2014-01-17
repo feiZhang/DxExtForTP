@@ -50,6 +50,32 @@ Sigma.GridDefault.loadFailure   = function(respD,e){
     //alert(' LOAD Failed! '+'\n Exception : \n'+ msg );
 }
 
+//ie9下不支持  goto生成，本质不支持：gt_base.js   234行 el = Sigma.doc.createElement(el);  的写法 ，，el为字符串   <input type="text"》
+//原始代码中的元素位：$element ,，后来调用的代码使用的是 $e
+Sigma.$extend(Sigma , {
+    $e : function(el,props){
+        if (Sigma.$type(el,'string') ){
+            if (Sigma.isIE && props && (props.name || props.type)){
+                el = Sigma.doc.createElement(el);
+                if(props.name) el.name = props.name;
+                if(props.type) el.type = props.type;
+                delete props.name;
+                delete props.type;
+            }else{
+                el = Sigma.doc.createElement(el);
+            }
+        }
+        if (props){
+            if (props.style){
+                Sigma.$extend(el.style,props.style);
+                delete props.style;
+            }
+            Sigma.$extend(el,props);
+        }
+        return el;
+    }
+});
+
 /**
  * 重写 gird 的print方法。使用lodop实现打印功能。
  */

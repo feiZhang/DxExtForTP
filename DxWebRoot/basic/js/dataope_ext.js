@@ -15,35 +15,66 @@ function dataOpeEdit(config){
     if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle=$("#modelInfo_editTitle").val();
     if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle="修改";
     if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url  = APP_URL + "/" + moduleName;
-    $.dialog({
+
+    var saveButton = {
+                id:"ok",
+                value:"保存",
+                disabled:true,
+                callback:function(){
+                    if($("form#itemAddForm").length<1) return true;
+                    $("form#itemAddForm").attr("action",this_post_url + "/save");
+                    if(config.reloadPage=="1"){
+                        $('form#itemAddForm').attr("afterSubmit","reloadPage");
+                    }
+                    $('form#itemAddForm').submit();
+                    return false;
+                }
+            };
+    var showButton = config.isEdit==false?[{
+                id:"editData",
+                value:"修改",
+                callback:function(){
+                    startEdit(this);
+                    return false;
+                }
+            },saveButton]:[$.extend(saveButton,{disabled:false})];
+    var editDialog = $.dialog({
         id:"editObject",
         title:dialogTitle,
         content:'正在加载页面!<img src="' + DX_PUBLIC + '/public/loading.gif" />',
         esc:true,
         padding:0,
         lock:true,
-        ok:function(){
-            if($("form#itemAddForm").length<1) return true;
-            $("form#itemAddForm").attr("action",this_post_url + "/save");
-            $('form#itemAddForm').submit();
-            if(config.reloadPage=="1"){
-                $('form#itemAddForm').attr("afterSubmit","reloadPage");
-            }
-            return false;
-        },
-        okValue:"保存",
-        cancelValue:"取消",
+        cancelValue:"关闭",
         cancel:function(){},
         initialize:function(){
             var theThis     = this;
-            $.get(this_post_url + "/edit/" + data_id + "?" + urlPara,function(html){
+            $.post(this_post_url + "/edit/" + data_id,urlPara,function(html){
+                //追加一个input控件，用于外部js与angular的变量交互，即：isEdit
                 theThis.content(html);
                 angular.bootstrap(document,["dxApp"]);
+                $(theThis.dom.main).contents().find("input#dataIsEdit").val(config.isEdit==false?0:1);
+                $(theThis.dom.main).contents().find("input#dataIsEdit").trigger('input');
+                $(theThis.dom.main).contents().find("input#dataIsEdit").trigger('change');
+console.log($(theThis.dom.main).contents().find("input#dataIsEdit"));
                 $(theThis.dom.main).contents().find(":input:visible").not(".Wdate").eq(0).focus();
                 $("form#itemAddForm").attr("action",this_post_url);
             });
-        }
+        },
+        button:showButton
     });
+    function startEdit(theDialog){
+        $(theDialog.dom.main).contents().find("input#dataIsEdit").val(1);
+        $(theDialog.dom.main).contents().find("input#dataIsEdit").trigger('input');
+        $(theDialog.dom.main).contents().find("input#dataIsEdit").trigger('change');
+        theDialog.button({id:"editData",value:"取消修改",callback:function(){cancelEdit(this);return false;}},{id:"ok",disabled:false});
+    }
+    function cancelEdit(theDialog){
+        $(theDialog.dom.main).contents().find("input#dataIsEdit").val(0);
+        $(theDialog.dom.main).contents().find("input#dataIsEdit").trigger('input');
+        $(theDialog.dom.main).contents().find("input#dataIsEdit").trigger('change');
+        theDialog.button({id:"editData",value:"修改",callback:function(){startEdit(this);return false;}},{id:"ok",disabled:true});
+    }
 }
 function dataOpeDelete(config){
     var this_post_url   = URL_URL;
@@ -85,7 +116,8 @@ function dataOpeListDialog(config){
         content:'正在加载页面!<img src="' + DX_PUBLIC + '/public/loading.gif" />',
         padding:0,
         ok:function(){
-            if(config.ok != undefined) config.ok(this);
+            if(config.ok != undefined) return config.ok(this);
+            return false;
         },
         okValue:"确定",
         cancel:function(){},
@@ -95,8 +127,8 @@ function dataOpeListDialog(config){
             var this_post_url   = URL_URL;
             var moduleName = config.moduleName;
             if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url  = APP_URL + "/" + moduleName;
-            var html = "<div id='dataListConDialog' style='width:600px;height:500px;'><div id='dataListDialog'></div></div>";
-            if(config.html != undefined) html = html + config.html;
+            if(config.html == undefined) config.html = "";
+            var html = "<form id='dataOpeListDialogForm'>" + config.html + "<div id='dataListConDialog' style='width:600px;height:500px;'><div id='dataListDialog'></div></div></form>";
 
             $.get(this_post_url + "/get_model",function(data){
                 theThis.content(html);
@@ -112,34 +144,12 @@ function dataOpeListDialog(config){
                 dxGridList.showGrid({"excludeHeight":config.excludeHeight,"onComplete":config.onComplete});
             });
         }
-
     });
 }
 
-/**
- * 数据查询函数
- * */
-function getDataSearchUrl(){
-    var para    = new Object();
-    $("input.dataOpeSearch,select.dataOpeSearch").each(function(){
-        if($(this).val()=="") return;
-        if($(this).attr("type")=="radio"){
-            if($(this).attr("checked")=="checked"){
-                para[$(this).attr("name")]    = $(this).val();
-            }
-        }else{
-            var tPara   = $(this).val();
-            if($(this).hasClass("likeLeft")) tPara  = "%" + tPara;
-            if($(this).hasClass("likeRight")) tPara = tPara + "%";
-            para[$(this).attr("name")]    = tPara;
-        }
-    });
-    para = jQuery.param(para);
-    return para;
-}
-function dataOpeSearch(noAllData){
-    if(noAllData){
-        dxGrid.query(getDataSearchUrl());
+function dataOpeSearch(formId){
+    if(formId!=undefined && formId!=''){
+        dxGrid.query($("#" + formId).serialize());
     }else{
         dxGrid.query("");
     }
@@ -185,7 +195,7 @@ function resetPasswd(config){
 /**
  * 打开剪切头像对话框
  * */
-function showUploadPhoto(img,input){
+function showUploadPhoto(img,imgValueInput){
     $.dialog({
         id:"upload_cut_photo",
         title:"上传头像",
@@ -210,8 +220,8 @@ function showUploadPhoto(img,input){
                  "top":xyz.css("marginTop")},
                 success : function(data){
                     if(data.status){
-                        img.attr("src",APP_URL + "/" + (data.data.url).substring(1));
-                        input.val(data.data.file);
+                        img.attr("src",APP_URL + "/Basic/showImg?p=tmp&f=" + data.data.url);
+                        imgValueInput.val(data.data.file);
                         _this.content(data.info).time(2000).button({
                             id: 'ok',
                             disabled: true
@@ -276,7 +286,6 @@ function _dataope_onCheckChange(obj){
     return false;
 }
 
-
 //数据验证后，自动执行此操作。
 function formSubmitComplete(form, r){
     if(r){
@@ -291,9 +300,9 @@ function formSubmitComplete(form, r){
                 $("input" + "#" + toId).val("");
             else if($(this).hasClass("cantonSelect")){
                 // 最后一个可能为空选
-                var tvvv = $(this).find('option:selected').attr('key');
+                var tvvv = $(this).find('option:selected').attr('text_name');
                 if(tvvv!=undefined && tvvv!=""){
-                    $("input" + "#" + toId).val($(this).find('option:selected').attr('key'));
+                    $("input" + "#" + toId).val(tvvv);
                 }
             }else
                 $("input" + "#" + toId).val($(this).find('option:selected').text());
@@ -325,5 +334,17 @@ function formSubmitComplete(form, r){
         });
     }
     return false;
+}
+
+//使用对话框选择数据
+function dialogSelectField(config,textTo,btn){
+    btn.val("查询中...");
+    if(config.model == undefined || config.model == 0)
+        btn.val("异常操作");
+    $.post(APP_URL + '/' + config.model + '/get_datalist',
+           $.param(config),
+           function(data){
+               btn.val("查");
+           },'json');
 }
 

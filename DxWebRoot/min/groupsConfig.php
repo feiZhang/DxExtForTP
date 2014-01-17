@@ -16,7 +16,7 @@ $groupBasePath		= "/".substr($_SERVER["SCRIPT_NAME"],0,-14);
 return array(
     'headerCss' => array(
         $groupBasePath."/public/bootstrap/css/bootstrap.css",
-        $groupBasePath."/public/bootstrap/css/bootstrap-responsive.css",
+        $groupBasePath."/public/bootstrap/css/bootstrap-theme.css",
        	$groupBasePath."/basic/css/default.css",
     ),
     'headerJs' => array(

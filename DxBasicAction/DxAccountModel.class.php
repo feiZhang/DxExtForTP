@@ -1,10 +1,10 @@
 <?php
 class DxAccountModel extends DxExtCommonModel{
     protected  $listFields = array (
-            "account_id"     => array('title'=>'操作','width'=>120, 'pk'=>true,'hide'=>22,'renderer'    => "var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){
-                                    var v   = '<a href=\"javascript:dataOpeEdit( { \'id\':' + value + '});\">修改</a>';
-                                    v   += ' <a href=\"javascript:dataOpeDelete( { \'id\':' + value + '});\">删除</a>';
-                                    v   += ' <a href=\"javascript:resetPasswd( { \'id\':' + value + '});\">重置密码</a>';
+            "account_id"     => array('title'=>'操作','width'=>150, 'pk'=>true,'hide'=>22,'renderer'    => "var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){
+                                    var v   = '<a class=\"btn btn-xs btn-success\" href=\"javascript:dataOpeEdit( { \'id\':' + value + '});\">修改</a>';
+                                    v   += ' <a class=\"btn btn-xs btn-danger\" href=\"javascript:dataOpeDelete( { \'id\':' + value + '});\">删除</a>';
+                                    v   += ' <a class=\"btn btn-xs btn-warning\" href=\"javascript:resetPasswd( { \'id\':' + value + '});\">重置密码</a>';
                                     return v;
                                 }"),
             "canton_id"      => array('title'=>'所在区域','hide'=>01,'display_none'=>0777),
@@ -35,11 +35,11 @@ class DxAccountModel extends DxExtCommonModel{
         "title"=>'系统账号','readOnly'=>false,"helpInfo"=>"请谨慎删除账号，通畅禁用账号即可!",
         'searchHTML'=>"
                 <span class='add-on'>登录名:</span>
-                <input style='width: 80px;' name='login_username' class='dataOpeSearch z_input likeRight likeLeft' value='' type='text' />
+                <input size='5' placeholder='真实姓名' type='text' class='z_input' name='%login_username%' id='login_username' value=''/>
                 <span class='add-on'>真实姓名:</span>
-                <input style='width: 80px;' name='true_name' class='dataOpeSearch z_input likeRight likeLeft' value='' type='text' />
-                <button onclick='javascript:dataOpeSearch(true);' class='btn' id='allLaoren'>查询</button>
-                <button onclick='javascript:dataOpeSearch(false);' class='btn' id='item_query_all' />全部数据</button>
+                <input size='5' placeholder='真实姓名' type='text' class='z_input' name='%true_name%' id='true_name' value=''/>
+                <button onclick='javascript:dataOpeSearch(\"dataListSearch\");' class='btn btn-info btn-sm' id='item_query_items'>查询</button>
+                <button onclick='javascript:dataOpeSearch(\"\");' class='btn btn-info btn-sm' id='item_query_all' />全部数据</button>
             ",
     );
 

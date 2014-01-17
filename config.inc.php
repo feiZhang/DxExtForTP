@@ -5,7 +5,9 @@ return array (
     'APP_DEBUG' => false, // 是否开启调试模式
     'UPLOAD_BASE_PATH' => dirname(APP_PATH)."/userUploadFiles",
     'HAVE_HEADER_MENU' => true,
+
     //控制data_list的默认是否加载菜单
+    'NO_SAVE_DATA_CHANGE' => array('DataChangeLog','Menu','OperationLog'),   //不尽兴data_change记录的Model
     'USER_AUTH_KEY' => 'login_user_id',
     'LOGIN_USER_NICK_NAME' => "true_name", // 用户昵称字段名
     'DP_NOT_CHECK_ACTION' => array ("Public" => 1,"DataSync" => 1 ), // 不进行数据权限控制的Action
@@ -30,6 +32,8 @@ return array (
     'MY_DESKTOP' => array ('width' => '300','height' => '206' ),
     // 文件上传的临时路径
     'TEMP_FILE_PATH' => RUNTIME_PATH . "TMP_IMG",
+    'CUT_PHOTO_DEFAULT_IMG' => 'touxiang_default_heibai.jpg', //photo_default.png
+    'UPLOAD_IMG_FILETYPE' => '.gif、.jpeg、.jpg、.png',    //通常文件上传的扩展名
 
     //--几乎不进行改动的配置项
     // 设置公共模板路径,属于TP的配置内容,一般情况下，不需要覆盖修改的内容。
@@ -42,6 +46,7 @@ return array (
     'APP_AUTOLOAD_PATH' => DXINFO_PATH,
     'SESSION_AUTO_START' => true,
     'TMPL_ENGINE_TYPE' => "Dxthink",     //模板解析类。。TP自带的类对，tags支持非常弱，3.1.3就不支持tags，3.1.2的模板继承不支持tags，所以直接创建自己的模板类
+    'TMPL_STRIP_SPACE' => false,        //这个查询按钮没有间隔
 
     // url重写的支持
     'URL_ROUTER_ON' => true,

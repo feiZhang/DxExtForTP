@@ -1,0 +1,16 @@
+var cantonFdnTree = new Array();
+var cantonData = {$CantonData};
+var cantonIdValChange = new Array();
+var cantonLength = cantonData.length;
+var tempCantonFdn = null;
+for (i=0;i<cantonLength;++i) {
+    tempCantonFdn = cantonData[i].val.split(".");
+    tempCantonFdn.pop();
+    tempCantonFdn = tempCantonFdn.pop();
+    cantonIdValChange[parseInt(tempCantonFdn,10)] = cantonData[i];
+    if (undefined == cantonFdnTree[cantonData[i].parent_id]) {
+        cantonFdnTree[cantonData[i].parent_id] = new Array();
+    }
+    cantonFdnTree[cantonData[i].parent_id].push(cantonData[i]);
+};
+
