@@ -3,9 +3,9 @@ if (! defined ( 'THINK_PATH' ))
     exit ();
 
 $theProjectConfig = require (DXINFO_PATH . "/config.inc.php");
-$theProjectDatabase = require ("./database.inc.php");
+$theProjectDatabase = require ("../database.inc.php");
 
-if (file_exists ( "./database.php" ))
+if (file_exists ( "../database.php" ))
     $theAppDatabase = require ("database.php");
 else
     $theAppDatabase = array ();

@@ -7,7 +7,7 @@
  * 1.项目虚拟目录不能和APP_NAME相同，TP会删除虚拟目录
  */
 //修改insttall.php的定义，运行之
-define('DXINFO_URL','/DxInfo/DxWebRoot');
+define('DXINFO_URL','/DxWebRoot');
 define('APP_PATH','/job/jujiayewu');
 define('APP_NAME','JJYW');
 //默认值可以不修改
@@ -16,7 +16,8 @@ define('DXINFO_PATH',substr(__FILE__,0,-16));
 //== 安装程序
 mkdir(APP_PATH);
 mkdir(APP_PATH."/".APP_NAME);
-copy(DXINFO_PATH."/doc/install/index.php",APP_PATH."/index.php");
+mkdir(APP_PATH."/www");
+copy(DXINFO_PATH."/doc/install/index.php",APP_PATH."/www/index.php");
 copy(DXINFO_PATH."/doc/install/database.inc.php",APP_PATH."/database.inc.php");
 
 mkdir(APP_PATH."/Public");
