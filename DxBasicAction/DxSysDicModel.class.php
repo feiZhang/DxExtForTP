@@ -1,7 +1,7 @@
 <?php
 class DxSysDicModel extends DxExtCommonModel {
     public $listFields = array (
-        "dic_id" => array("pk"=>true,'title'=>'操作',"hide"=>22,
+        "dic_id" => array("pk"=>true,'title'=>'操作',"hide"=>22,"width"=>100,
                     'renderer'  => "var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){
                                         var v   = '<a class=\"btn btn-xs btn-success\" href=\"javascript:dataOpeEdit({ \'id\':' + value + ',\'isEdit\':true});\">修改</a>';
                                         v   += ' <a class=\"btn btn-xs btn-danger\" href=\"javascript:dataOpeDelete({ \'id\':' + value + '});\">删除</a>';

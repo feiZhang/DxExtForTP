@@ -50,5 +50,10 @@ class DxMenuModel extends  DxExtCommonModel{
         $data   = $this->where(array("_string"=>"`order_no`>>".$len."=".$order_no." AND menu_id<>".$my["menu_id"],'menu_id'=>array('in',D("Role")->getMenuID()),'type'=>array('in','sub_menu,hide_sub_menu')))->order("order_no asc")->select();
         return $data;
     }
+    public function updateClickTimes($where){
+        if(in_array("click_times",$this->getDbFields())){
+            $this->where($where)->save(array("click_times"=>array("exp","click_times+1")));
+        }
+    }
 }
 

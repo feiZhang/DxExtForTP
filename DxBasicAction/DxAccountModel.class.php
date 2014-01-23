@@ -32,12 +32,12 @@ class DxAccountModel extends DxExtCommonModel{
 
     protected $modelInfo=array(
         "dictTable"=>"true_name","enablePage"=>false,
-        "title"=>'系统账号','readOnly'=>false,"helpInfo"=>"请谨慎删除账号，通畅禁用账号即可!",
+        "title"=>'系统账号','readOnly'=>false,"helpInfo"=>"",
         'searchHTML'=>"
                 <span class='add-on'>登录名:</span>
-                <input size='5' placeholder='真实姓名' type='text' class='z_input' name='%login_username%' id='login_username' value=''/>
+                <input size='5' placeholder='登录名' type='text' class='z_input' name='%login_username%' id='login_username' value=''/>
                 <span class='add-on'>真实姓名:</span>
-                <input size='5' placeholder='真实姓名' type='text' class='z_input' name='%true_name%' id='true_name' value=''/>
+                <input size='7' placeholder='真实姓名' type='text' class='z_input' name='%true_name%' id='true_name' value=''/>
                 <button onclick='javascript:dataOpeSearch(\"dataListSearch\");' class='btn btn-info btn-sm' id='item_query_items'>查询</button>
                 <button onclick='javascript:dataOpeSearch(\"\");' class='btn btn-info btn-sm' id='item_query_all' />全部数据</button>
             ",
