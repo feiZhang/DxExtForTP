@@ -116,20 +116,34 @@ class DxFieldInput{
                 $inputType = "radio";
                 if(!empty($fieldSet["textTo"])) $inputType = sprintf("%s\" class=\"textTo\" textTo=\"%s",$inputType,$fieldSet["textTo"]);
                 $inputRV = sprintf('<span ng-show="isEdit">');
+                $inputRV .= sprintf('<span ng-repeat="(key,val) in dataFields.%s.valChange">',$fieldSet["name"]);
+                $inputRV .= sprintf("<input type=\"%1\$s\" name=\"%2\$s\" id=\"%2\$s\" value=\"{{key}}\" text=\"{{val}}\" 
+                                                ng-model=\"dataInfo.%2\$s\" ng-class=\"isEdit | validClass:isAdd:'%4\$s':'%3\$s'\" />{{val}}",
+                        $inputType,$fieldSet["name"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
+                $inputRV .= '</span>';
+                /*
                 foreach($fieldSet["valChange"] as $key => $val){
                     $inputRV .= sprintf("<input type=\"%1\$s\" name=\"%2\$s\" id=\"%2\$s\" value=\"%3\$s\" text=\"%4\$s\" ng-model=\"dataInfo.%2\$s\" ng-class=\"isEdit | validClass:isAdd:'%6\$s':'%5\$s'\" />%4\$s",
                         $inputType,$fieldSet["name"],$key,DxFunction::escapeHtmlValue($val),$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
                 }
+                */
                 $inputRV .= sprintf('</span>');
                 break;
             case "set":
                 $inputType = "checkbox";
                 if(!empty($fieldSet["textTo"])) $inputType = sprintf("%s\" class=\"textTo\" textTo=\"%s",$inputType,$fieldSet["textTo"]);
                 $inputRV = sprintf('<span ng-show="isEdit">');
+                $inputRV .= sprintf('<span ng-repeat="(key,val) in dataFields.%s.valChange">',$fieldSet["name"]);
+                $inputRV .= sprintf("<input type=\"%1\$s\" name=\"%2\$s[]\" id=\"%2\$s\" value=\"{{key}}\" text=\"{{val}}\" 
+                                        ng-checked=\"dataInfo.%2\$s | checkBoxChecked:key\" ng-class=\"isEdit | validClass:isAdd:'%4\$s':'%3\$s'\" />{{val}}",
+                        $inputType,$fieldSet["name"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
+                $inputRV .= '</span>';
+                /*
                 foreach($fieldSet["valChange"] as $key => $val){
                     $inputRV .= sprintf("<input type=\"%1\$s\" name=\"%2\$s[]\" id=\"%2\$s\" value=\"%3\$s\" text=\"%4\$s\" ng-checked=\"dataInfo.%2\$s | checkBoxChecked:'%3\$s'\" ng-class=\"isEdit | validClass:isAdd:'%6\$s':'%5\$s'\" />%4\$s",
                         $inputType,$fieldSet["name"],$key,DxFunction::escapeHtmlValue($val),$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
                 }
+                */
                 $inputRV .= sprintf('</span>');
                 $inputRV .= sprintf("<span ng-hide=\"isEdit\" ng-bind=\"dataFields.%1\$s.valChange[dataInfo.%1\$s]\"></span>",$fieldSet["name"]);
                 break;
@@ -151,12 +165,15 @@ class DxFieldInput{
                 $inputAddr = empty($fieldSet["multiple"])?"":" multiple";
                 if(!empty($fieldSet["textTo"])) $textTo = sprintf(' textTo" textTo="%s',$fieldSet['textTo']);
                 else $textTo = "";
-                $inputRV = sprintf('<select name="%1$s" id="%1$s" ng-class="isEdit | validClass:isAdd:\'%3$s\':\'%2$s\'" ng-model="dataInfo.%1$s"%4$s class="autowidth%5$s" ng-show="isEdit">',
+                $inputRV = sprintf('<select name="%1$s" id="%1$s" ng-class="isEdit | validClass:isAdd:\'%3$s\':\'%2$s\'" 
+                                            ng-model="dataInfo.%1$s"%4$s class="autowidth%5$s" ng-show="isEdit" ng-options="key as val for (key,val) in dataFields.%1$s.valChange">',
                     $fieldSet["name"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputAddr,$textTo);
                 $inputRV .= sprintf('<option value="">请选择</option>');
+                /*
                 foreach($fieldSet["valChange"] as $key => $val){
                     $inputRV .= sprintf("<option value=\"%s\">%s</option>",$key,DxFunction::escapeHtmlValue($val));
                 }
+                */
                 $inputRV .= sprintf('</select>');
                 break;
             case "password":

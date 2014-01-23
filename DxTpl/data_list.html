@@ -15,24 +15,31 @@
     <table id="gridHeader" style="display:none">{$modelInfo['gridHeader']}</table>
     <notempty name="modelInfo.modelTitle">
     <div id="header_title" class="dataListHeader" style="margin-bottom: 0px;">
+        <literal>
+        <!-- 数据字典功能 -->
         <span style="vertical-align: middle;font-size: 22px;font-weight: bold;">{$modelInfo.modelTitle}</span>
+        </literal>
 
         <form id="dataListSearch">
-      <php>
-      //searchHtml中可以存放动态的数据，比如：员工组
-      if(!empty($modelInfo["searchHTML"])){
-          printf('<span id="query_items" class="">');
-          if(!empty($modelInfo["searchHTML"])){
-            print($modelInfo["searchHTML"]);
-          }
-          printf("</span>");
-      }
-      </php>
+            <php>
+            //searchHtml中可以存放动态的数据，比如：员工组
+            if(!empty($modelInfo["searchHTML"])){
+            printf('<span id="query_items" class="">');
+                if(!empty($modelInfo["searchHTML"])){
+                print($modelInfo["searchHTML"]);
+                }
+                printf("</span>");
+            }
+            </php>
 
-      <?php if (!$modelInfo["readOnly"]) { ?>
-      <button class="btn btn-primary btn-sm" id='item_add' onclick="javascript:dataOpeAdd({ 'isEdit':true,<literal>'data':'{$InitSearchPara}',</literal>
-                                                                                                'title':'{$modelInfo['addTitle']}','modelName':'{$Think.const.MODULE_NAME}'});">{$modelInfo['addTitle']}</button>
-      <?php } ?>
+        <literal>
+            <?php if (!$modelInfo["readOnly"]) { ?>
+            <button class="btn btn-primary btn-sm" id='item_add' onclick="javascript:dataOpeAdd({ 'isEdit':true,
+                'data':'{$InitSearchPara}',
+                'title':'{$modelInfo['addTitle']}',
+                'modelName':'{$Think.const.MODULE_NAME}'});">{$modelInfo['addTitle']}</button>
+            <?php } ?>
+        </literal>
       <?php if ($modelInfo["enableImport"]) { ?>
         <form method="post" action="__URL__/importFromExcel" enctype="multipart/form-data">
             <input type="file" name="file_stu" />
@@ -67,7 +74,7 @@
     <else/>
     <link href="__DXPUBLIC__/min/g=dataListCss" rel="stylesheet" type="text/css" />
     </eq>
-    <script src="__DXPUBLIC__/public/DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script src="__DXPUBLIC__/public/WDatePicker/WdatePicker.js" type="text/javascript"></script>
     <script src="__DXPUBLIC__/public/sigma_grid/gt_grid_all.js" type="text/javascript"></script>
 
     <eq name="Think.config.APP_DEBUG" value="true">

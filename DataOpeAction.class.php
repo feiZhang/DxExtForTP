@@ -151,10 +151,11 @@ class DataOpeAction extends DxExtCommonAction{
      * dxDisplay实现二次编译功能。。
      * @param string $templateFile 模板名称
      */
-    protected function dxDisplay($templateFile){
+    protected function dxDisplay($templateFile,$cacheType=""){
         //一个Model可能被两个Module使用，但是显示的界面不同。。:机构管理－》监测指标
         //一个Module的同一个页面，不同用户显示的界面不同。。:机构管理－》监测指标
-        $cacheAliaName = "_".$this->model->getModelInfoMd5()."_".$this->model->getListFieldsMd5()."_".session('role_id');
+        //相同model的add 和 edit 页面，listFields完全相同，但是显示内容可以不同。
+        $cacheAliaName = "_".$cacheType."_".$this->model->getModelInfoMd5()."_".$this->model->getListFieldsMd5()."_".session('role_id');
         //$cacheAliaName .= "_".md5(json_encode($_REQUEST));
         $tempFile   = TEMP_PATH.'/'.MODULE_NAME.'_'.ACTION_NAME.$cacheAliaName.C('TMPL_TEMPLATE_SUFFIX');
         if(C("APP_DEBUG") || $this->disableDxTplCache===true || !file_exists($tempFile) ){
@@ -266,7 +267,9 @@ class DataOpeAction extends DxExtCommonAction{
                             $tVals = explode(",",$vo[$field["name"]]);
                         }
                         foreach($tVals as $tv){
-                            $vo[$field["name"]."_textTo"][] = $field["valChange"][$tv];
+                            if($tv!="" && $tv!=0){
+                                $vo[$field["name"]."_textTo"][] = $field["valChange"][$tv];
+                            }
                         }
                         $vo[$field["name"]."_textTo"] = implode(",",$vo[$field["name"]."_textTo"]);
                         break;
@@ -289,7 +292,11 @@ class DataOpeAction extends DxExtCommonAction{
         //引用于模板继承，使用变量作为模板文件
         $this->assign('dx_data_edit', DXINFO_PATH."/DxTpl/data_edit.html");
 
-        $this->dxDisplay("Public:data_edit");
+        if($pkId>0){
+            $this->dxDisplay("Public:data_edit","edit");
+        }else{
+            $this->dxDisplay("Public:data_edit");
+        }
     }
 
     /**
