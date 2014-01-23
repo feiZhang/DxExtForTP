@@ -49,7 +49,7 @@ class DxFieldInput{
                 break;
             case "cutPhoto":
                 $defaultPhoto = C("CUT_PHOTO_DEFAULT_IMG");
-                $inputRV = sprintf('<a href="javascript:showUploadPhoto($(\'img#%1$s\'),$(\'input#%1$s\'));"> 
+                $inputRV = sprintf('<a href="javascript:if($(\'#dataIsEdit\').val()==\'1\'){showUploadPhoto($(\'img#%1$s\'),$(\'input#%1$s\'));}"> 
                     <img id="%1$s" src="__APP__/Basic/showImg?f={{dataInfo.%1$s}}" onerror="src=\'__DXPUBLIC__/basic/images/%2$s\'" title="点击编辑相片" alt="点击编辑相片" width="96" height="100" border=0 />
                     </a> 
                     <input type="text" ng-hide="true" name="%1$s" value="" id="%1$s"/>
