@@ -56,7 +56,6 @@ function dataOpeEdit(config){
                 $(theThis.dom.main).contents().find("input#dataIsEdit").val(config.isEdit==false?0:1);
                 $(theThis.dom.main).contents().find("input#dataIsEdit").trigger('input');
                 $(theThis.dom.main).contents().find("input#dataIsEdit").trigger('change');
-console.log($(theThis.dom.main).contents().find("input#dataIsEdit"));
                 $(theThis.dom.main).contents().find(":input:visible").not(".Wdate").eq(0).focus();
                 $("form#itemAddForm").attr("action",this_post_url);
             });
