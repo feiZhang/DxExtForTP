@@ -30,7 +30,7 @@ class DxPublicAction extends DxExtCommonAction {
                 $this->redirect($main_url);
             else $this->redirect(__ROOT__."/");
         }else
-            $this->redirect('Public/login');
+            $this->redirect(C("LOGIN_URL"));
     }
     public function login() {
         if($this->checkSaveAccount()){
@@ -73,7 +73,7 @@ class DxPublicAction extends DxExtCommonAction {
             //$this->assign("jumpUrl",$homeUrl);
             //$this->success($rv["msg"]);
         }else{
-            $this->assign("jumpUrl",U("Public/login"));
+            $this->assign("jumpUrl",C("LOGIN_URL"));
             $this->error($rv["msg"]);
         }
     }
@@ -187,8 +187,8 @@ class DxPublicAction extends DxExtCommonAction {
         if(isset($_REQUEST["ajax"])){
             $this->ajaxReturn(0,"注销成功",1);
         }else{
-            $this->assign("jumpUrl",U("Public/login"));
-            $this->success('注销成功!');            
+            $this->assign("jumpUrl",C("LOGIN_URL"));
+            $this->success('注销成功!');
         }
     }
 }

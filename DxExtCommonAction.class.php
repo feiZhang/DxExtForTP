@@ -25,6 +25,9 @@ class DxExtCommonAction extends Action {
     }
 
     function _initialize() {
+        $url    =   C("LOGIN_URL");
+        if($url[0]!="/" || substr($url,0,4)!="http") C("LOGIN_URL",U($url));
+
         fb::log($_REQUEST);
         $this->cacheActionList  = DxFunction::getModuleActionForMe();
 
@@ -35,9 +38,7 @@ class DxExtCommonAction extends Action {
             if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
                 //为了不验证公共方法，比如：public、web等，所以将session验证放在里面。
                 if(0 == intval(session(C("USER_AUTH_KEY")))) {
-                    $url    =   C("LOGIN_URL");
-                    if($url[0]!="/") $url = U($url);
-                    redirect($url,0,"");
+                    redirect(C("LOGIN_URL"),0,"");
                 }
                 //判断用户是否有当前动作操作权限
                 $privilege = $this->check_action_privilege();
@@ -99,9 +100,9 @@ class DxExtCommonAction extends Action {
         if(!empty($m) && $m->create()){
             $v = false;
             //fb::log($_REQUEST,$m);
-            if(!empty($_REQUEST[$pkId])){
+            if(intval($_REQUEST[$pkId])>0){
                 $v = $m->save();
-                if($v) $v = $_REQUEST[$pkId];
+                if($v!==false) $v = $_REQUEST[$pkId];
             }else{
                 $v = $m->add(); //如果添加成功返回的就是pkId
             }
@@ -312,7 +313,7 @@ class DxExtCommonAction extends Action {
         $action_name        = $this->cacheActionList["allAction"][$model->module][$model->action];
 
         //更新菜单的点击次数
-        D("Menu")->where(array("module_name"=>$model->module,"action_name"=>$model->action))->save(array("click_times"=>array("exp","click_times+1")));
+        D("Menu")->updateClickTimes(array("module_name"=>$model->module,"action_name"=>$model->action));
 
         if(sizeof($action_name)>1){
             $action_name    = DxFunction::argsInRequest($action_name,$_REQUEST);
