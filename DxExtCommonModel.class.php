@@ -668,7 +668,9 @@ class DxExtCommonModel extends Model {
         if(empty($relationDelete) || !is_array($relationDelete)) return true;
         foreach($relationDelete as $modelN => $fields){
             $idValues = $this->where($where)->getField($fields["fromid"],true);
-            D($modelN)->where(array($fields["toid"]=>array("in"=>$idValues)))->delete();
+            $relationM = D($modelN);
+            $relationM->where(array($fields["toid"]=>array("in",$idValues)))->delete();
+            fb::log($relationM->getLastSQL());
         }
     }
     
