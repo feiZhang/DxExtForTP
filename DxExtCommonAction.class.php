@@ -389,10 +389,18 @@ class DxExtCommonAction extends Action {
             }
 
             if (array_key_exists($key,$dbFields)) {
+                if($dbFields[$key]["type"]=="date"){
+                    $MAX_DATE = '3999-12-31 23:59:59';
+                    $MIN_DATE = '1908-01-01 00:00:00';
+                    if($fieldAdd == "elt" || $fieldAdd == "lt") $val = $val.substr($MAX_DATE,strlen($val));
+                    if($fieldAdd == "egt" || $fieldAdd == "gt") $val = $val.substr($MIN_DATE,strlen($val));
+                }
                 if($fieldAdd == "egt" || $fieldAdd=="elt" || $fieldAdd == "gt" || $fieldAdd=="lt"){
-                    if(array_key_exists($key, $map))
-                        $map[$key]  = array($map[$key],array($fieldAdd,$val),"and");
-                    else $map[$key] = array($fieldAdd,$val);
+                    if(array_key_exists($key, $map)){
+                        $map[$key] = array($map[$key],array($fieldAdd,$val),"and");
+                    }else{
+                        $map[$key] = array($fieldAdd,$val);
+                    }
                 }else if(strtolower(trim($val))=="null"){
                     $map[$key] = array("exp","is null");
                 }else if($fieldAdd == "like"){
