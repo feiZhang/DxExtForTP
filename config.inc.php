@@ -5,6 +5,7 @@ return array (
     'APP_DEBUG' => false, // 是否开启调试模式
     'UPLOAD_BASE_PATH' => dirname(APP_PATH)."/userUploadFiles",
     'HAVE_HEADER_MENU' => true,
+    'DB_BACK_PATH' => '/tmp/',
 
     //控制data_list的默认是否加载菜单
     'NO_SAVE_DATA_CHANGE' => array('DataChangeLog','Menu','OperationLog'),   //不尽兴data_change记录的Model

@@ -61,10 +61,11 @@ class DxFieldInput{
                 else $inputAddr = "";
 
                 $inputRV = sprintf('
-                    <div ng-show="isEdit">
+                    <span ng-show="isEdit" style="display:inline">
                     <select class="autowidth cantonSelect%2$s" ng-show="cantonTree[canton_id].length" ng-model="selectedCanton.%1$s" ng-change="cantonChange(selectedCanton.%1$s,\'dataInfo.%1$s\')" ng-repeat="canton_id in dataInfo.%1$s | cantonFdnToArray">
                         <option ng-repeat="canton in cantonTree[canton_id]" ng-selected="dataInfo.%1$s|cantonOptionSelected:canton.val" key="{{canton.canton_id}}" text_name="{{canton.text_name}}" value="{{canton.val}}">{{canton.title}}</option>
                     </select>
+
                     <!--
                     <select class="autowidth cantonSelect%2$s" ng-show="cantonTree[canton_id].length" ng-model="selectedCanton.%1$s" ng-change="cantonChange(selectedCanton.%1$s,\'dataInfo.%1$s\')" ng-repeat="canton_id in dataInfo.%1$s | cantonFdnToArray" 
                         ng-options="canton.title as canton.val for canton in cantonTree[canton_id]" >
@@ -72,7 +73,7 @@ class DxFieldInput{
                     -->
 
                     <input type="text" ng-hide="true" name="%1$s" id="%1$s" ng-model="dataInfo.%1$s" value="" class="dataOpeSearch likeRight" />
-                    </div>'
+                    </span>'
                     ,$fieldSet["name"],$inputAddr);
                 break;
             case "dialogSelect":
@@ -177,7 +178,7 @@ class DxFieldInput{
                 $inputRV .= sprintf('</select>');
                 break;
             case "password":
-                $inputRV = sprintf('<input style="width:120px" type="password" name="%1$s" id="%1$s" placeholder="%2$s" ng-show="isEdit" class="dataOpeSearch likeRight likeLeft" class_add="%3$s" class_edit="%4$s" value="" />',
+                $inputRV = sprintf('<input style="width:120px" ng-model="dataInfo.%1$s" type="password" name="%1$s" id="%1$s" placeholder="%2$s" ng-show="isEdit" class="dataOpeSearch likeRight likeLeft" class_add="%3$s" class_edit="%4$s" value="" />',
                     $fieldSet["name"],$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
                 break;
             case "idcard"://身份证号

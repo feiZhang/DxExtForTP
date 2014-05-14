@@ -439,6 +439,61 @@ class DxExtCommonModel extends Model {
         return $res;
     }
 
+    //将find的数据，进行数据转换，从而能够直接显示数据。
+    public function getInfo($listFields=""){
+        $vo = $this->find();
+        return $this->findToInfo($vo,$listFields);
+    }
+    public function findToInfo($vo,$listFields=""){
+        if(empty($listFields)) $listFields = $this->getEditFields();
+        //将set、enum数据进行转换，为了显示具体的数据。。
+        foreach($listFields as $field){
+            if($field["type"]=="date"){
+                if(substr($vo[$field["name"]],0,10)=="0000-00-00") $vo[$field["name"]] = "";
+            }else if(!empty($field["valChange"]) && empty($field["textTo"])){
+                switch($field["type"]){
+                case "set":
+                    if($field["valFormat"]=="json"){
+                        $tVals = json_decode($vo[$field["name"]],true);
+                    }else{
+                        $tVals = explode(",",$vo[$field["name"]]);
+                    }
+                    foreach($tVals as $tv){
+                        if($tv!="" && $tv!=0){
+                            $vo[$field["name"]."_textTo"][] = $field["valChange"][$tv];
+                        }
+                    }
+                    $vo[$field["name"]."_textTo"] = implode(",",$vo[$field["name"]."_textTo"]);
+                    break;
+                default:
+                    $vo[$field["name"]."_textTo"] = $field["valChange"][$vo[$field["name"]]];
+                    break;
+                }
+            }
+        }
+        return $vo;
+    }
+    /*
+     * 将老人资料转换为数据显示格式，将字典内容转换为对应的字符。
+     * getInfo 只是为了edit使用，字典字段，还是用的数字。
+     */
+    public function getInfoToText($dataInfo,$listFields=""){
+        if(empty($dataInfo)) return $dataInfo;
+        if(empty($listFields)) $listFields = $this->getEditFields();
+        foreach($listFields as $field){
+            if($field["type"]=="cutPhoto"){
+                $dataInfo[$field["name"]] = "http://".$_SERVER["HTTP_HOST"].__APP__."/Basic/showImg?f=".$dataInfo[$field["name"]];
+            }else if(!empty($field["valChange"])){
+                if(empty($field["textTo"])){
+                    $dataInfo[$field["name"]] = $dataInfo[$field["name"]."_textTo"];
+                }else{
+                    $dataInfo[$field["name"]] = $dataInfo[$listFields[$field["textTo"]]];
+                }
+            }
+        }
+        return $dataInfo;
+    }
+
     //3.1.2居然删除了配置 DB_FIELDTYPE_CHECK ，这里只能恢复他。
     protected function _parseOptions($options=array()) {
         if(is_array($options))
@@ -1336,9 +1391,11 @@ class DxExtCommonModel extends Model {
                     $dataPowerFieldDelete[] = sprintf("%s%s!='%s'",$table_alias,$key,$val);
                 }
             }
-        }if ($returnArray   == false){
+        }
+        if ($returnArray == false){
             $dataPowerFieldDelete = implode(" AND ", $dataPowerFieldDelete);
         }
+        if(empty($dataPowerFieldDelete)) return "1";
         return $dataPowerFieldDelete;
     }
 

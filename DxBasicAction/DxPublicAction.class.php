@@ -13,6 +13,7 @@
  * */
 class DxPublicAction extends DxExtCommonAction {
     public function resetPass(){
+        //echo DxFunction::authcode("53e6BJS1InaokcldY3xbuyzL3lotrHSA+8AFiafDb6adKlxdwg", 'DECODE');die();
         if(APP_DEBUG){
             if(C("LOGIN_MD5")){     //密码验证方式不同。
                 $inputPass = md5('dxinfo');
@@ -29,8 +30,9 @@ class DxPublicAction extends DxExtCommonAction {
             if(!empty($main_url))
                 $this->redirect($main_url);
             else $this->redirect(__ROOT__."/");
-        }else
+        }else{
             $this->redirect(C("LOGIN_URL"));
+        }
     }
     public function login() {
         if($this->checkSaveAccount()){

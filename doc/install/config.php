@@ -12,7 +12,6 @@ else
 
 $theAppConfig = array (
     // DxInfo配置
-    'DX_PUBLIC' => "/DxInfo/DxWebRoot" 
     // 项目应用配置
 );
 

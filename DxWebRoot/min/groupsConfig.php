@@ -11,7 +11,7 @@
  * See http://code.google.com/p/minify/wiki/CustomSource for other ideas
  **/
 
-$groupBasePath		= "/".substr($_SERVER["SCRIPT_NAME"],0,-14);
+$groupBasePath      = "/".substr($_SERVER["SCRIPT_NAME"],0,-14);
 
 return array(
     'headerCss' => array(

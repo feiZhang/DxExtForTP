@@ -3,7 +3,7 @@ session_name('JGGL');
 define('APP_NAME', 'JGGL');
 define('APP_DEBUG', true);
 define('DXINFO_PATH','DXINFO_DIR_PATH');
-define('DX_PUBLIC','DXINFO_URL');
+define('DX_PUBLIC',$_SERVER["REQUEST_URI"].'DxWebRoot');
 require_once '../FirePHPCore-0.3.2/lib/FirePHPCore/fb.php';
 fb::setEnabled(false);
 define('THINK_PATH', '../ThinkPHP/ThinkPHP312/');

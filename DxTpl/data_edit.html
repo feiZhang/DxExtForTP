@@ -50,8 +50,8 @@
 <!--
 <literal>
 var dataIsEdit = '{\\$Think.request.isEdit}';
-var recordDataInfo = {\\$recordDataInfo};
 <php>
+printf("var recordDataInfo = %s;",str_replace("{","{ ",json_encode($recordDataInfo)));
 printf("var recordDataFields = %s;",str_replace("{","{ ",json_encode($listFields)));
 </php>
 </literal>

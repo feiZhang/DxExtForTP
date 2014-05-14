@@ -193,5 +193,16 @@ class DxBasicAction extends Action {
         $this->assign("CantonData",str_replace("{","{ ",json_encode(D("Canton")->getSelectSelectSelect())));
         $this->display("global");
     }
+
+    /**
+     * 备份数据库
+     */
+    public function backDb(){
+        $backFile = C("DB_BACK_PATH").C("DB_NAME").date("d").".sql";
+        $backSQL = sprintf("mysqldump --opt -u%s -p%s -h%s %s>%s",C("DB_USER"),C("DB_PWD"),C("DB_HOST"),C("DB_NAME"),$backFile);
+        //die($backSQL);
+        system($backSQL);
+        die("beifen chenggong");
+    }
 }
 

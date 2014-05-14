@@ -253,32 +253,7 @@ class DataOpeAction extends DxExtCommonAction{
         if($pkId>0){
             //要修改的 数据内容
             $where   = array($model->getPk()=>$pkId);
-            $vo      = $model->where( $where )->find();
-            //将set、enum数据进行转换，为了显示具体的数据。。
-            foreach($listFields as $field){
-                if($field["type"]=="date"){
-                    if(substr($vo[$field["name"]],0,10)=="0000-00-00") $vo[$field["name"]] = "";
-                }else if(!empty($field["valChange"]) && empty($field["textTo"])){
-                    switch($field["type"]){
-                    case "set":
-                        if($field["valFormat"]=="json"){
-                            $tVals = json_decode($vo[$field["name"]],true);
-                        }else{
-                            $tVals = explode(",",$vo[$field["name"]]);
-                        }
-                        foreach($tVals as $tv){
-                            if($tv!="" && $tv!=0){
-                                $vo[$field["name"]."_textTo"][] = $field["valChange"][$tv];
-                            }
-                        }
-                        $vo[$field["name"]."_textTo"] = implode(",",$vo[$field["name"]."_textTo"]);
-                        break;
-                    default:
-                        $vo[$field["name"]."_textTo"] = $field["valChange"][$vo[$field["name"]]];
-                        break;
-                    }
-                }
-            }
+            $vo      = $model->where( $where )->getInfo($listFields);
             if($vo){
                 $this->assign('pkId',$pkId);
             }else{
@@ -288,7 +263,7 @@ class DataOpeAction extends DxExtCommonAction{
             $vo = $model->getListFieldDefault();
         }
         $recordDataInfo = array_merge($vo,$_REQUEST);
-        $this->assign('recordDataInfo', str_replace("{","{ ",json_encode($recordDataInfo)));
+        $this->assign('recordDataInfo', $recordDataInfo);
         //引用于模板继承，使用变量作为模板文件
         $this->assign('dx_data_edit', DXINFO_PATH."/DxTpl/data_edit.html");
 
