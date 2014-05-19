@@ -1,9 +1,107 @@
+<style>
+<!--
+div.accordion li {
+    list-style: none;
+    border-bottom:1px solid #FFFFFF;
+}
+
+
+/*风格3 蓝*/
+div.accordion, div.accordion ul, div.accordion li, div.accordion a, div.accordion span {
+    margin: 0;
+    padding: 0;
+    outline: none;
+}
+div.accordion{border-top:#CCCCCC;}
+div.accordion li {
+    list-style: none;
+    border-bottom:1px solid #FFFFFF;
+}
+div.accordion li a {
+    display: block;
+    position: relative;
+    min-width: 150px;
+    padding: 0 00px 0 20px;
+    height: 32px;
+    color: #2966a1;
+    font:14px/32px Arial, sans-serif;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px rgba(0, 0, 0, .10);
+    background:url(__DXPUBLIC__/basic/simple_menu_img/lan/01.png) repeat-x center center;
+    -webkit-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, .1), 0px 1px 0px 0px rgba(0, 0, 0, .1);
+    -moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, .1), 0px 1px 0px 0px rgba(0, 0, 0, .1);
+    box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, .1), 0px 1px 0px 0px rgba(0, 0, 0, .1);
+}
+
+
+div.accordion li a:hover{ color: #b2d9f6;
+    height:32px;
+    line-height:32px;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, .2);
+    background: url(__DXPUBLIC__/basic/simple_menu_img/lan/active.png) repeat-x;
+}
+    
+div.accordion li:target a, div.accordion li a.active {
+    color: #b2d9f6;
+    height:32px;
+    line-height:32px;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, .2);
+    background: url(__DXPUBLIC__/basic/simple_menu_img/lan/active.png) repeat-x;
+    /*background: #a5cd4e;
+    background: -moz-linear-gradient(top, #a5cd4e 0%, #6b8f1a 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #a5cd4e), color-stop(100%, #6b8f1a));
+    background: -webkit-linear-gradient(top, #a5cd4e 0%, #6b8f1a 100%);
+    background: -o-linear-gradient(top, #a5cd4e 0%, #6b8f1a 100%);
+    background: -ms-linear-gradient(top, #a5cd4e 0%, #6b8f1a 100%);
+    background: linear-gradient(top, #a5cd4e 0%, #6b8f1a 100%);*/
+}
+div.accordion li a span {
+    display: block;
+    position: absolute;
+    top: 7px;
+    right: 0;
+    padding: 0 10px;
+    margin-right: 10px;
+    width:15px;
+    font: normal bold 12px/18px Arial, sans-serif;
+    background:url(__DXPUBLIC__/basic/simple_menu_img/lan/next.png) no-repeat right center;
+    /*background: #404247;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    -webkit-box-shadow: inset 1px 1px 1px rgba(0, 0, 0, .2), 1px 1px 1px rgba(255, 255, 255, .1);
+    -moz-box-shadow: inset 1px 1px 1px rgba(0, 0, 0, .2), 1px 1px 1px rgba(255, 255, 255, .1);
+    box-shadow: inset 1px 1px 1px rgba(0, 0, 0, .2), 1px 1px 1px rgba(255, 255, 255, .1);*/
+}
+div.accordion li:hover a span, div.accordion li:target a span, div.accordion li a.active span {
+    width:15px;
+    color: #fdfdfd;
+    text-shadow: 0px 1px 0px rgba(0, 0, 0, .35);
+    background:url(__DXPUBLIC__/basic/simple_menu_img/lan/0next.png) no-repeat right center;
+}
+/* Images */
+
+div.accordion li a:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    content: '';
+    width: 24px;
+    height: 24px;
+    margin: 4px 8px;
+    /*background-repeat: no-repeat;
+    background-image: url(__DXPUBLIC__/basic/simple_menu_img/lan/icons.png);
+    background-position: 0px 0px;*/
+}
+-->
+</style>
 <div class="accordion">
-<ul class="nav nav-pills nav-stacked">
+<ul>
     <volist name="menu_list" id="menu">
-    <li id="one" class="files" style="">
+    <li id="one" class="files">
         <a href="__APP__/{$menu.module_name}/{$menu.action_name}/{$menu.args}" target="_self">
             {$menu.menu_name}
+            <span>&nbsp;</span>
         </a>
     </li>
     </volist>
