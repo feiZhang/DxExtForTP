@@ -7,8 +7,8 @@
  * 1.项目虚拟目录不能和APP_NAME相同，TP会删除虚拟目录
  */
 //修改insttall.php的定义，运行之
-define('APP_PATH','/job/car/New');
-define('APP_NAME','car_sale');
+define('APP_PATH','/Users/pengL/job/tongxunduan/login');
+define('APP_NAME','txd_login');
 
 //默认值可以不修改
 define('DXINFO_PATH',substr(__FILE__,0,-16));

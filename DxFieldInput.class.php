@@ -6,6 +6,43 @@ class DxFieldInput{
             return $fieldSet["editor"];
         }else{
             $validateMsg = sprintf("data-errormessage=\"%s\" regex=\"%s\"",$fieldSet["valid"]["validateMsg"],$fieldSet["valid"]["regex"]);
+
+            $inputRV = "";
+            if($fieldSet["readOnly"]!==true){
+                $inputRV = DxFieldInput::createInputHtml($fieldSet);
+            }
+
+            //显示视图模式的内容
+            switch($fieldSet["type"]){
+            case "uploadFile":
+            case "cutPhoto":
+                break;
+            case "canton":
+                $inputRV .= sprintf("<span ng-hide=\"%2\$s\" ng-bind=\"dataInfo.%1\$s | cantonFdnToText\"></span>",$fieldSet["name"],$fieldSet["readOnly"]!==true?"isEdit":"");
+                break;
+            case "enum":
+            case "select":
+            case "set":
+            case "dialogSelect":
+                if(!empty($fieldSet["textTo"]))
+                    $inputRV .= sprintf("<span ng-hide=\"%2\$s\" ng-bind=\"dataInfo.%1\$s\"></span>",$fieldSet["textTo"],$fieldSet["readOnly"]!==true?"isEdit":"");
+                else
+                    $inputRV .= sprintf("<span ng-hide=\"%2\$s\" ng-bind=\"dataInfo.%1\$s_textTo\"></span>",$fieldSet["name"],$fieldSet["readOnly"]!==true?"isEdit":"");
+
+                break;
+            case "password":
+                $inputRV .= sprintf("<span ng-hide=\"%1\$s\">******</span>",$fieldSet["readOnly"]!==true?"isEdit":"");
+                break;
+            default:
+                $inputRV .= sprintf("<span ng-hide=\"%2\$s\" ng-bind=\"dataInfo.%1\$s\"></span>",$fieldSet["name"],$fieldSet["readOnly"]!==true?"isEdit":"");
+                break;
+            }
+        }
+        if(!empty($fieldSet["danwei"])) $inputRV .= sprintf("<span class=\"help-inline\">%s</span>",$fieldSet["danwei"]);
+        return $inputRV;
+    }
+
+    static private function createInputHtml($fieldSet){
             switch($fieldSet["type"]){
             case "uploadFile":
                 if(empty($fieldSet['upload']['buttonValue'])) $uploadButtonValue = "新增文件";
@@ -210,34 +247,7 @@ class DxFieldInput{
                 }
                 break;
             }
-
-            //显示视图模式的内容
-            switch($fieldSet["type"]){
-            case "uploadFile":
-            case "cutPhoto":
-                break;
-            case "canton":
-                $inputRV .= sprintf("<span ng-hide=\"isEdit\" ng-bind=\"dataInfo.%1\$s | cantonFdnToText\"></span>",$fieldSet["name"]);
-                break;
-            case "enum":
-            case "select":
-            case "set":
-            case "dialogSelect":
-                if(!empty($fieldSet["textTo"]))
-                    $inputRV .= sprintf("<span ng-hide=\"isEdit\" ng-bind=\"dataInfo.%1\$s\"></span>",$fieldSet["textTo"]);
-                else
-                    $inputRV .= sprintf("<span ng-hide=\"isEdit\" ng-bind=\"dataInfo.%1\$s_textTo\"></span>",$fieldSet["name"]);
-
-                break;
-            case "password":
-                $inputRV .= sprintf("<span ng-hide=\"isEdit\">******</span>");
-                break;
-            default:
-                $inputRV .= sprintf("<span ng-hide=\"isEdit\" ng-bind=\"dataInfo.%1\$s\"></span>",$fieldSet["name"]);
-                break;
-            }
-        }
-        if(!empty($fieldSet["danwei"])) $inputRV .= sprintf("<span class=\"help-inline\">%s</span>",$fieldSet["danwei"]);
         return $inputRV;
     }
 }
+

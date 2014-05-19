@@ -3,7 +3,7 @@
 class SysDicAction extends DataOpeAction {
     public function __construct(){
         parent::__construct();
-        $this->model->setLeftMenu(100);
+        $this->model->setLeftMenu(90);
     }
 }
 

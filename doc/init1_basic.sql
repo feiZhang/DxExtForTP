@@ -15,8 +15,8 @@ INSERT INTO `role` (`role_id`, `name`, `menu_ids`, `shortcut_ids`, `desk_ids`, `
 -- http://192.168.0.101:9008/index.php/%E6%9D%83%E9%99%90%E7%B3%BB%E7%BB%9F
 TRUNCATE table menu;
 INSERT INTO `menu` (`menu_id`, `parent_id`, `order_no`, `order_level`, `fdn`, `menu_name`, `module_name`, `action_name`, `args`, `type`, `is_desktop`, `desktop_url`, `other_info`) VALUES 
-(90, 0, 28*power(32,5), 1, '7.', '数据字典', 'SysDic', 'main', '', 'menu', 0, '', ''),
-
+(90, 0, 28*power(32,5), 1, '7.', '数据字典', 'SysDic', 'index', '?type=older_type&modelTitle=客户类型', 'menu', 0, '', ''),
+(9011, 90, 28*power(32,5)+5*power(32,4), 2,'', '客户类型', 'SysDic', 'index', '?type=older_type&modelTitle=客户类型', 'hide_sub_menu', 0, '', ''),
 -- (150, 0, 21*power(32,5), 1, '8.', '共享文件', 'ShareFile', 'index', '', 'quick_menu', 0, '', ''),
 -- (151, 150, 21*power(32,5) + 8*power(32,4), 2, '', '共享文件', 'ShareFile', 'index', '', 'menu', 0, '', ''),
 
