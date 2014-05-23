@@ -276,7 +276,10 @@ class DxExtCommonModel extends Model {
     }
     // 通过key改变model的listFields属性
     public function setListField($key, $v) {
-        $this->listFields [$key] = array_merge ( $this->listFields [$key], $v );
+        if(empty($this->listFields [$key]))
+            $this->listFields [$key] = $v;
+        else
+            $this->listFields [$key] = array_merge ( $this->listFields [$key], $v );
     }
     //新增一个字段
     public function addListField($field) {
