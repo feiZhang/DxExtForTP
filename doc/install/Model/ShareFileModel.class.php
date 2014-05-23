@@ -29,9 +29,9 @@ class ShareFileModel extends DxExtCommonModel {
         "helpInfo"=>'<div class="alert alert-warning">一条记录多个文件时：将鼠标停留在文件内容框中，会显示其余的文件，点击后可下载。弹出框挡住下面文件框时，点击非文件框的其他区域，将隐藏弹出框。</div>',
         'searchHTML'=>"
           <span class='add-on'>主题:</span>
-          <input id='title' size='10' class='dataOpeSearch likeLeft likeRight' value='' type='text' />
-          <button onclick='javascript:dataOpeSearch(true);' class='btn' id='item_query_items'>查询</button>
-          <button onclick='javascript:dataOpeSearch(false);' class='btn' id='item_query_all' />全部数据</button>
+          <input id='title' name='%title%' size='10' class='z-input' value='' type='text' />
+          <button onclick='javascript:dataOpeSearch(\"dataListSearch\");' class='btn btn-info btn-sm' id='item_query_items'>查询</button>
+          <button onclick='javascript:dataOpeSearch(\"\");' class='btn btn-info btn-sm' id='item_query_all' />全部数据</button>
         ",
     );
 }
