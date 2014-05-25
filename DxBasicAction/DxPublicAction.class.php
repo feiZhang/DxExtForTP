@@ -24,12 +24,21 @@ class DxPublicAction extends DxExtCommonAction {
             echo "success";
         }
     }
+    private function loginGotoUri(){
+        $main_url   = session("main_url");
+        $redirect_uri = session("redirect_uri");
+        if(!empty($redirect_uri)){
+            session("redirect_uri","");
+            redirect($redirect_uri);
+        }else if(!empty($main_url)){
+            redirect($main_url);
+        }else{
+            redirect(__ROOT__."/");
+        }
+    }
     public function index() {
         if($this->checkSaveAccount()){
-            $main_url   = session("main_url");
-            if(!empty($main_url))
-                $this->redirect($main_url);
-            else $this->redirect(__ROOT__."/");
+            $this->loginGotoUri();
         }else{
             $this->redirect(C("LOGIN_URL"));
         }
@@ -38,7 +47,9 @@ class DxPublicAction extends DxExtCommonAction {
         if($this->checkSaveAccount()){
             $this->redirect(__ROOT__."/");
         }
+        $redirect_uri = session("redirect_uri");
         session(null);
+        session("redirect_uri",$redirect_uri);
         $this->assign("clientIp", getenv('REMOTE_ADDR'));
         $date = date('Y-m-d,w');
         list($tempDate, $week) = explode(',', $date);
@@ -65,15 +76,7 @@ class DxPublicAction extends DxExtCommonAction {
     {
         $rv = $this->userAuth();
         if($rv["state"]){
-            $main_url   = session("main_url");
-            if(!empty($main_url)){
-                $homeUrl = __APP__.$main_url;
-            }else{
-                $homeUrl = __ROOT__."/";
-            }
-            header("location:$homeUrl");
-            //$this->assign("jumpUrl",$homeUrl);
-            //$this->success($rv["msg"]);
+            $this->loginGotoUri();
         }else{
             $this->assign("jumpUrl",C("LOGIN_URL"));
             $this->error($rv["msg"]);
