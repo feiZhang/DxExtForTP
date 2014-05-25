@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `menu` (
 -- 系统角色表  控制用户的权限，menu_ids = menu.id+','; --
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE IF NOT EXISTS `role` (
-  `role_id` int(11) unsigned NOT NULL DEFAULT 0,
+  `role_id` smallint(5) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL DEFAULT '' COMMENT '角色名',
   `menu_ids` varchar(1000) NOT NULL DEFAULT '' COMMENT '菜单ID',
   `shortcut_ids` varchar(1000) NOT NULL DEFAULT '' COMMENT '快捷方式ids',
