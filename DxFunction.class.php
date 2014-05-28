@@ -340,7 +340,7 @@ class DxFunction{
     /**
      * 将data数据转换grid显示的数据
      * 1.将上传的多文件字符串json解析，以适用于grid展示
-     * 2.将fdn转换为字符串，不需要valChange传递过的字符到客户端
+     * 2.将fdn转换为字符串，不需要valChange传递过的字符到客户端,,canton的数据量太大，传递到客户端需要较大的资源
      */
     function uploadFilesToGrid(&$dataList,$fieldName){
         foreach($dataList as $kk=>$vv){

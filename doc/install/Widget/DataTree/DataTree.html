@@ -1,0 +1,143 @@
+<link rel="stylesheet" href="__DXPUBLIC__/public/zTree/css/zTreeStyle/zTreeStyle.css" type="text/css">
+
+<SCRIPT type="text/javascript">
+<!--
+var setting = {
+    treeId :'pkid',
+    data: {
+        simpleData: {
+            enable: true,
+            idKey: "pkid",
+            pIdKey: "parent_id",
+            rootPId: 0
+        },
+        key:{
+            name:'name',
+            title:'full_name'
+        }
+    },
+    view:{
+        addDiyDom: addDiyDom
+    },
+    callback: {
+        onClick: zTreeOnClick
+    }
+};
+function zTreeOnClick(event, treeId, treeNode) {
+    {$clickUrl}
+};
+
+//在节点上增加修改删除操作
+function addDiyDom(treeId, treeNode) {
+    var aObj = $("#" + treeNode.tId + "_a");
+    if(treeNode.layer=={$startEditLayer}){
+        var editStr = "<a style='color:#336699;'  class='diyBtn3' id='addBtn_" + treeNode.pkid
+        + "' onfocus='this.blur();' >增加下级区域</a>";
+    }
+    if(treeNode.layer > {$startEditLayer}){
+        var editStr = "<span id='diyBtn_space_" +treeNode.pkid+ "' > </span>"
+        + "<a style='color:#336699;' class='diyBtn1' id='delBtn_" + treeNode.pkid
+        + "' onfocus='this.blur();' >删除</a>"
+        + "<a style='color:#336699;' class='diyBtn2' id='editBtn_" + treeNode.pkid
+        + "' onfocus='this.blur();' >编辑</a>"
+        + "<a style='color:#336699;' class='diyBtn3' id='addBtn_" + treeNode.pkid
+        + "' onfocus='this.blur();' >增加子节点</a>";
+    }
+    aObj.append(editStr);
+    var editBtn = $("#editBtn_"+treeNode.pkid);
+    if (editBtn) editBtn.bind("click", function(e){ edit(e,treeNode)} );
+    var addBtn = $("#addBtn_"+treeNode.pkid);
+    if (addBtn) addBtn.bind("click",{}, function(e){ add(e,treeNode) });
+    var delBtn = $("#delBtn_"+treeNode.pkid);
+    if (delBtn) delBtn.bind("click", function(e){ delNode(e,treeNode) });
+};
+function delNode(e,treeNode){
+    var treeObj = $.fn.zTree.getZTreeObj("dataTree");
+    if(typeof treeNode !='object'){
+        var nodes = zTree.getSelectedNodes();
+        if(nodes.length == 0){
+            alert('请选择一个区域');
+            return;
+        }else{
+            treeNode = nodes[0];
+        }
+    }
+    showDealDialog({url:'__URL__/delete/'+treeNode.pkid,beforemsg:'确定要删除本节点以及其子节点？',afterfunction:function(data){
+        if(data.status){
+            treeObj.removeNode(treeNode);
+        }else{
+            showDialog("提示",data.info);
+        }
+    }});
+}
+function edit(e,treeNode){
+    var treeObj = $.fn.zTree.getZTreeObj("dataTree");
+    if(typeof treeNode !='object'){
+        var nodes = zTree.getSelectedNodes();
+        if(nodes.length == 0){
+            alert('请选择一个节点');
+            return;
+        }else{
+            treeNode = nodes[0];
+        }
+    }
+    dataOpeEdit({"id":treeNode.pkid,"ok":function(form,msg){
+        if(msg.status==1){
+            treeNode.name        = form.find("#name").val();
+            treeObj.updateNode(treeNode)
+        }
+    }});
+}
+function add(e,treeNode) {
+    var treeObj = $.fn.zTree.getZTreeObj("dataTree");
+    var initData="";
+    if(typeof treeNode !='object'){
+        treeNode = $.fn.zTree.getZTreeObj("dataTree");
+        initData = {parent_id:0,layer:1};
+    }else{
+        initData = {layer:parseInt(treeNode.layer)+1,parent_id:treeNode.pkid};
+    }
+
+    dataOpeEdit({"id":0,"data":initData,"ok":function(form,msg){
+        if(msg.status==1){
+            treeObj.addNodes(treeNode, $.extend(initData,{"name":form.find("#name").val(),"pkid":msg.data}));
+        }
+    }});
+}
+
+var zNodes = {$treeData};
+$(document).ready(function(){
+    var treeObj = $.fn.zTree.init($("#dataTree"), setting, zNodes);
+    var nodes   = treeObj.getNodes();
+    if(zNodes.length<30){
+        treeObj.expandAll(true);
+    }else{
+        treeObj.expandNode(nodes[0]);
+    }
+});
+//-->
+</SCRIPT>
+<div>
+    <ul id="dataTree" class="ztree"></ul>
+</div>
+
+<eq name="Think.config.APP_DEBUG" value="true">
+<link href="__DXPUBLIC__/min/g=dataListCss&debug=1" rel="stylesheet" type="text/css" />
+<else/>
+<link href="__DXPUBLIC__/min/g=dataListCss" rel="stylesheet" type="text/css" />
+</eq>
+<script src="__DXPUBLIC__/public/WDatePicker/WdatePicker.js" type="text/javascript"></script>
+
+<!--数据修改和新增的js 因为ajax加载js会出现异常，所以在这里进行加载-->
+<script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/load-image.min.js"></script>
+<script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/tmpl.min.js"></script>
+
+<eq name="Think.config.APP_DEBUG" value="true">
+<script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs&debug=1"></script>
+<script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs&debug=1"></script>
+<else/>
+<script type="text/javascript" src="__DXPUBLIC__/min/g=dataListJs"></script>
+<script type="text/javascript" src="__DXPUBLIC__/min/g=dataEditJs"></script>
+</eq>
+
+<script type="text/javascript" src="__DXPUBLIC__/public/zTree/js/jquery.ztree.all-3.5.min.js"></script>

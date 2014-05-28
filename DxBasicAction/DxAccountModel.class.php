@@ -1,16 +1,20 @@
 <?php
 class DxAccountModel extends DxExtCommonModel{
-    protected  $listFields = array (
-            "account_id"     => array('title'=>'操作','width'=>150, 'pk'=>true,'hide'=>22,'renderer'    => "var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){
+    public $listFields = array (
+            "account_id"     => array('title'=>'操作','width'=>150, 'pk'=>true,'hide'=>06,'renderer'    => "var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){
                                     var v   = '<a class=\"btn btn-xs btn-success\" href=\"javascript:dataOpeEdit( { \'id\':' + value + '});\">修改</a>';
                                     v   += ' <a class=\"btn btn-xs btn-danger\" href=\"javascript:dataOpeDelete( { \'id\':' + value + '});\">删除</a>';
                                     v   += ' <a class=\"btn btn-xs btn-warning\" href=\"javascript:resetPasswd( { \'id\':' + value + '});\">重置密码</a>';
                                     return v;
                                 }"),
-            "canton_id"      => array('title'=>'所在区域','hide'=>01,'display_none'=>0777),
-            "canton_fdn"     => array('title'=>'所在区域','width'=>140,'type'=>"canton"),
+            //"canton_id"      => array('title'=>'所在区域','hide'=>01,'display_none'=>0777),
+            //"canton_fdn"     => array('title'=>'所在区域','width'=>140,'type'=>"canton"),
             "login_username" => array('title'=>'登录名',),
             "role_id"        => array('title'=>'角色','type'=>'enum','valChange'=>array('model'=>'Role'),'default'=>2),
+            "dept_id"        => array('title'=>'部门','hide'=>01,'display_none'=>07777),
+            "dept_fdn"       => array('title'=>'部门','hide'=>00,'type'=>'selectselectselect',
+                                        'fdn'=>array("pkid_name"=>"dept_id"),
+                                        'valChange'=>array("model"=>"Dept"),"default"=>"00001."),
             "login_pwd"      => array('title'=>'登录密码','hide'=>01,'type'=>'password'),
             "true_name"      => array('title'=>'真实姓名','width'=>80),
             "tel"            => array('title'=>'联系电话','width'=>80),

@@ -170,6 +170,8 @@ class DxPublicAction extends DxExtCommonAction {
         session('role_id', $user['role_id']);
         session('canton_id', $user['canton_id']);
         session('canton_fdn', $user['canton_fdn']);
+        session('dept_id', $user['dept_id']);
+        session('dept_fdn', $user['dept_fdn']);
         session("main_url",$user["main_url"]);
         if($user['role_id']=="1") session('DP_ADMIN', true);
 

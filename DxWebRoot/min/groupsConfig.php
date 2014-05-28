@@ -50,7 +50,6 @@ return array(
         ),
     'dataListJs'    => array(
         $groupBasePath."/public/sigma_grid/gt_msg_cn.js",
-        $groupBasePath."/basic/js/sigma_custom/fix.toolbar.js",
         $groupBasePath."/basic/js/DataOpe.js",
         $groupBasePath."/basic/js/dataope_ext.js",
         $groupBasePath."/public/validate/js/jquery.validationEngine.js",

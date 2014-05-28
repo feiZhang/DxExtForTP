@@ -4,16 +4,26 @@
 
 <table class="table table-bordered">
     <tr>
-        <td class="text-right">{$listFields.canton_fdn.title}：</td>
-        <td><?php echo DxFunction::createFieldInput($listFields["canton_fdn"]);?></td>
-        <td class="text-right">{$listFields.role_id.title}：</td>
-        <td><?php echo DxFunction::createFieldInput($listFields["role_id"]);?></td>
-    </tr>
-    <tr>
         <td class="text-right">{$listFields.login_username.title}：</td>
         <td><?php echo DxFunction::createFieldInput($listFields["login_username"]);?></td>
         <td class="text-right">{$listFields.login_pwd.title}：</td>
         <td><?php echo DxFunction::createFieldInput($listFields["login_pwd"]);?></td>
+    </tr>
+    <tr>
+        <td class="text-right">{$listFields.role_id.title}：</td>
+        <td colspan="3"><?php echo DxFunction::createFieldInput($listFields["role_id"]);?></td>
+    </tr>
+    <tr>
+        <td class="text-right">{$listFields.dept_fdn.title}：</td>
+        <td colspan="3">
+            <?php echo DxFunction::createFieldInput($listFields["dept_fdn"]);?>
+        </td>
+    </tr>
+    <tr>
+        <td class="text-right">{$listFields.canton_fdn.title}：</td>
+        <td colspan="3">
+            <?php echo DxFunction::createFieldInput($listFields["canton_fdn"]);?>
+        </td>
     </tr>
     <tr>
         <td class="text-right">{$listFields.true_name.title}：</td>

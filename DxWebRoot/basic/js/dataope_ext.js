@@ -6,6 +6,23 @@ function dataOpeAdd(config){
 }
 
 function dataOpeEdit(config){
+    //form 提交成功后的回调函数
+    function editFormSubmitSuccess(form,msg){
+        var theDialog     = $(form).data("editDialog");
+        if (msg["status"] == 0) {
+            showDialog("提示",msg["info"]);
+            theDialog.button({id: 'ok',disabled: false,'value':'确定'},{id:'cancel',disabled:false});
+        } else {
+            if($(form).attr("afterSubmit")=="reloadPage"){
+                setInterval(function(){document.location.reload();},2000);
+            }else if(Sigma.GridCache && Sigma.GridCache["theDataOpeGrid"]){
+                Sigma.GridCache["theDataOpeGrid"].reload();
+            }
+            theDialog.content(msg['info']).time(2000).button({id: 'ok',disabled: true},{id:'cancel',value:'关闭'});
+        }
+        if(config.ok !== undefined) config.ok(form,msg);
+    }
+
     var moduleName = config.moduleName;
     var dialogTitle = config.title;
     var urlPara = config.data==undefined?"":config.data;
@@ -21,12 +38,15 @@ function dataOpeEdit(config){
                 value:"保存",
                 disabled:true,
                 callback:function(){
-                    if($("form#itemAddForm").length<1) return true;
-                    $("form#itemAddForm").attr("action",this_post_url + "/save");
+                    var theForm = $("form#itemAddForm");
+                    if(theForm.length<1) return true;
+                    theForm.attr("action",this_post_url + "/save");
                     if(config.reloadPage=="1"){
-                        $('form#itemAddForm').attr("afterSubmit","reloadPage");
+                        theForm.attr("afterSubmit","reloadPage");
                     }
-                    $('form#itemAddForm').submit();
+                    theForm.data("editDialog",editDialog);
+                    theForm.data("submitSuccess",editFormSubmitSuccess);
+                    theForm.submit();
                     return false;
                 }
             };
@@ -96,7 +116,7 @@ function dataOpeDelete(config){
                     setInterval(function(){document.location.reload();},2000);
                 }else{
                     if(data.status){
-                        Sigma.GridCache["theDataOpeGrid"].reload();
+                        if(Sigma.GridCache) Sigma.GridCache["theDataOpeGrid"].reload();
                     }
                 }
             },"json");
@@ -287,6 +307,7 @@ function _dataope_onCheckChange(obj){
 
 //数据验证后，自动执行此操作。
 function formSubmitComplete(form, r){
+    var submitSuccess = $(form).data("submitSuccess");
     if(r){
         //将textTo的数据赋值
         $("input.textTo[type='radio']").each(function(){
@@ -297,7 +318,7 @@ function formSubmitComplete(form, r){
             toId  = $(this).attr("textTo");
             if($(this).val()=="")
                 $("input" + "#" + toId).val("");
-            else if($(this).hasClass("cantonSelect")){
+            else if($(this).hasClass("fdnSelectSelect")){
                 // 最后一个可能为空选
                 var tvvv = $(this).find('option:selected').attr('text_name');
                 if(tvvv!=undefined && tvvv!=""){
@@ -308,26 +329,16 @@ function formSubmitComplete(form, r){
         });
 
         //触发savedata事件,用于支持fckeditor保存数据.
-        $('form#itemAddForm').find(":input").trigger("savedata");
+        $(form).find(":input").trigger("savedata");
 
-        var theThis     = $.dialog.get('editObject');
-        theThis.button({id: 'ok',disabled: true,'value':'数据正在处理'},{id:'cancel',disabled:true});
+        var theDialog     = $(form).data("editDialog");
+        theDialog.button({id: 'ok',disabled: true,'value':'数据正在处理'},{id:'cancel',disabled:true});
         $.ajax({
             type : "POST",
-            url : $("form#itemAddForm").attr("action"),
-            data : $("form#itemAddForm").serialize(),
+            url : $(form).attr("action"),
+            data : $(form).serialize(),
             success : function(msg) {
-                if (msg["status"] == 0) {
-                    showDialog("提示",msg["info"]);
-                    theThis.button({id: 'ok',disabled: false,'value':'确定'},{id:'cancel',disabled:false});
-                } else {
-                    if($('form#itemAddForm').attr("afterSubmit")=="reloadPage"){
-                        setInterval(function(){document.location.reload();},2000);
-                    }else if(Sigma.GridCache["theDataOpeGrid"]){
-                        Sigma.GridCache["theDataOpeGrid"].reload();
-                    }
-                    theThis.content(msg['info']).time(2000).button({id: 'ok',disabled: true},{id:'cancel',value:'关闭'});
-                }
+                submitSuccess(form,msg);
             },
             dataType : "json"
         });
