@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS `canton` (
   `layer` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '所在层',
   `fdn` varchar(32) NOT NULL DEFAULT '' COMMENT '标识区域关系的串，一般为上级区域的fdn当前id.',
   `canton_uniqueno` char(8) NOT NULL DEFAULT '' COMMENT '区域代码',
-  `text_name` varchar(128) NOT NULL DEFAULT '' COMMENT '全称',
-  `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1为可以删除，0为不能删除',
+  `full_name` varchar(128) NOT NULL DEFAULT '' COMMENT '全称',
+  `user_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1为可以删除，0为不能删除',
   `creater_user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建人',
   `create_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '创建时间',
   PRIMARY KEY (`canton_id`),
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `sys_dic` (
   `order` int(11) unsigned DEFAULT 0 NOT NULL COMMENT '排序，用于在页面上显示顺序',
   `other_info` varchar(100) DEFAULT '' NOT NULL COMMENT '其他信息，比如：房间数量',
   `show_type` tinyint(1) unsigned DEFAULT '1' NOT NULL COMMENT '是否显示在用户编辑页面，1显示 0不显示 2显示但不能编辑',
-  `is_del` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1已删除0正常',
+  `user_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '1已删除0正常',
   `creater_user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建人',
   `create_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '创建时间',
   `sync_status` tinyint(1) unsigned NOT NULL DEFAULT '1',
@@ -81,6 +81,22 @@ CREATE TABLE IF NOT EXISTS `role` (
   PRIMARY KEY (`role_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='角色信息表';
 
+-- 部门表
+DROP TABLE IF EXISTS `dept`;
+CREATE TABLE IF NOT EXISTS `dept` (
+  `dept_id` smallint(5) unsigned zerofill NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL DEFAULT '' COMMENT '部门名',
+  `parent_id` smallint(5) unsigned zerofill NOT NULL DEFAULT '00000' COMMENT '上级区域ID',
+  `ordernum` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `layer` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '所在层',
+  `fdn` varchar(32) NOT NULL DEFAULT '' COMMENT '标识区域关系的串，一般为上级区域的fdn当前id.',
+  `full_name` varchar(128) NOT NULL DEFAULT '' COMMENT '全称',
+  `user_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1为可以删除，0为不能删除',
+  `creater_user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建人',
+  `create_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '创建时间',
+  PRIMARY KEY (`dept_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='部门信息表';
+
 -- 用户表 为每个用户分配一个角色用于控制权限，role_id = role.id; -- 
 DROP TABLE IF EXISTS `account`;
 CREATE TABLE IF NOT EXISTS `account` (
@@ -90,6 +106,8 @@ CREATE TABLE IF NOT EXISTS `account` (
   `login_username` varchar(45) NOT NULL DEFAULT '' COMMENT '系统用户名',
   `login_pwd` varchar(200) NOT NULL DEFAULT '' COMMENT '登录密码',
   `true_name` varchar(45) NOT NULL DEFAULT '' COMMENT '用户本人实际姓名',
+  `dept_id` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '部门ID',
+  `dept_fdn` varchar(45) NOT NULL DEFAULT '' COMMENT '部门fdn',
   `tel` varchar(12) NOT NULL DEFAULT '' COMMENT '联系电话',
   `email` varchar(52) NOT NULL DEFAULT '' COMMENT 'Email',
   `address` varchar(45) NOT NULL DEFAULT '' COMMENT '本人地址',
@@ -99,9 +117,11 @@ CREATE TABLE IF NOT EXISTS `account` (
   `desk_ids` varchar(1000) NOT NULL DEFAULT '' COMMENT '桌面id 串',
   `main_url` varchar(100) NOT NULL DEFAULT '' COMMENT '登陆后转向的url',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '根据实际情况确定:1=>正常,0=>未验证,2=>禁用',
-  `delete_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1:删除',
+  `user_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1:删除',
   `creater_user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建人',
   `create_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `login_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '登录时间',
+  `active_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '激活时间',
   PRIMARY KEY (`account_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统用户表';
 

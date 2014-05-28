@@ -126,7 +126,7 @@ operator：对于自动填充无效，用户数据过滤时，确定过滤的方
 
 listFields属性详解：
 
-1. type:字段类型，string、int、float、date[日期]、enum[枚举,单选框]、select[枚举,下拉框]、set[集合]、uploadFile[文件上传]、canton[区域]、cutPhoto[剪切头像]、idcard[身份证类型]
+1. type:字段类型，string、int、float、date[日期]、enum[枚举,单选框]、select[枚举,下拉框]、set[集合]、uploadFile[文件上传]、canton[区域]、cutPhoto[剪切头像]、idcard[身份证类型]、selectselectselect[级联选择，类似于Canton]
 
 		type用于3个地方：
 		1. grid生成时，sigma支持 string int float（排序结果不同）
@@ -138,8 +138,9 @@ listFields属性详解：
     	文件上传的路径，在config中配置：UPLOAD_BASE_PATH 和 TEMP_FILE_PATH
         set的附加参数:valFormat=json,douhao   分别表示，以json 或 逗号(默认)隔开 存储多选数据,注意：如果存储为json，则无法对此字段进行数据检索
         date的附加参数:valFormat=yyyy-MM-dd HH:mm:ss  就是js插件WdatePicker的参数格式
-        canton的附加属性 canton=>array("rootCantonId"=>3520,"id_name"=>"canton_id")，即跟区域的Id，是否将选择的值赋值给id_name设定的input
+        canton的附加属性 fdn=>array("pkid_name"=>"canton_id")，即跟区域的Id，是否将选择的值赋值给pkid_name设定的input
         idcard类型，附加属性idcard：'birthday':'birthday','sex':'sex','id_reg_addr':'id_reg_addr',自动根据身份证填充生日、性别、户籍地
+        selectselectselect类型,类似于canton，必须有默认值
 
 2. title:中文标题
 3. hide:是否在前台生成此字段（此值使用位运算）。见常量 HIDE\_FIELD\_*，确定字段在某个场景下不生成html 或不处理。如果在多个位置不生成，等于各个值的和。比如：列表新增都不生成则为3

@@ -22,13 +22,14 @@ INSERT INTO `menu` (`menu_id`, `parent_id`, `order_no`, `order_level`, `fdn`, `m
 
 (120, 0, 30*power(32,5), 1, '5.', '系统管理', 'Account', 'index', '', 'menu', 0, '', ''),
 (121, 120, 30*power(32,5) + 6*power(32,4), 2, '', '用户管理', 'Account', 'index', '', 'sub_menu', 0, '', ''),
-(122, 120, 30*power(32,5) + 7*power(32,4), 2, '', '系统参数配置', 'SysSetting', 'index', '?type=user', 'sub_menu', 0, '', ''),
+(126, 120, 30*power(32,5) + 7*power(32,4), 2, '', '部门管理', 'Dept', 'index', '', 'sub_menu', 0, '', ''),
+(122, 120, 30*power(32,5) + 8*power(32,4), 2, '', '系统参数配置', 'SysSetting', 'index', '?type=user', 'sub_menu', 0, '', ''),
 (123, 120, 30*power(32,5) + 9*power(32,4), 2, '', '系统日志', 'OperationLog', 'index', '', 'sub_menu', 0, '', ''),
 (124, 120, 30*power(32,5) + 29*power(32,4), 2, '', '清除缓存', 'Basic', 'clearCache', '', 'action', 0, '', ''),
 (125, 120, 30*power(32,5) + 30*power(32,4), 2, '', '修改密码', 'Account', 'editpass', '', 'sub_menu', 0, '', '');
 
 TRUNCATE table canton;
-INSERT INTO `canton` (`canton_id`, `name`, `parent_id`, `ordernum`, `layer`, `fdn`, `creater_user_id`, `create_time`, `canton_uniqueno`, `text_name`, `is_del`)
+INSERT INTO `canton` (`canton_id`, `name`, `parent_id`, `ordernum`, `layer`, `fdn`, `creater_user_id`, `create_time`, `canton_uniqueno`, `full_name`, `is_del`)
 VALUES
 	(00001,'北京市',03520,0,2,'03520.00001.',0,'2012-12-14 14:01:26','110000','北京市',0),
 	(00002,'市辖区',00001,0,3,'03520.00001.00002.',0,'2012-12-14 14:01:26','110100','北京市|市辖区',0),
@@ -2675,7 +2676,7 @@ VALUES
 	(02643,'南溪县',02639,0,4,'03520.02519.02639.02643.',0,'2012-12-14 14:01:26','511522','四川省|宜宾市|南溪县',0),
 	(02644,'江安县',02639,0,4,'03520.02519.02639.02644.',0,'2012-12-14 14:01:26','511523','四川省|宜宾市|江安县',0);
 
-INSERT INTO `canton` (`canton_id`, `name`, `parent_id`, `ordernum`, `layer`, `fdn`, `creater_user_id`, `create_time`, `canton_uniqueno`, `text_name`, `is_del`)
+INSERT INTO `canton` (`canton_id`, `name`, `parent_id`, `ordernum`, `layer`, `fdn`, `creater_user_id`, `create_time`, `canton_uniqueno`, `full_name`, `is_del`)
 VALUES
 	(02645,'长宁县',02639,0,4,'03520.02519.02639.02645.',0,'2012-12-14 14:01:26','511524','四川省|宜宾市|长宁县',0),
 	(02646,'高县',02639,0,4,'03520.02519.02639.02646.',0,'2012-12-14 14:01:26','511525','四川省|宜宾市|高县',0),
@@ -3557,4 +3558,4 @@ VALUES
 	(03522,'郑东新区',01674,0,4,'03520.01673.01674.03522.',0,'2012-12-14 14:01:26','410110','河南省|郑州市|郑东新区',0),
 	(03523,'经济技术开发区',01674,0,4,'03520.01673.01674.03523.',0,'2012-12-14 14:01:26','410111','河南省|郑州市|经济技术开发区',0);
 
-update canton set text_name=replace(text_name,"|","");
+update canton set full_name=replace(full_name,"|","");

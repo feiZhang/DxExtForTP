@@ -191,12 +191,29 @@ class DxExtCommonModel extends Model {
         switch($field["type"]){
             case "canton":
                 $field["width"] = "180";
-                $field["default"] = session("canton_fdn");
+                if(empty($field["default"])) $field["default"] = session("canton_fdn");
                 if(empty($field["default"])) $field["default"] = C("ROOT_CANTON_FDN");
                 $field["valChange"] = "";   //因为canton的valchange内容太多，所以放到页面头部直接载入，每个field中不再体现。
                 $data_change    = $this->getModelInfo("data_change");
                 $data_change[$field["name"]] = "cantonFdnToText";
                 $this->setModelInfo("data_change",$data_change);
+                break;
+            case "selectselectselect":
+                $field["width"] = "180";
+                if(isset($field["valChange"]["model"])){
+                    if($this->name==$field["valChange"]["model"])
+                        $m    = $this;
+                    else
+                        $m    = D($field["valChange"]["model"]);
+
+                    $allDataVal = $m->getSelectSelectSelect();
+                    $fdnTreeData = array();
+                    foreach($allDataVal as $d){
+                        if(!is_array($fdnTreeData[$d["parent_id"]])) $fdnTreeData[$d["parent_id"]] = array();
+                        array_push($fdnTreeData[$d["parent_id"]],$d);
+                    }
+                    $field["fdnChange"] = $fdnTreeData;
+                }
                 break;
             case "date":
                 if(empty($field["valFormat"])) $field["valFormat"] = "yyyy-MM-dd";
@@ -926,12 +943,14 @@ class DxExtCommonModel extends Model {
             $this->options  = $tOptions;
 
             $vvv = parent::delete($options);
+            fb::Log($this->getLastSQL());
             return $vvv;
         }
     }
     protected function deleteTag($options=array()) {
         // 分析表达式
         $result     = $this->where($options["where"])->save(C('DELETE_TAGS'));
+        fb::Log($this->getLastSQL());
         if(false !== $result) {
             $data = array();
             if(isset($pkValue)) $data[$pk]   =  $pkValue;

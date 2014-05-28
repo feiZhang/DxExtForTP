@@ -18,7 +18,8 @@ class DxFieldInput{
             case "cutPhoto":
                 break;
             case "canton":
-                $inputRV .= sprintf("<span ng-hide=\"%2\$s\" ng-bind=\"dataInfo.%1\$s | cantonFdnToText\"></span>",$fieldSet["name"],$fieldSet["readOnly"]!==true?"isEdit":"");
+            case "selectselectselect":
+                $inputRV .= sprintf("<span ng-hide=\"%2\$s\" ng-bind=\"dataInfo.%1\$s | fdnToText:dataFields.%1\$s.valChange\"></span>",$fieldSet["name"],$fieldSet["readOnly"]!==true?"isEdit":"");
                 break;
             case "enum":
             case "select":
@@ -94,24 +95,19 @@ class DxFieldInput{
                     $fieldSet["name"],$defaultPhoto);
                 break;
             case "canton":
+            case "selectselectselect":
                 if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo" textTo="%s',$fieldSet['textTo']);
                 else $inputAddr = "";
 
                 $inputRV = sprintf('
                     <span ng-show="isEdit" style="display:inline">
-                    <select class="autowidth cantonSelect%2$s" ng-show="cantonTree[canton_id].length" ng-model="selectedCanton.%1$s" ng-change="cantonChange(selectedCanton.%1$s,\'dataInfo.%1$s\')" ng-repeat="canton_id in dataInfo.%1$s | cantonFdnToArray">
-                        <option ng-repeat="canton in cantonTree[canton_id]" ng-selected="dataInfo.%1$s|cantonOptionSelected:canton.val" key="{{canton.canton_id}}" text_name="{{canton.text_name}}" value="{{canton.val}}">{{canton.title}}</option>
+                    <select class="autowidth fdnSelectSelect%2$s" ng-show="dataFields.%1$s.fdnChange[fdnNode].length" ng-model="selectedFdn.%1$s" ng-change="selectselectselectChange(this,selectedFdn.%1$s,\'dataInfo.%1$s\',\'%3$s\')" ng-repeat="fdnNode in dataInfo.%1$s | fdnStrToArray">
+                        <option ng-repeat="fdnObj in dataFields.%1$s.fdnChange[fdnNode]" ng-selected="dataInfo.%1$s|fdnOptionSelected:fdnObj.fdn" key="{{fdnObj.pkid}}" text_name="{{fdnObj.full_name}}" value="{{fdnObj.fdn}}">{{fdnObj.name}}</option>
                     </select>
-
-                    <!--
-                    <select class="autowidth cantonSelect%2$s" ng-show="cantonTree[canton_id].length" ng-model="selectedCanton.%1$s" ng-change="cantonChange(selectedCanton.%1$s,\'dataInfo.%1$s\')" ng-repeat="canton_id in dataInfo.%1$s | cantonFdnToArray" 
-                        ng-options="canton.title as canton.val for canton in cantonTree[canton_id]" >
-                    </select>
-                    -->
 
                     <input type="text" ng-hide="true" name="%1$s" id="%1$s" ng-model="dataInfo.%1$s" value="" class="dataOpeSearch likeRight" />
                     </span>'
-                    ,$fieldSet["name"],$inputAddr);
+                    ,$fieldSet["name"],$inputAddr,empty($fieldSet["fdn"]["pkid_name"])?"":"dataInfo.".$fieldSet["fdn"]["pkid_name"]);
                 break;
             case "dialogSelect":
                 /*

@@ -17,8 +17,14 @@ dxAngularM.controller("dataEditCtrl",function($scope,$http,$rootScope){
     }
     if(recordDataInfo.id == undefined || recordDataInfo.id == "0")
         $scope.isAdd = true;  //要区分新增和修改，使用不同的js数据验证规则
-    $scope.cantonTree = cantonFdnTree;
     $scope.dataInfo = recordDataInfo;
+
+    angular.forEach(recordDataFields,function(val,key){
+        if(val.type == "canton"){
+            recordDataFields[key].fdnChange = cantonFdnTree;
+            recordDataFields[key].valChange = cantonIdValChange;
+        }
+    });
     $scope.dataFields = recordDataFields;
 
     //设置文件上传组件
@@ -55,12 +61,20 @@ dxAngularM.controller("dataEditCtrl",function($scope,$http,$rootScope){
         onValidationComplete:formSubmitComplete
     });
 
-    $scope.cantonChange = function(selectCanton,cantonFdn,textTo){
-        if(selectCanton!=undefined && selectCanton!=null && selectCanton!=0) eval("$scope." + cantonFdn + "= selectCanton;");
+    $scope.selectselectselectChange = function(selectInput,selectedFdn,fieldFdnAngVal,fieldFdnIdAngVal=""){
+        if(selectedFdn!=undefined && selectedFdn!=null && selectedFdn!=0){
+            eval("$scope." + fieldFdnAngVal + "= selectedFdn;");
+            if(fieldFdnIdAngVal!=undefined && fieldFdnIdAngVal!=null && fieldFdnIdAngVal!=""){
+                var ta = selectedFdn.split(".");
+                ta.pop();
+                ta = ta.pop();
+                eval("$scope." + fieldFdnIdAngVal + "= parseInt(ta);");
+            }
+        }
     };
 });
 
-dxAngularM.filter('cantonFdnToArray', function() {
+dxAngularM.filter('fdnStrToArray', function() {
     return function(fdn) {
         if(fdn==undefined || fdn==null || fdn==0){
             return new Array();
@@ -72,20 +86,22 @@ dxAngularM.filter('cantonFdnToArray', function() {
     }
 });
 //将fdn转换为中文，因为cantonTree只存放的id数据，所以，还需要数据解析
-dxAngularM.filter('cantonFdnToText', function() {
-    return function(fdn) {
+dxAngularM.filter('fdnToText', function() {
+    return function(fdn,fdnTexts) {
         if(fdn==undefined || fdn==null || fdn==0 || fdn==""){
             return '';
         }
+        /*
         var ta = fdn.split(".");
         ta.pop();
         ta = ta.pop();
         if(ta==undefined || ta==null || ta==0 || ta=="") return '';
-        return cantonIdValChange[parseInt(ta,10)].text_name;
+        */
+        return fdnTexts[fdn].full_name;
     }
 });
 
-dxAngularM.filter('cantonOptionSelected', function() {
+dxAngularM.filter('fdnOptionSelected', function() {
     return function(selectedFdn,optionFdn) {
         if(selectedFdn==undefined) return false;
         return selectedFdn.substr(0,optionFdn.length)==optionFdn;
