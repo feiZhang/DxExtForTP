@@ -20,12 +20,12 @@ if(!file_exists(APP_PATH."/www")) mkdir(APP_PATH."/www");
 copy(DXINFO_PATH."/doc/install/.htaccess",APP_PATH."/www/.htaccess");
 copy(DXINFO_PATH."/doc/install/database.inc.php",APP_PATH."/database.inc.php");
 
-@mkdir(APP_PATH."/Public");
-@mkdir(APP_PATH."/Public/css");
-@mkdir(APP_PATH."/Public/image");
-@mkdir(APP_PATH."/Public/js");
-copy(DXINFO_PATH."/doc/install/default.css",APP_PATH."/Public/css/default.css");
-copy(DXINFO_PATH."/doc/install/dataope_ext.js",APP_PATH."/Public/js/dataope_ext.js");
+@mkdir(APP_PATH."/www/Public");
+@mkdir(APP_PATH."/www/Public/css");
+@mkdir(APP_PATH."/www/Public/image");
+@mkdir(APP_PATH."/www/Public/js");
+copy(DXINFO_PATH."/doc/install/default.css",APP_PATH."/www/Public/css/default.css");
+copy(DXINFO_PATH."/doc/install/dataope_ext.js",APP_PATH."/www/Public/js/dataope_ext.js");
 
 @mkdir(APP_PATH."/".APP_NAME."/Conf");
 copy(DXINFO_PATH."/doc/install/debug.php",APP_PATH."/".APP_NAME."/Conf/debug.php");
