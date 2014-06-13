@@ -152,9 +152,6 @@
                             }
                         }
                     });
-                    if($.browser.msie && ($.browser.version=="6.0")){
-                        max     = max - 20;
-                    }
                     gridOption.height   = max-7;
                 }
             }

@@ -15,12 +15,12 @@ $groupBasePath      = "/".substr($_SERVER["SCRIPT_NAME"],0,-14);
 
 return array(
     'headerCss' => array(
+        //$groupBasePath."/public/bootstrap/css/bootstrap-theme.css",
         $groupBasePath."/public/bootstrap/css/bootstrap.css",
-        $groupBasePath."/public/bootstrap/css/bootstrap-theme.css",
        	$groupBasePath."/basic/css/default.css",
     ),
     'headerJs' => array(
-        $groupBasePath."/public/Jquery/jquery-1.8.2.js",
+        $groupBasePath."/public/Jquery/jquery-1.11.1.js",
         $groupBasePath."/public/date.js",
         $groupBasePath."/public/bootstrap/js/bootstrap.js",
         $groupBasePath."/basic/js/selectselectselect.js"

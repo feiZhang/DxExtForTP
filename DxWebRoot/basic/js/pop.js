@@ -14,27 +14,27 @@
  * artdialog对iframe的支持不好，但可同时弹出多个框，用于信息展示较好。用于操作页面不方便，因为操作后需自动关闭弹出框，不知道关闭的是哪个弹出框
  */
 (function($){
-	$(function(){
-		var x=$("[pop='pop'],[pop='view']").live('click',function(event){
-			var o			= $(this);
-			var pop_href	= o.attr('href');			
-			var pop_title	= o.attr('title') || "提示";
-			var pop_width	= o.attr('width') || "auto";
-			var pop_height	= o.attr('height') || "auto";
-		    if(pop_href.indexOf("?")>0) pop_href = pop_href + "&haveHeaderMenu=false";
+    $(function(){
+        var x=$("[pop='pop'],[pop='view']").on('click',function(event){
+            var o           = $(this);
+            var pop_href    = o.attr('href');           
+            var pop_title   = o.attr('title') || "提示";
+            var pop_width   = o.attr('width') || "auto";
+            var pop_height  = o.attr('height') || "auto";
+            if(pop_href.indexOf("?")>0) pop_href = pop_href + "&haveHeaderMenu=false";
             else pop_href = pop_href + "?haveHeaderMenu=false"
-			$.dialog.open(pop_href + "&haveHeaderMenu=false",{"beforeunload":pop_callback,"title":pop_title,"width":pop_width,"height":pop_height})
-			//阻止链接跳转页面，而执行pop函数
-			event.preventDefault();
-		});
-		var pop_callback=function(){
-			//如果本页定义函数refresh_list 则调用本页函数，否则刷新页面
-			try {
-				if (typeof (eval(refresh_list)) == "function") {
-					refresh_list();
-				}
-			} catch (e) {
-			}
-		}
-	});
+            $.dialog.open(pop_href + "&haveHeaderMenu=false",{"beforeunload":pop_callback,"title":pop_title,"width":pop_width,"height":pop_height})
+            //阻止链接跳转页面，而执行pop函数
+            event.preventDefault();
+        });
+        var pop_callback=function(){
+            //如果本页定义函数refresh_list 则调用本页函数，否则刷新页面
+            try {
+                if (typeof (eval(refresh_list)) == "function") {
+                    refresh_list();
+                }
+            } catch (e) {
+            }
+        }
+    });
 })(jQuery);
