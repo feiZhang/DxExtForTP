@@ -21,6 +21,7 @@ return array(
     ),
     'headerJs' => array(
         $groupBasePath."/public/Jquery/jquery-1.11.1.js",
+        $groupBasePath."/public/Jquery/jquery-migrate-1.2.1.js",
         $groupBasePath."/public/date.js",
         $groupBasePath."/public/bootstrap/js/bootstrap.js",
         $groupBasePath."/basic/js/selectselectselect.js"
