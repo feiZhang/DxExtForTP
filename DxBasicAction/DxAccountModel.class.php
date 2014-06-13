@@ -1,6 +1,6 @@
 <?php
 class DxAccountModel extends DxExtCommonModel{
-    public $listFields = array (
+    protected $listFields = array (
             "account_id"     => array('title'=>'操作','width'=>150, 'pk'=>true,'hide'=>06,'renderer'    => "var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){
                                     var v   = '<a class=\"btn btn-xs btn-success\" href=\"javascript:dataOpeEdit( { \'id\':' + value + '});\">修改</a>';
                                     v   += ' <a class=\"btn btn-xs btn-danger\" href=\"javascript:dataOpeDelete( { \'id\':' + value + '});\">删除</a>';
@@ -35,7 +35,7 @@ class DxAccountModel extends DxExtCommonModel{
     );
 
     protected $modelInfo=array(
-        "dictTable"=>"true_name","enablePage"=>false,
+        "dictTable"=>"account_id,true_name","enablePage"=>false,
         "title"=>'系统账号','readOnly'=>false,"helpInfo"=>"",
         'searchHTML'=>"
                 <span class='add-on'>登录名:</span>
