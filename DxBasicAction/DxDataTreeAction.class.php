@@ -7,7 +7,10 @@ class DxDataTreeAction extends DataOpeAction {
 
     public function index(){
         $this->assign('dx_data_list', DXINFO_PATH."/DxTpl/data_list.html");
-        $this->display("data_list");
+        $dataListHtml = $this->fetch("data_list");
+        echo $this->display("Public:header");
+        echo $this->display("Public:menu");
+        echo $dataListHtml.$this->display("Public:footer");
     }
 
     /** 通过ajax提交删除请求 **/

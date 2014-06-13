@@ -4,8 +4,8 @@
 </script>
 <form id="itemAddForm">
     <table>
-		<?php
-		foreach($listFields as $field){
+        <?php
+        foreach($listFields as $field){
             printf("<tr style='display:%s'>",$field["hide"]?"none":"");
             printf("<td align='right'>%s:</td>",$field["title"]);
             switch($field["type"]){
@@ -21,8 +21,8 @@
                 break;
             }
             printf("<td>%s</td>",$fieldInput);
-            echo "</tr>";            
-        } 
-		?>
+            echo "</tr>";
+        }
+        ?>
     </table>
 </form>

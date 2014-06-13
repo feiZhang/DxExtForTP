@@ -174,7 +174,7 @@ class DataOpeAction extends DxExtCommonAction{
                 $tempT  = $this->fetch($templateFile);
             file_put_contents($tempFile, $tempT);
         }
-        $this->display($tempFile);
+        return $this->fetch($tempFile);
     }
     public function setDxTplCacheDisable(){
         $this->disableDxTplCache = true;
@@ -203,7 +203,13 @@ class DataOpeAction extends DxExtCommonAction{
         }
 
         $this->assign('dx_data_list', DXINFO_PATH."/DxTpl/data_list.html");
-        $this->dxDisplay("data_list");
+        $dataListHtml = $this->dxDisplay("data_list");
+
+        echo $this->display("Public:header");
+        if($this->haveHeaderMenu){
+            echo $this->display("Public:menu");
+        }
+        echo $dataListHtml.$this->display("Public:footer");
     }
     protected function getModelInfo(){
         $model = $this->model;
@@ -274,17 +280,26 @@ class DataOpeAction extends DxExtCommonAction{
         $this->assign('dx_data_edit', DXINFO_PATH."/DxTpl/data_edit.html");
 
         if($pkId>0){
-            $this->dxDisplay("Public:data_edit","edit");
+            $dataListHtml = $this->dxDisplay("Public:data_edit","edit");
         }else{
-            $this->dxDisplay("Public:data_edit");
+            $dataListHtml = $this->dxDisplay("Public:data_edit");
         }
+
+        if(array_key_exists("haveHeader",$_REQUEST)){
+            echo $this->display("Public:header");
+        }
+        if(array_key_exists("haveHeaderMenu",$_REQUEST)){
+            echo $this->display("Public:menu");
+        }
+        echo $dataListHtml;
+        if(array_key_exists("haveHeader",$_REQUEST)) $this->display("Public:footer");
     }
 
     /**
      * 数据展示页面
      * */
     public function view(){
-        $this->dxDisplay("Public:data_view");
+        echo $this->dxDisplay("Public:data_view");
     }
 
     /**

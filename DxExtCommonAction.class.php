@@ -11,6 +11,7 @@ class DxExtCommonAction extends Action {
     protected $model            = null;
     protected $theModelName     = "";
     private $cacheActionList    = array();  //系统action的缓存，对应menu表
+    protected $haveHeaderMenu   = true;
 
     function __construct() {
         parent::__construct();
@@ -19,8 +20,10 @@ class DxExtCommonAction extends Action {
 
         if($_REQUEST["haveHeaderMenu"]=="false" || C("HAVE_HEADER_MENU")==false){
             $this->assign("haveHeaderMenu",false);
+            $this->haveHeaderMenu = false;
         }else{
             $this->assign("haveHeaderMenu",true);
+            $this->haveHeaderMenu = true;
         }
     }
 
