@@ -292,11 +292,18 @@ class DxExtCommonModel extends Model {
         return $field;
     }
     // 通过key改变model的listFields属性
-    public function setListField($key, $v) {
+    public function setListField($key, $v, $start=0) {
+        $field = array();
         if(empty($this->listFields [$key]))
-            $this->listFields [$key] = $v;
+            $field = array($key=>$v);
         else
-            $this->listFields [$key] = array_merge ( $this->listFields [$key], $v );
+            $field = array($key=>array_merge ( $this->listFields [$key], $v ));
+        if($start==0){
+            $this->listFields[$key] = $field[$key];
+        }else{
+            $field[$key]["name"] = $key;
+            array_splice($this->listFields,intval($start),0,$field);
+        }
     }
     //新增一个字段
     public function addListField($field) {
@@ -465,9 +472,10 @@ class DxExtCommonModel extends Model {
         return $this->findToInfo($vo,$listFields);
     }
     public function findToInfo($vo,$listFields=""){
-        if(empty($listFields)) $listFields = $this->getEditFields();
+        if(empty($listFields)) $listFields = $this->getListFields();
         //将set、enum数据进行转换，为了显示具体的数据。。
         foreach($listFields as $field){
+            if(!array_key_exists($field["name"],$vo)) continue;
             if($field["type"]=="date"){
                 if(substr($vo[$field["name"]],0,10)=="0000-00-00") $vo[$field["name"]] = "";
             }else if(!empty($field["valChange"]) && empty($field["textTo"])){
