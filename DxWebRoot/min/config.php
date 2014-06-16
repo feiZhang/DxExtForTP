@@ -70,9 +70,10 @@ $min_cachePath = '/tmp';
  * If /min/ is directly inside your document root, just uncomment the 
  * second line. The third line might work on some Apache servers.
  */
-//$min_documentRoot = "";
-$min_documentRoot 	= $_SERVER["DOCUMENT_ROOT"]; 
+$min_documentRoot = '';
+//$min_documentRoot = substr(__FILE__, 0, -15);
 //$min_documentRoot = $_SERVER['SUBDOMAIN_DOCUMENT_ROOT'];
+
 
 /**
  * Cache file locking. Set to false if filesystem is NFS. On at least one 
@@ -102,6 +103,12 @@ $min_serveOptions['bubbleCssImports'] = false;
  * querystring, maxAge will be set to one year. E.g. /min/f=hello.css&123456
  */
 $min_serveOptions['maxAge'] = 1800;
+
+
+/**
+ * To use CSSmin (Túbal Martín's port of the YUI CSS compressor), uncomment the following line:
+ */
+//$min_serveOptions['minifiers']['text/css'] = array('Minify_CSSmin', 'minify');
 
 
 /**

@@ -24,7 +24,7 @@
  */
 class Minify {
     
-    const VERSION = '2.1.5';
+    const VERSION = '2.2.0';
     const TYPE_CSS = 'text/css';
     const TYPE_HTML = 'text/html';
     // there is some debate over the ideal JS Content-Type, but this is the
@@ -441,7 +441,7 @@ class Minify {
     /**
      * Set up sources to use Minify_Lines
      *
-     * @param array $sources Minify_Source instances
+     * @param Minify_Source[] $sources Minify_Source instances
      */
     protected static function _setupDebug($sources)
     {
@@ -458,6 +458,8 @@ class Minify {
      * Combines sources and minifies the result.
      *
      * @return string
+     *
+     * @throws Exception
      */
     protected static function _combineMinify()
     {
@@ -563,7 +565,7 @@ class Minify {
     {
         $name = preg_replace('/[^a-zA-Z0-9\\.=_,]/', '', self::$_controller->selectionId);
         $name = preg_replace('/\\.+/', '.', $name);
-        $name = substr($name, 0, 200 - 34 - strlen($prefix));
+        $name = substr($name, 0, 100 - 34 - strlen($prefix));
         $md5 = md5(serialize(array(
             Minify_Source::getDigest(self::$_controller->sources)
             ,self::$_options['minifiers'] 
