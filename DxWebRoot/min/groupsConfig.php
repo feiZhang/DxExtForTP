@@ -17,7 +17,7 @@ return array(
     'headerCss' => array(
         //$groupBasePath."/public/bootstrap/css/bootstrap-theme.css",
         $groupBasePath."/public/bootstrap/css/bootstrap.css",
-       	$groupBasePath."/basic/css/default.css",
+        $groupBasePath."/basic/css/default.css",
     ),
     'headerJs' => array(
         $groupBasePath."/public/Jquery/jquery-1.11.1.js",

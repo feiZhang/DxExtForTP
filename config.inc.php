@@ -53,7 +53,8 @@ return array (
     'URL_ROUTER_ON' => true,
     'URL_ROUTE_RULES' => array ( // 正则模式下，不能使用 /xx/xx/xx/xx传递GET参数，会强制引入分组概念，导致action对应不上
         "/(\w+)\/edit\/(\d+)/" => ":1/add?id=:2",
-        "/(\w+)\/delete\/(\d+)/" => ":1/delete?id=:2"
+        "/(\w+)\/delete\/(\d+)/" => ":1/delete?id=:2",
+        "/Public\/showSysMsg\/(\d+)/" => "Public/showSysMsg?id=:1",
     ),
 
     'tags' => array (
