@@ -15,6 +15,7 @@ class DxAccountModel extends DxExtCommonModel{
             "dept_fdn"       => array('title'=>'部门','hide'=>00,'type'=>'selectselectselect',
                                         'fdn'=>array("pkid_name"=>"dept_id"),
                                         'valChange'=>array("model"=>"Dept"),"default"=>"00001."),
+            "duty_id"        => array('title'=>'职务','hide'=>00,'display_none'=>00,"valChange"=>array("model"=>"Duty")),
             "login_pwd"      => array('title'=>'登录密码','hide'=>01,'type'=>'password'),
             "true_name"      => array('title'=>'真实姓名','width'=>80),
             "tel"            => array('title'=>'联系电话','width'=>80),
@@ -23,7 +24,7 @@ class DxAccountModel extends DxExtCommonModel{
             "shorcut_ids"    => array('title'=>'快捷操作','hide'=>07),
             "desk_ids"       => array('title'=>'桌面操作','hide'=>07),
             "menu_ids"       => array('title'=>'菜单','hide'=>077777),
-            "status"         => array('title'=>"状态","width"=>30,'type'=>'enum','default'=>1,'valChange'=>array('1'=>'正常','0'=>'未验证',2=>'禁用'),'COMMENT'=> '1.正常 0:未验证 -1:已删除 2:禁用'),
+            "status"         => array('title'=>"状态","width"=>50,'type'=>'enum','default'=>1,'valChange'=>array('1'=>'正常','0'=>'未验证',2=>'禁用'),'COMMENT'=> '1.正常 0:未验证 -1:已删除 2:禁用'),
             "creater_user_id" => array('title'=>'创建人',"hide"=>06,"width"=>80,"valChange"=>array("model"=>"Account")),
             "create_time"    => array('title'=>'创建时间','type'=>'date','hide'=>06),
     );

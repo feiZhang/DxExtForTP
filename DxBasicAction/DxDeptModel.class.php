@@ -20,12 +20,13 @@ class DxDeptModel extends DxExtCommonModel {
             $p_info = $this->where($map)->field('fdn,full_name')->find();//父fdn
             $data["fdn"] = $fdn = sprintf('%s%05d.',$p_info['fdn'],$data[$this->getPk()]);
             $full_name = sprintf('%s%s',$p_info['full_name'],$data['name']);
-        }else {
-            $data["fdn"] = $p_fdn= "";
+        }else{
+            $data["fdn"] = $fdn = sprintf('%05d.',$data[$this->getPk()]);
             $full_name = $data['name'];
         }
 
         $this->where(array($this->getPk() => $data[$this->getPk()]))->save(array('fdn'=>$fdn,'full_name'=>$full_name));
+        fb::log($data);
         parent::_after_insert($data,$option);
         return $data;
     }
@@ -48,12 +49,12 @@ class DxDeptModel extends DxExtCommonModel {
      * @param int $canton_id
      * @return  array $canton_list
      */
-    public function getChildCanton($canton_id=""){
-        if(empty($canton_id)){
-            $canton_id = session('canton_id');
+    public function getChildCanton($parent_id=""){
+        if(empty($parent_id)){
+            $parent_id = 0;
         }
-        $canton_list = $this->where(array('parent_id'=>$canton_id))->field('id,fdn,name')->select();
-        return $canton_list ;
+        $data_list = $this->where(array('parent_id'=>$parent_id))->field($this->getPk().',fdn,name')->select();
+        return $data_list ;
     }
 }
 

@@ -198,5 +198,11 @@ class DxPublicAction extends DxExtCommonAction {
             $this->success('注销成功!');
         }
     }
+
+    public function showSysMsg(){
+        $msg = D("SysMessage")->where(intval($_REQUEST["id"]))->getInfo();
+        $this->assign("msg",$msg);
+        $this->display();
+    }
 }
 
