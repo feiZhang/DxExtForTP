@@ -8,7 +8,7 @@ class DxFunction{
     /**
      * 获取一个当前日期
      * */
-    function getMySqlNow(){
+    static function getMySqlNow(){
         return date("Y-m-d H:i:s");
     }
     

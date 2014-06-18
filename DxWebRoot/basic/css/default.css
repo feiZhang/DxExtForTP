@@ -71,4 +71,8 @@ td.d-main table.table-bordered td.text-right{
   direction: ltr;
   cursor: pointer;
 }
-
+/* bootstrap 导航栏焦点的颜色修正 */
+.nav > li > a:focus {
+    background-color: #D9EDF7;
+    text-decoration: none;
+}

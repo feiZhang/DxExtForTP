@@ -130,7 +130,10 @@ CREATE TABLE IF NOT EXISTS `account` (
 DROP TABLE IF EXISTS `data_change_log`;
 CREATE TABLE IF NOT EXISTS `data_change_log` (
   `dcl_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `model_name` varchar(63) NOT NULL COMMENT '模块名称',
+  `model_name` varchar(63) NOT NULL COMMENT '模型名称',
+  `model_name_cn` varchar(63) NOT NULL COMMENT '模型中文名称',
+  `module_name` varchar(63) NOT NULL COMMENT '模块名称',
+  `action_name` varchar(63) NOT NULL COMMENT '操作名称',
   `event` varchar(8) NOT NULL COMMENT '事件：insert、update、delete',
   `options` varchar(1024) NOT NULL COMMENT '操作的选项',
   `options_ser` varchar(1024) NOT NULL COMMENT 'options的序列化值',
@@ -190,4 +193,25 @@ CREATE TABLE IF NOT EXISTS `share_file` (
   PRIMARY KEY (`sf_id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='上传文件记录表';
 
+-- 系统公告
+DROP TABLE IF EXISTS `sys_message`;
+CREATE TABLE `sys_message` (
+  `sm_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `title` varchar(200) NOT NULL DEFAULT '',
+  `content` varchar(6000) NOT NULL DEFAULT '',
+  `creater_user_id` int(10) unsigned NOT NULL DEFAULT '0',
+  `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `update_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `user_deleted` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`sm_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+-- 职务
+DROP TABLE IF EXISTS `duty`;
+CREATE TABLE `duty` (
+  `duty_id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) NOT NULL DEFAULT '',
+  `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `creater_user_id` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`duty_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

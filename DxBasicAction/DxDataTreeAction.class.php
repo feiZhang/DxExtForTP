@@ -9,7 +9,9 @@ class DxDataTreeAction extends DataOpeAction {
         $this->assign('dx_data_list', DXINFO_PATH."/DxTpl/data_list.html");
         $dataListHtml = $this->fetch("data_list");
         echo $this->display("Public:header");
-        echo $this->display("Public:menu");
+        if($this->haveHeaderMenu){
+            echo $this->display("Public:menu");
+        }
         echo $dataListHtml.$this->display("Public:footer");
     }
 

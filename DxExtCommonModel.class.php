@@ -764,9 +764,9 @@ class DxExtCommonModel extends Model {
         if(in_array($this->getModelName(),C("NO_SAVE_DATA_CHANGE"))) return;
         $m  = D("DataChangeLog");
         if($m){
-            $m->add(array("model_name"=>$this->getModelName(),"module_name"=>MODULE_NAME,"action_name"=>ACTION_NAME,
+            $m->add(array("model_name_cn"=>$this->getModelInfo("title"),"model_name"=>$this->getModelName(),"module_name"=>MODULE_NAME,"action_name"=>ACTION_NAME,
                 'options'=>var_export($options,true),'options_ser'=>serialize($options),'data'=>var_export($data,true),'data_ser'=>serialize($data),
-                "event"=>$event,'user_id'=>$_SESSION[C('USER_AUTH_KEY')],'user_name'=>$_SESSION[C('LOGIN_USER_NICK_NAME')]));
+                "event"=>$event,'creater_user_id'=>$_SESSION[C('USER_AUTH_KEY')],'creater_user_name'=>$_SESSION[C('LOGIN_USER_NICK_NAME')]));
         }
     }
     /**

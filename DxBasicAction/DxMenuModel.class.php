@@ -15,6 +15,12 @@ class DxMenuModel extends  DxExtCommonModel{
         "desktop_url"  => array('type'=>'varchar','size'=>31, 'default' =>'','comment'=>'桌面菜单URL'),
         "other_info"   => array('type'=> 'varchar','size'=>127,'default' =>'','comment'=>'附加信息')
     );
+
+    protected $modelInfo=array(
+        "title"=>'用户菜单','readOnly'=>true,"enablePage"=>false,"order"=>"order_no",
+        "dictTable"=>"menu_id,menu_name","helpInfo"=>""
+    );
+
     public function getDongTaiMenu(){
         return $this->where(array("type"=>array('in',"menu,sub_menu"),$this->getPk()=>array('in',D("Role")->getMenuID())))->order("click_times desc,order_no asc")->select();
     }

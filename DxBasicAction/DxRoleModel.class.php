@@ -1,16 +1,19 @@
 <?php
 class DxRoleModel extends DxExtCommonModel {
     public $listFields = array(
-        'role_id'    =>array('type'=>'int','size'=>10 ,'default' =>'0'),
-        'name'       =>array('type'=>'varchar','size'=>45 ,'title'=>'角色名'),
-        'menu_ids'   =>array('type'=>'varchar','size'=>1000,'title'=>'菜单ID'),
-        'shortcut_ids'=>array('type'=>'varchar','size'=>1000,'title'=> '快捷方式ids'),
-        'desk_ids'   =>array('type'=>'varchar','size'=>1000,'title'=>'桌面菜单ids'),
+        'role_id'    =>array('title'=>'操作','hide'=>06,'width'=>80 ,'default' =>'0','renderer'    => "var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){
+                                    var v   = '<a class=\"btn btn-xs btn-success\" href=\"javascript:dataOpeEdit( { \'id\':' + value + '});\">修改</a>';
+                                    return v;
+                                }"),
+        'name'       =>array('type'=>'string','width'=>80 ,'title'=>'角色名'),
+        'menu_ids'   =>array('type'=>'set','width'=>600,'title'=>'操作列表','valChange'=>array("model"=>"Menu")),
+        'shortcut_ids'=>array('type'=>'string','width'=>1000,'title'=> '快捷方式ids','hide'=>07777),
+        'desk_ids'   =>array('type'=>'string','width'=>1000,'title'=>'桌面菜单ids','hide'=>07777),
     );
 
     protected $modelInfo=array(
         "title"=>'用户角色','readOnly'=>true,"enablePage"=>false,
-        "dictTable"=>"name","helpInfo"=>"用户角色由系统初始化，无法进行增删!" 
+        "dictTable"=>"role_id,name","helpInfo"=>"用户角色由系统初始化，无法进行增删!"
     );
 
     public function getMenuID(){
