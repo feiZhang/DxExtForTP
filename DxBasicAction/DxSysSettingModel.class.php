@@ -3,7 +3,7 @@ class DxSysSettingModel extends DxExtCommonModel {
     protected $listFields = array (
         "name" => array ('title'=>'参数','frozen'=>true,'readOnly'=>06,"hide"=>07),
         "memo" => array('title' => '参数说明',"width"=>"400",'readOnly'=>06,),
-        "val"  => array ('title' => '参数值','width'=>"300",),
+        "val"  => array ('title' => '参数值','width'=>"8000",),
         "type" => array ('title' => '类型','hide'=>0767),
         "set_id" => array("pk"=>true,'title'=>'操作',"hide"=>22,
             'renderer'  => "var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){

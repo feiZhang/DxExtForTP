@@ -441,6 +441,9 @@ class DxExtCommonModel extends Model {
      * 1.请勿将where条件写在  函数的参数中，请使用where进行where参数传递
      * 2.Model在select后，进行update或者delete操作，需要恢复table值，否则操作失败
      */
+    public function setViewTableName($sql){
+        $this->viewTableName = $sql;
+    }
     public function find($options = array()) {
         if(!empty($this->viewTableName)){
             //$orgTableName    = $options["table"];

@@ -16,3 +16,4 @@ class DxWidget extends Widget {
         return str_replace("__DXPUBLIC__", C("DX_PUBLIC"), $content);
 	}
 }
+
