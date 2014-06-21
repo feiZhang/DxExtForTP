@@ -37,7 +37,8 @@ class DxAccountModel extends DxExtCommonModel{
 
     protected $modelInfo=array(
         "dictTable"=>"account_id,true_name","enablePage"=>false,
-        "title"=>'系统账号','readOnly'=>false,"helpInfo"=>"<div class='alert alert-warning'></div>",
+        "title"=>'系统账号','readOnly'=>false,
+       // "helpInfo"=>"<div class='alert alert-warning'></div>",
         'searchHTML'=>"
                 <span class='add-on'>登录名:</span>
                 <input size='5' placeholder='登录名' type='text' class='z_input' name='%login_username%' id='login_username' value=''/>

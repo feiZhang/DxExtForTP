@@ -209,7 +209,8 @@ class DataOpeAction extends DxExtCommonAction{
         if($this->haveHeaderMenu){
             echo $this->display("Public:menu");
         }
-        echo $dataListHtml.$this->display("Public:footer");
+        echo $dataListHtml;
+        echo $this->display("Public:footer");
     }
     protected function getModelInfo(){
         $model = $this->model;

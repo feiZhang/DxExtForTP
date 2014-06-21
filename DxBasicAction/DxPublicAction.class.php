@@ -28,7 +28,7 @@ class DxPublicAction extends DxExtCommonAction {
         $main_url   = session("main_url");
         $redirect_uri = session("redirect_uri");
         if(!empty($redirect_uri)){
-            session("redirect_uri","");
+            session("redirect_uri",null);
             redirect($redirect_uri);
         }else if(!empty($main_url)){
             redirect($main_url);
@@ -157,6 +157,11 @@ class DxPublicAction extends DxExtCommonAction {
                 $authInfo["save_account"]   = authcode(substr(session_id(),0,10).mt_rand(10000,99999).time(), 'ENCODE');
                 cookie("account",$authInfo["save_account"]);
             }
+            $Account->where(array("account_id"=>$authInfo["account_id"]))->save(array(
+                "active_time"=>DxFunction::getMySqlNow(),
+                "login_time"=>DxFunction::getMySqlNow(),
+                "session_id"=>session_id(),
+            ));
             $this->setSession($authInfo);
 
             return array("state"=>true,"msg"=>'欢迎['.$authInfo["true_name"].']登录本系统！');

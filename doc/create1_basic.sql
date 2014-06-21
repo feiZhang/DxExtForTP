@@ -118,6 +118,7 @@ CREATE TABLE IF NOT EXISTS `account` (
   `main_url` varchar(100) NOT NULL DEFAULT '' COMMENT '登陆后转向的url',
   `status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '根据实际情况确定:1=>正常,0=>未验证,2=>禁用',
   `user_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1:删除',
+  `session_id` varchar(100) NOT NULL DEFAULT '' COMMENT '',
   `creater_user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建人',
   `create_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '创建时间',
   `login_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '登录时间',
