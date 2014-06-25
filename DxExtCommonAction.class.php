@@ -14,9 +14,10 @@ class DxExtCommonAction extends Action {
     protected $haveHeaderMenu   = true;
 
     function __construct() {
-        parent::__construct();
         if(empty($this->model)) $this->model  = D($this->getModelName());
         else $this->theModelName    = $this->model->name;
+        if(empty($this->model)) $this->model = M();
+        parent::__construct();
 
         if($_REQUEST["haveHeaderMenu"]=="false" || C("HAVE_HEADER_MENU")==false){
             $this->assign("haveHeaderMenu",false);
@@ -41,6 +42,13 @@ class DxExtCommonAction extends Action {
             if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
                 //为了不验证公共方法，比如：public、web等，所以将session验证放在里面。
                 if(0 == intval(session(C("USER_AUTH_KEY")))) {
+                    if(MODULE_NAME!="Home"){
+                        $curUrl = ($_SERVER["HTTPS"]=="on"?"https://":"http://").$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
+                        if(C("INDEX_IFRAME")){
+                            $curUrl = __ROOT__."/?showURL=".urlencode($curUrl);
+                        }
+                        session("redirect_uri",$curUrl);
+                    }
                     redirect(C("LOGIN_URL"),0,"");
                 }
                 //判断用户是否有当前动作操作权限

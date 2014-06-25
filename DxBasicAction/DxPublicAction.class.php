@@ -29,12 +29,14 @@ class DxPublicAction extends DxExtCommonAction {
         $redirect_uri = session("redirect_uri");
         if(!empty($redirect_uri)){
             session("redirect_uri",null);
-            redirect($redirect_uri);
+            $url = $redirect_uri;
         }else if(!empty($main_url)){
-            redirect($main_url);
+            $url = $main_url;
         }else{
-            redirect(__ROOT__."/");
+            $url = __ROOT__."/";
         }
+
+        redirect($url);
     }
     public function index() {
         if($this->checkSaveAccount()){

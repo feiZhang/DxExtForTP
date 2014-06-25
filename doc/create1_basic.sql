@@ -123,6 +123,7 @@ CREATE TABLE IF NOT EXISTS `account` (
   `create_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '创建时间',
   `login_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '登录时间',
   `active_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '激活时间',
+  `is_logout` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否已经被要求退出',
   PRIMARY KEY (`account_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='系统用户表';
 
