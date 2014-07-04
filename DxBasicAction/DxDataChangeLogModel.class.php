@@ -1,10 +1,10 @@
 <?php
 class DxDataChangeLogModel extends  DxExtCommonModel{
     public $listFields = array (
-        "model_name_cn"    => array ('title'=>'操作对象','type'=>'string'),
-        'event'         => array ('type' =>'string','width'=>80,'title'=>"操作类型"),
-        "module_name"   => array ('title'=>'模块','type'=>'string','hide'=>07777),
-        "action_name"        => array ('title'=>'Action','type'=>'string','renderer' => "var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){
+        "model_name_cn" => array ('title'=>'操作对象','type'=>'string'),
+        'event'         => array ('type' =>'string','width'=>80,'title'=>"操作类型","valChange"=>array("insert"=>"新增","update"=>"更新","delete"=>"删除")),
+        "module_name"   => array ('title'=>'模块','type'=>'string','hide'=>07767),
+        "action_name"   => array ('title'=>'用户操作','type'=>'string','renderer' => "var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){
                     var v  = record['module_name']+'/' + value + '';
                     return v;
                 }",'width'=>180,

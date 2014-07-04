@@ -30,7 +30,9 @@ class DxExtCommonAction extends Action {
 
     function _initialize() {
         $url    =   C("LOGIN_URL");
-        if($url[0]!="/" || substr($url,0,4)!="http") C("LOGIN_URL",U($url));
+        if($url[0]!="/" || substr($url,0,4)!="http"){
+            C("LOGIN_URL",U($url));
+        }
 
         fb::log($_REQUEST);
         $this->cacheActionList  = DxFunction::getModuleActionForMe();
@@ -45,10 +47,14 @@ class DxExtCommonAction extends Action {
                     if(MODULE_NAME!="Home"){
                         $curUrl = ($_SERVER["HTTPS"]=="on"?"https://":"http://").$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"];
                         if(C("INDEX_IFRAME")){
-                            $curUrl = __ROOT__."/?showURL=".urlencode($curUrl);
+                            if(ACTION_NAME=='online'){
+                                $curUrl = __ROOT__;
+                            }else{
+                                $curUrl = __ROOT__."/?showURL=".urlencode($curUrl);
+                            }
                         }
-                        session("redirect_uri",$curUrl);
                     }
+                    session("redirect_uri",$curUrl);
                     redirect(C("LOGIN_URL"),0,"");
                 }
                 //判断用户是否有当前动作操作权限
@@ -293,8 +299,12 @@ class DxExtCommonAction extends Action {
 
         $thisModule = empty($module_name)?MODULE_NAME:$module_name;
         $thisAction = empty($action_name)?ACTION_NAME:$action_name;
-        //dump($thisModule);dump($thisAction);
-        //dump($cacheAction["myAction"]);dump($cacheAction["allAction"][$thisModule][$thisAction]);
+        /*
+        dump($thisModule);dump($thisAction);
+        dump($cacheAction["myAction"]);
+        dump($cacheAction["allAction"]);
+        dump($cacheAction["allAction"][$thisModule][$thisAction]);
+         */
         if(empty($cacheAction["myAction"][$thisModule][$thisAction])){
             if(empty($cacheAction["allAction"][$thisModule][$thisAction])){
                 return true;    //未定义的Action，默认都有权限操作
@@ -317,6 +327,7 @@ class DxExtCommonAction extends Action {
      * 初始操作，无论是否权限验证是否通过，都存储，再权限验证后，更新操作的验证信息。
      */
     public function writeActionLog($moduleName="",$actionName=""){
+        if(in_array($moduleName."-".$actionName,C("NOT_OPERATION_LOG"))) return;
         $model = D('OperationLog');
         $model->ip          = get_client_ip()."_".$_SERVER["REMOTE_ADDR"];
         $model->action      = empty($actionName)?ACTION_NAME:$actionName;

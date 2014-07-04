@@ -6,10 +6,10 @@ class DxSysMessageModel extends DxExtCommonModel{
                                     v   += ' <a class=\"btn btn-xs btn-danger\" href=\"javascript:dataOpeDelete( { \'id\':' + value + '});\">删除</a>';
                                     return v;
                                 }"),
-            "title" => array('title'=>'标题',"width"=>160),
-            "content"        => array('title'=>'内容','type'=>'text','width'=>8000),
+            "title" => array('title'=>'标题',"width"=>260),
+            "content" => array('title'=>'内容','type'=>'text','width'=>8000),
             "creater_user_id" => array('title'=>'创建人',"hide"=>06,"width"=>80,"valChange"=>array("model"=>"Account")),
-            "create_time"    => array('title'=>'创建时间','type'=>'date','hide'=>06),
+            "create_time" => array('title'=>'创建时间','type'=>'date','hide'=>06),
     );
     protected $_validate = array(
         array('title','require','标题不能为空!'),

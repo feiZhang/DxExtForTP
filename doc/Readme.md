@@ -70,7 +70,8 @@ date: 2013-11-21 14:34:23
             'field_name' => 'create_userid',
             'auto_type' => 1,
             'type' => 0,
-            'session_field' => "_id" 
+            'session_field' => "_id" ,
+            'operator' => 'eq'
         )
     )
 
@@ -78,17 +79,19 @@ DP_POWER_FIELDS:TP的配置字段，数组形式，每个配置项作为数组�
 
 field_name：_auto要自动填充的数据库字段名
 
-auto_type：TP的 _auto 类型，1:INSERT 2:UPDATE 3:BOTH，但是在配置文件中不能使用Model常量，所以只能用 1、2、3
+auto_type：TP的 _auto 类型，1:INSERT 2:UPDATE 3:BOTH，但是在配置文件中不能使用Model常量，所以只能用 1、2、3		0 代表不自动填充。
 
 type：DxExtCommonMode增加3个常量，3个类型都会增加到 _auto 中
 
-- const DP_TYPE_ENABLE = 1;//数据权限控制字段，不仅增加到 _auto 中，同时作为 SELECT 注入的字段
-- const DP_TYPE_PUBLIC = 2;//数据权限控制，不仅增加到 _auto 中，同时作为 SELECT 注入的字段，数据的此字段等于1，则此数据所有人都可查看到，比如：全系统共享的公司手册
+- const DP_TYPE_ENABLE = 1;//数据权限控制字段，作为 SELECT 注入的字段
+- const DP_TYPE_PUBLIC = 2;//数据权限控制，作为 SELECT 注入的字段，数据的此字段等于1，则此数据所有人都可查看到，比如：全系统共享的公司手册
 - const DP_TYPE_STATIC_AUTO = 4;	//\_auto的静态设定，自动填充，不使用Session值，而是用 auto_type 配置固定值，比如：同步状态要求，新增时全为1，更新时全为4
 
 session_field：填充字段的session下标，留空则使用 field_name 为下标
 
 operator：对于自动填充无效，用户数据过滤时，确定过滤的方法，默认为“like”，可选“eq”
+
+注意：使用viewTableName的时候，要进行权限控制的字段必须写在listFields中，因为这时候的字段与dbFields不同。
 
 ### 数据权限控制 ###
 效果：

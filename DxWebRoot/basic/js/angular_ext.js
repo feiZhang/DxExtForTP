@@ -23,6 +23,13 @@ dxAngularM.controller("dataEditCtrl",function($scope,$http,$rootScope){
         if(val.type == "canton"){
             recordDataFields[key].fdnChange = cantonFdnTree;
             recordDataFields[key].valChange = cantonIdValChange;
+        }else if(val.type=="editer"){
+            var tUM = UM.getEditor('editer_' + val.name, {
+                    /* 传入配置参数,可配参数列表看umeditor.config.js */
+                    toolbar: ['undo redo | bold italic underline']
+                });
+                console.log($("script#editer_" + val.name));
+            $("script#editer_" + val.name).data("UM",tUM);
         }
     });
     $scope.dataFields = recordDataFields;
@@ -61,7 +68,7 @@ dxAngularM.controller("dataEditCtrl",function($scope,$http,$rootScope){
         onValidationComplete:formSubmitComplete
     });
 
-    $scope.selectselectselectChange = function(selectInput,selectedFdn,fieldFdnAngVal,fieldFdnIdAngVal=""){
+    $scope.selectselectselectChange = function(selectInput,selectedFdn,fieldFdnAngVal,fieldFdnIdAngVal){
         if(selectedFdn!=undefined && selectedFdn!=null && selectedFdn!=0){
             eval("$scope." + fieldFdnAngVal + "= selectedFdn;");
             if(fieldFdnIdAngVal!=undefined && fieldFdnIdAngVal!=null && fieldFdnIdAngVal!=""){

@@ -31,15 +31,16 @@ class DataOpeAction extends DxExtCommonAction{
         }
         if($start<0) $start = 0;
 
-        $where          = array_merge($this->defaultWhere,$this->_search());
+        $where          = array_merge($model->getDefaultWhere(),$this->defaultWhere,$this->_search());
         //使用Model连贯操作时，每一个连贯操作，都会往Model对象中赋值，如果嵌套使用Model的连贯操作，会覆盖掉原来已经存在的值，导致bug。
         if(isset($_REQUEST['export']) && !empty($_REQUEST['export'])){
             $data_list  = $model->where($where)->field($fieldsStr)->order($model->getModelInfo("order"))->select();
         }else{
             if($enablePage){
-               $data_list  = $model->where($where)->field($fieldsStr)->limit( $start.",".$pageSize )->order($model->getModelInfo("order"))->select();
-            }else
+                $data_list  = $model->where($where)->field($fieldsStr)->limit( $start.",".$pageSize )->order($model->getModelInfo("order"))->select();
+            }else{
                 $data_list  = $model->where($where)->field($fieldsStr)->order($model->getModelInfo("order"))->select();
+            }
         }
         fb::log(MODULE_NAME."get_datalist:".$model->getLastSQL());
         //无数据时data_list = null,此时返回的数据，grid不会更新rows，这导致，再删除最后一条数据时，grid无法删除前端的最后一样。
@@ -106,12 +107,12 @@ class DataOpeAction extends DxExtCommonAction{
         if($customHeader===null){
             $customHeader   = $this->model->getModelInfo("gridHeader");
         }
-        
+
         if(empty($exportname)){
             $exportname="export";
         }
         $exportname=DxFunction::get_filename_bybrowser($exportname);
-        
+
         //dump($fields_list);dump($data);die();
         //导出excel
         header("Pragma: no-cache");

@@ -47,7 +47,8 @@ return array(
         $groupBasePath."/public/sigma_grid/gt_grid.css",
         $groupBasePath."/public/sigma_grid/skin/default/skinstyle.css",
         $groupBasePath."/basic/css/sigma_grid.css",
-        $groupBasePath."/public/validate/css/validationEngine.jquery.css"
+        $groupBasePath."/public/validate/css/validationEngine.jquery.css",
+        $groupBasePath."/public/umeditor1_2_2-utf8-php/themes/default/css/umeditor.css"
         ),
     'dataListJs'    => array(
         $groupBasePath."/public/sigma_grid/gt_msg_cn.js",
@@ -56,7 +57,7 @@ return array(
         $groupBasePath."/public/validate/js/jquery.validationEngine.js",
         $groupBasePath."/public/validate/js/languages/jquery.validationEngine-zh_CN.js",
         $groupBasePath."/basic/js/validate.js",
-        ),
+    ),
     'dataEditJs'    => array(
         $groupBasePath."/public/validate/js/jquery.validationEngine.js",
         $groupBasePath."/public/validate/js/languages/jquery.validationEngine-zh_CN.js",
@@ -67,5 +68,5 @@ return array(
         $groupBasePath."/public/jquery-upload-file/js/jquery.fileupload-fp.js",
         $groupBasePath."/public/jquery-upload-file/js/jquery.fileupload-ui.js",
         $groupBasePath."/public/json2.js",
-        )
+    ),
 );

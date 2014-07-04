@@ -30,7 +30,9 @@ class DxExtCommonModel extends Model {
     //数据权限相关
     public $skipDataPowerCheck  = false;    //关闭数据权限域控制。
     protected $viewTableName    = "";
+    protected $defaultWhere     = array();
     private $viewTableIsSelect  = false;
+    protected $DP_POWER_FIELDS  = array();
 
     protected $fullTextState    = 0;        //Model追加的fulltext数据的状态,一般在model的_before_insert  _before_update中改变此属性
     /* 将所有的数据库字段，全初始化为数据列表字段，默认使用数据库字段名 */
@@ -87,8 +89,9 @@ class DxExtCommonModel extends Model {
         // dump($this->getDbFields());die();
         $dbFields       = $this->getDbFields();
         $tDpFields      = C('DP_POWER_FIELDS');
+        $tDpFields      = array_merge($tDpFields,$this->DP_POWER_FIELDS);
         if(isset($tDpFields) && is_array($tDpFields)){
-            foreach(C('DP_POWER_FIELDS') as $dp_fields){
+            foreach($tDpFields as $dp_fields){
                 if(intval($dp_fields["auto_type"])<1) continue; //不自动填充数据
                 $field_name = $dp_fields["field_name"];
                 $session_field_name = array_key_exists("session_field", $dp_fields)?$dp_fields["session_field"]:$field_name;
@@ -441,6 +444,9 @@ class DxExtCommonModel extends Model {
      * 1.请勿将where条件写在  函数的参数中，请使用where进行where参数传递
      * 2.Model在select后，进行update或者delete操作，需要恢复table值，否则操作失败
      */
+    public function getDefaultWhere(){
+        return $this->defaultWhere;
+    }
     public function setViewTableName($sql){
         $this->viewTableName = $sql;
     }
@@ -464,8 +470,9 @@ class DxExtCommonModel extends Model {
             $res  = parent::select($options);
             $this->viewTableIsSelect = false;
             //$options["table"]   = $orgTableName;
-        }else
+        }else{
             $res  = parent::select($options);
+        }
         return $res;
     }
 
@@ -588,8 +595,11 @@ class DxExtCommonModel extends Model {
                 }
             }
         }
-        
-        if(is_array(C('DP_POWER_FIELDS')) && sizeof(C('DP_POWER_FIELDS'))>0 && (!array_key_exists("DP_ADMIN", $_SESSION) || !$_SESSION["DP_ADMIN"])){        //为了提高代码执行效率
+
+        $tDpFields = C('DP_POWER_FIELDS');
+        $tDpFields      = array_merge($tDpFields,$this->DP_POWER_FIELDS);
+        //dump($this->getModelName());dump($tDpFields);
+        if(is_array($tDpFields) && sizeof($tDpFields)>0 && (!array_key_exists("DP_ADMIN", $_SESSION) || !$_SESSION["DP_ADMIN"])){        //为了提高代码执行效率
             //某些模块不需要进行数据域验证，比如：登录；；管理员也不受此限制
             if(!DxFunction::checkNotAuth(C('DP_NOT_CHECK_ACTION'))){
                 //方法一、是将表名直接转换为一个SQL子语句。。。这个要处理UPDATE太麻烦。
@@ -603,16 +613,17 @@ class DxExtCommonModel extends Model {
                 //              }
                 //方法二、将所有的where追加一些条件。难点是要判断where的类型：string、array、object
                 //              print_r($dp_fields);
-                foreach(C('DP_POWER_FIELDS') as $dp_fields){
+                foreach($tDpFields as $dp_fields){
                     $dataPowerOneW      = array();
                     $field_name         = $dp_fields["field_name"];
                     //如果没有定义session的名称，则使用字段名称。
                     if(array_key_exists("session_field", $dp_fields)) $session_field_name = $dp_fields["session_field"];
                     else $session_field_name = $field_name;
-                    //Log::write("field".var_export($dp_fields,true).MODULE_NAME."|".ACTION_NAME."__DP_POWER_FIELDS",Log::INFO);
-                    //Log::write("field".var_export($dbFields,true).MODULE_NAME."|".ACTION_NAME."__DBFIELDs",Log::INFO);
+                    //dump(7777);
+                    //dump("field".var_export($dp_fields,true).MODULE_NAME."|".ACTION_NAME."__DP_POWER_FIELDS",Log::INFO);
+                    //dump("field".var_export($dbFields,true).MODULE_NAME."|".ACTION_NAME."__DBFIELDs",Log::INFO);
                     if($dp_fields["type"] & self::DP_TYPE_ENABLE && isset($_SESSION[$session_field_name]) && array_search($field_name,$dbFields,true)){
-                        //Log::write($session_field_name."_field_".var_export($_SESSION,true).MODULE_NAME."|".ACTION_NAME."SESSION",Log::INFO);
+                        //dump($session_field_name."_field_".var_export($_SESSION,true).MODULE_NAME."|".ACTION_NAME."SESSION",Log::INFO);
                         if(is_array($_SESSION[$session_field_name])){
                             foreach($_SESSION[$session_field_name] as $key=>$val){
                                 if(!empty($val)){
@@ -648,25 +659,24 @@ class DxExtCommonModel extends Model {
                 }
             }
         }
-        //dump($this->name);
+        //dump($this->name);dump($dataPowerFieldW);
         //大部分人员，喜欢使用管理员来操作数据，所以删除标记的数据，管理员也不能看到。
         $tempOptionsWhere       = "";
         if(!empty($dataPowerFieldW))
             $tempOptionsWhere       = $this->addOptionsWhere($dataPowerFieldPublic,implode(" AND ",$dataPowerFieldW),"OR");
         $tempOptionsWhere       = $this->addOptionsWhere($tempOptionsWhere,implode(" AND ",$dataPowerFieldDelete),"AND");
-        //dump($options["where"]);
         $options["where"]       = $this->addOptionsWhere($options["where"],$tempOptionsWhere,"AND");
         //dump($dataPowerFieldW);dump($options["where"]);
-        
+
         if(APP_DEBUG) Log::write(var_export($dataPowerFieldDelete,true).$this->name."|".MODULE_NAME."|".ACTION_NAME."dataPowerFieldDelete",Log::INFO);
         if(APP_DEBUG) Log::write(var_export($dataPowerFieldW,true).MODULE_NAME."|".ACTION_NAME."dataPowerFieldW",Log::INFO);
         if(APP_DEBUG) Log::write(var_export($dataPowerFieldPublic,true).MODULE_NAME."|".ACTION_NAME."dataPowerFieldPublic",Log::INFO);
     }
-    
+
     //为Options的Where增加条件。
     public function addOptionsWhere($opWhere,$dataPowerWhere,$type="AND"){
         if(empty($dataPowerWhere)) return $opWhere;
-        
+
         if(!isset($opWhere) || (is_string($opWhere) && trim($opWhere)=="") || (is_array($opWhere) && sizeof($opWhere)==0)){
             $opWhere = $dataPowerWhere;
         }else if(is_string($opWhere)){
@@ -680,7 +690,7 @@ class DxExtCommonModel extends Model {
                 $opWhere        = $where;
             }
         }
-        
+
         return $opWhere;
     }
 

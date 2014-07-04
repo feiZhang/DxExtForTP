@@ -1,7 +1,12 @@
 <?php
 class DxOperationLogModel extends DxExtCommonModel {
+    protected $defaultWhere = array("action_name"=>array("neq",""));
+    protected $DP_POWER_FIELDS = array(
+        array ('field_name' => 'creater_user_id','auto_type' => 0,'type' => 1,'session_field'=>'login_user_id',"operator"=>"eq"),
+    );
     protected $listFields = array (
         "creater_user_name" => array ('title'=>'操作人'),
+        "creater_user_id" => array ('hide'=>07777),
         "create_time" => array ('title'=>'操作时间','width'=>130),
         'ip' => array ('title'=>'操作人IP',"width"=>"130",),
         "action_name" => array ('title'=>'执行的操作',),

@@ -36,7 +36,7 @@ class DxAccountModel extends DxExtCommonModel{
     );
 
     protected $modelInfo=array(
-        "dictTable"=>"account_id,true_name","enablePage"=>false,
+        "dictTable"=>"account_id,true_name","enablePage"=>true,
         "title"=>'系统账号','readOnly'=>false,
        // "helpInfo"=>"<div class='alert alert-warning'></div>",
         'searchHTML'=>"
@@ -50,12 +50,26 @@ class DxAccountModel extends DxExtCommonModel{
     );
 
     protected function _before_update(&$data, $options) {
-        if(array_key_exists("login_pwd",$data)) $data["login_pwd"] = DxFunction::authcode($data["login_pwd"],"ENCODE");
+        $pass = $data["login_pwd"];
+        if(C("LOGIN_MD5")){     //密码验证方式不同。
+            $pass  = md5(trim($pass));
+        }else{
+            $pass  = DxFunction::authcode(trim($pass),"ENCODE");
+        }
+
+        if(array_key_exists("login_pwd",$data)) $data["login_pwd"] = $pass;
         parent::_before_update($data, $options);
         return true;
     }
     protected function _before_insert(&$data, $options) {
-        if(array_key_exists("login_pwd",$data)) $data["login_pwd"] = DxFunction::authcode($data["login_pwd"],"ENCODE");
+        $pass = $data["login_pwd"];
+        if(C("LOGIN_MD5")){     //密码验证方式不同。
+            $pass  = md5(trim($pass));
+        }else{
+            $pass  = DxFunction::authcode(trim($pass),"ENCODE");
+        }
+
+        if(array_key_exists("login_pwd",$data)) $data["login_pwd"] = $pass;
         parent::_before_insert($data, $options);
         return true;
     }

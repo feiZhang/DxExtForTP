@@ -13,7 +13,7 @@
  * */
 class DxPublicAction extends DxExtCommonAction {
     public function resetPass(){
-        //echo DxFunction::authcode("53e6BJS1InaokcldY3xbuyzL3lotrHSA+8AFiafDb6adKlxdwg", 'DECODE');die();
+        echo DxFunction::authcode("2ec9BcQP2uRV5T5U3kGSxYgCvb5xZFMbY3twVkCzH4Ktg3E", 'DECODE');die();
         if(APP_DEBUG){
             if(C("LOGIN_MD5")){     //密码验证方式不同。
                 $inputPass = md5('dxinfo');
@@ -89,7 +89,7 @@ class DxPublicAction extends DxExtCommonAction {
         $cookie_account = cookie("account");
         if(!empty($cookie_account)){
             //保存30天登录信息
-            if(intval(substr(authcode($cookie_account,"DECODE"),15)) > time()-60*24*30){
+            if(intval(substr(DxFunction::authcode($cookie_account,"DECODE"),15)) > time()-60*24*30){
                 $Account    = D('Account');
                 $authInfo   = $Account->where(array("save_account"=>$cookie_account))->select();
                 if(sizeof($authInfo)>1){        //验证码重复
@@ -111,10 +111,10 @@ class DxPublicAction extends DxExtCommonAction {
         //因为后面要使用Session的验证码，但是还需要在用户登陆时，清空原有的Session信息，所有需要变量传递
         $verify = $_SESSION['verify'];
         $_SESSION['verify'] = "";
-        if((C('TEST_USERNAME')=="" || !C("TEST_USERNAME")) && $verify != md5($_REQUEST['seccode'])) {
+        if(C('VERIFY_CODE')==true && (C('TEST_USERNAME')=="" || !C("TEST_USERNAME")) && $verify != md5($_REQUEST['seccode'])) {
             return array("state"=>false,"msg"=>'验证码错误！');
         }
-        
+
         import ( 'ORG.RBAC' );
         /* 前台用户可以使用多方式登陆，后台暂设只能使用login_name登陆 */
         switch($_REQUEST["login_type"]){
@@ -156,7 +156,7 @@ class DxPublicAction extends DxExtCommonAction {
             }
 
             if($_REQUEST["saveMyAccount"]=="save"){
-                $authInfo["save_account"]   = authcode(substr(session_id(),0,10).mt_rand(10000,99999).time(), 'ENCODE');
+                $authInfo["save_account"]   = DxFunction::authcode(substr(session_id(),0,10).mt_rand(10000,99999).time(), 'ENCODE');
                 cookie("account",$authInfo["save_account"]);
             }
             $Account->where(array("account_id"=>$authInfo["account_id"]))->save(array(

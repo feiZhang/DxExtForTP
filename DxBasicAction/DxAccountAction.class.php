@@ -22,6 +22,10 @@ class DxAccountAction extends DataOpeAction {
     }
 
     function resetPassword(){
+        if(session("DP_ADMIN")!=true){
+            $this->ajaxReturn(0,"你没有这个权限!",0);
+            exit;
+        }
         if(intval($_REQUEST["i"])>0){
             $v  = $this->model->where(array($this->model->getPk()=>intval($_REQUEST["i"])))->save(array("login_pwd"=>$_REQUEST['p']));
             if($v)

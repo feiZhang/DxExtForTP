@@ -45,6 +45,10 @@ class DxFieldInput{
 
     static private function createInputHtml($fieldSet){
             switch($fieldSet["type"]){
+            case "editer":
+                $inputRV = sprintf('<script id="editer_%s" name="editer_%s" type="text/plain" style="width:500px;height:200px;">',$fieldSet["name"],$fieldSet["name"]);
+                $inputRV .= '</script>';
+                break;
             case "uploadFile":
                 if(empty($fieldSet['upload']['buttonValue'])) $uploadButtonValue = "新增文件";
                 else $uploadButtonValue = $fieldSet['upload']['buttonValue'];
@@ -237,7 +241,7 @@ class DxFieldInput{
                                             ng-class="isEdit | validClass:isAdd:\'%4$s\':\'%3$s\'" %7$s />',
                         $fieldSet["name"],$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputType,$fieldSet["width"],$validateMsg);
                 }else{
-                    $inputRV = sprintf('<textarea ng-model="dataInfo.%1$s" rows="%2$d" style="width:200px" name="%1$s" id="%1$s" placeholder="%3$s" 
+                    $inputRV = sprintf('<textarea ng-model="dataInfo.%1$s" rows="%2$d" style="width:400px" name="%1$s" id="%1$s" placeholder="%3$s" 
                                                 ng-class="isEdit | validClass:isAdd:\'%5$s\':\'%4$s\'" ng-show="isEdit" %7$s></textarea>',
                         $fieldSet["name"],round(intval($fieldSet["width"])/1000),$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputType,$validateMsg);
                 }

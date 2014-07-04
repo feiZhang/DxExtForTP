@@ -7,6 +7,8 @@ return array (
     'HAVE_HEADER_MENU' => true,
     'DB_BACK_PATH' => '/tmp/',
     'INDEX_IFRAME' => true,         //是否使用iframe进行首页显示
+    'VERIFY_CODE' => true,
+    'NOT_OPERATION_LOG' => array('Account-online','Public-verify'),
 
     //控制data_list的默认是否加载菜单
     'NO_SAVE_DATA_CHANGE' => array('DataChangeLog','Menu','OperationLog'),   //不尽兴data_change记录的Model
@@ -21,7 +23,7 @@ return array (
     ),
     'NOT_AUTH_ACTION' => array ("Public" => 1,"Web" => 1 ), // 无需权限认证的Action
     'REQUIST_AUTH_ACTION' => array (), // 必须权限认证的Action
-    'LOGIN_MD5' => false, // 是否md5加密密码
+    'LOGIN_MD5' => true, // 是否md5加密密码
     'ROOT_CANTON_FDN' => "03520.",
 
     //--偶尔需要变动的
