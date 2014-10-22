@@ -1,6 +1,7 @@
 <?php
 class DxFieldInput{
     static function create($fieldSet){
+        if(empty($fieldSet)) return "";
         // searchPara 将字段转换为查询框的时候，需要附加的字段
         if(!empty($fieldSet["editor"])){
             return $fieldSet["editor"];

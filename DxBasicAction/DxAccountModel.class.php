@@ -16,7 +16,7 @@ class DxAccountModel extends DxExtCommonModel{
                                         'fdn'=>array("pkid_name"=>"dept_id"),
                                         'valChange'=>array("model"=>"Dept"),"default"=>"00001."),
             "duty_id"        => array('title'=>'职务','hide'=>00,'display_none'=>00,"type"=>"enum","valChange"=>array("model"=>"Duty")),
-            "login_pwd"      => array('title'=>'登录密码','hide'=>01,'type'=>'password'),
+            "login_pwd"      => array('title'=>'登录密码','hide'=>05,'type'=>'password'),
             "true_name"      => array('title'=>'真实姓名','width'=>80),
             "tel"            => array('title'=>'联系电话','width'=>80),
             "email"          => array('title'=>'Email','type'=>'email','width'=>120),

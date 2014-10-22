@@ -6,7 +6,11 @@
     <tr>
         <td class="text-right">{$listFields.login_username.title}：</td>
         <td><?php echo DxFunction::createFieldInput($listFields["login_username"]);?></td>
-        <td class="text-right">{$listFields.login_pwd.title}：</td>
+        <td class="text-right">{$listFields.login_pwd.title}
+            <notempty name="listFields.login_pwd.title">
+            ：
+            </notempty>
+        </td>
         <td><?php echo DxFunction::createFieldInput($listFields["login_pwd"]);?></td>
     </tr>
     <tr>

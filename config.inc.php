@@ -8,7 +8,7 @@ return array (
     'DB_BACK_PATH' => '/tmp/',
     'INDEX_IFRAME' => true,         //是否使用iframe进行首页显示
     'VERIFY_CODE' => true,
-    'NOT_OPERATION_LOG' => array('Account-online','Public-verify'),
+    'NOT_OPERATION_LOG' => array('Account-online','Public-verify','Home-main'),
 
     //控制data_list的默认是否加载菜单
     'NO_SAVE_DATA_CHANGE' => array('DataChangeLog','Menu','OperationLog'),   //不尽兴data_change记录的Model

@@ -114,7 +114,8 @@ class DxPublicAction extends DxExtCommonAction {
         if(C('VERIFY_CODE')==true && (C('TEST_USERNAME')=="" || !C("TEST_USERNAME")) && $verify != md5($_REQUEST['seccode'])) {
             return array("state"=>false,"msg"=>'验证码错误！');
         }
-
+        //TP的session函数存在bug，session("name","")，当值为空时，不是设置session而是返回session值。
+        session(null);
         import ( 'ORG.RBAC' );
         /* 前台用户可以使用多方式登陆，后台暂设只能使用login_name登陆 */
         switch($_REQUEST["login_type"]){
@@ -171,6 +172,7 @@ class DxPublicAction extends DxExtCommonAction {
     }
 
     protected function setSession($user){
+        session(null);
         session(C('USER_AUTH_KEY'), $user['account_id']);
         session('login_username', $user['login_username']);
         session('true_name', $user['true_name']);

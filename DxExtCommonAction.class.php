@@ -327,11 +327,15 @@ class DxExtCommonAction extends Action {
      * 初始操作，无论是否权限验证是否通过，都存储，再权限验证后，更新操作的验证信息。
      */
     public function writeActionLog($moduleName="",$actionName=""){
-        if(in_array($moduleName."-".$actionName,C("NOT_OPERATION_LOG"))) return;
+        //过滤不需要保存的日志
+        $actionName = empty($actionName)?ACTION_NAME:$actionName;
+        $moduleName = empty($moduleName)?MODULE_NAME:$moduleName;
+        if(in_array($model->module."-".$model->action,C("NOT_OPERATION_LOG"))) return;
         $model = D('OperationLog');
         $model->ip          = get_client_ip()."_".$_SERVER["REMOTE_ADDR"];
-        $model->action      = empty($actionName)?ACTION_NAME:$actionName;
-        $model->module      = empty($moduleName)?MODULE_NAME:$moduleName;
+        $model->action      = $actionName;
+        $model->module      = $moduleName;
+
         $action_name        = $this->cacheActionList["allAction"][$model->module][$model->action];
 
         //更新菜单的点击次数
