@@ -153,7 +153,8 @@ function dataOpeListDialog(config){
                 theThis.content(html);
 
                 var dxGridList = new $.dxGrid();
-                dxGridList.init({ "gridDiv":"dataListDialog",",loadUrl":"","gridFields":data.gridFields,"datasetFields":data.datasetFields,"parentGridDiv":"dataListConDialog",
+                dxGridList.init({ "gridDiv":"dataListDialog",",loadUrl":"",
+                        "gridFields":data.gridFields,"datasetFields":data.datasetFields,"parentGridDiv":"dataListConDialog",
                         "enablePage":0,"enableExport":0,"enablePrint":0,
                         "customRowAttribute":"",
                         "stripeRows":"","pkId":data.pkId

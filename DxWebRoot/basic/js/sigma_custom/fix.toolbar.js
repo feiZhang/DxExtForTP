@@ -83,7 +83,9 @@ Sigma.GridDefault.printGrid = function()
 {
     var theGrid=this;
     if(this.navigator && this.navigator.pageInfo && this.navigator.pageInfo.totalRowNum && this.navigator.pageInfo.totalRowNum > 500){
-        $.dialog.confirm("要打印的数据为" + this.navigator.pageInfo.totalRowNum + "条，确定要打印！<br \>",function(){printGrid(theGrid)},function(){});
+        $.dialog.confirm("要打印的数据为" + this.navigator.pageInfo.totalRowNum + "条，确定要打印！<br \>",
+                         function(){printGrid(theGrid)},function(){}
+                        );
     }else{
         printGrid(theGrid);
     }
@@ -121,7 +123,9 @@ Sigma.GridDefault.printGrid = function()
                 oneLine = data_list[i];
                 for ( var j in oneLine) {
                     var change = fields[j];
-                    if (null != change.valChange) {
+                    if(oneLine[j] == null || oneLine[j] == 'null'){
+                        tempArray.push("<td></td>");
+                    }else if (null != change.valChange) {
                         var valchange = change.valChange;
                         tempArray.push("<td>" + valchange[oneLine[j]] + "</td>");
                     }else{

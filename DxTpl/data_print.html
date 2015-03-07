@@ -1,0 +1,24 @@
+<table border=0 cellpadding=0 cellspacing=0 style="border-collapse: collapse; table-layout: fixed">
+	<notempty name="customHeader">
+		{$customHeader}
+	<else />
+		<tr height=15 style='height: 15.0pt'>
+			<volist id="vo" name="listFields">
+			<td>{$vo['title']}</td>
+			</volist>
+		</tr>
+	</notempty>
+	<volist id="vo" name="objectData">
+	<tr>
+		<volist id="fld" name="listFields">
+			<notempty name="fld['valChange']">
+				<td class="text">{$fld['valChange'][$vo[$fld['name']]]|htmlspecialchars}</td>
+			<else />
+				<td class="text">{$vo[$fld['name']]|htmlspecialchars}</td>
+			</notempty>
+		</volist>
+	</tr>
+	</volist>
+</table>
+
+
