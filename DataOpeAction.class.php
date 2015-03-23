@@ -148,38 +148,6 @@ class DataOpeAction extends DxExtCommonAction{
         }
     }
     
-    /**
-     * dxDisplay实现二次编译功能。。
-     * @param string $templateFile 模板名称
-     * @param string $cacheType    使用同一个模版文件，但是需要二次编译为不同的缓存。
-     */
-    protected function dxDisplay($templateFile,$cacheType=""){
-        //一个Model可能被两个Module使用，但是显示的界面不同。。:机构管理－》监测指标
-        //一个Module的同一个页面，不同用户显示的界面不同。。:机构管理－》监测指标
-        //相同model的add 和 edit 页面，listFields完全相同，但是显示内容可以不同。
-        if($this->model instanceof DxExtCommModel){
-            $cacheAliaName = "_".$cacheType."_".$this->model->getModelInfoMd5()."_".$this->model->getListFieldsMd5()."_".session('role_id');
-        }else{
-            //PublicAction 没有model
-            $cacheAliaName = "_".$cacheType."_".session('role_id');
-        }
-        //$cacheAliaName .= "_".md5(json_encode($_REQUEST));
-        $tempFile   = TEMP_PATH.'/'.MODULE_NAME.'_'.ACTION_NAME.$cacheAliaName.C('TMPL_TEMPLATE_SUFFIX');
-        if(C("APP_DEBUG") || $this->disableDxTplCache===true || !file_exists($tempFile) ){
-            if(C("TOKEN_ON")){
-                //多次编译会导致生成多个TOKEN
-                C("TOKEN_ON",false);
-                $tempT  = $this->fetch($templateFile);
-                C("TOKEN_ON",true);
-            }else
-                $tempT  = $this->fetch($templateFile);
-            file_put_contents($tempFile, $tempT);
-        }
-        return $this->fetch($tempFile);
-    }
-    public function setDxTplCacheDisable(){
-        $this->disableDxTplCache = true;
-    }
     /* 显示页面内容 **/
     public function index(){
         $model  = $this->model;
