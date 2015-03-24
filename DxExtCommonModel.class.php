@@ -37,7 +37,9 @@ class DxExtCommonModel extends Model {
     protected $fullTextState    = 0;        //Model追加的fulltext数据的状态,一般在model的_before_insert  _before_update中改变此属性
     /* 将所有的数据库字段，全初始化为数据列表字段，默认使用数据库字段名 */
     function initListFields(){
-        if(sizeof($this->listFields) > 0) return;
+        if(sizeof($this->listFields) > 0){
+            return;
+        }
         $dbFields   = $this->getDbFields();
         $listF      = array();
         //dump($dbFields);die();
@@ -119,19 +121,13 @@ class DxExtCommonModel extends Model {
     public function getListFields($reNew=false,$original=false){
         Log::write($this->name."->getListFields",LOG::INFO);
         if($original) return $this->listFields;
-        //调试阶段，可能需要不断改变listFields的值
-        if($reNew || C("APP_DEBUG")){
-            $this->setCacheListFields();
-            return $this->cacheListFields;
+
+        $fieldsMd5 = $this->getListFieldsMd5();
+        if(empty($this->cacheListFields[$fieldsMd5]) || APP_DEBUG){
+            return $this->getCacheListFields($fieldsMd5);
+        }else{
+            return $this->cacheListFields[$fieldsMd5];
         }
-        if(empty($this->cacheListFields)){
-            $this->cacheListFields  = S($cacheFile);
-            //dump($this->cacheDictDatas);
-            if(empty($this->cacheListFields)){
-                $this->setCacheListFields();
-            }
-        }
-        return $this->cacheListFields;
     }
     //获取字段的默认值，在新增数据时，需要
     public function getListFieldDefault(){
@@ -142,24 +138,25 @@ class DxExtCommonModel extends Model {
             }
         }
         return $default;
-    }
+    }    
+
     // 将数据列表Grid要显示的字段，整合为一个字符串，作为SELECT 语句的字段列表
-    public function getListFieldString() {
-        return $this->getFieldsString ( self::HIDE_FIELD_DATA );
+    public function getListFieldString($table_alias="") {
+        return $this->getFieldsString ( self::HIDE_FIELD_DATA,$table_alias );
     }
     // 将要打印的字段，整合为一个字符串，作为SELECT 语句的字段列表
-    public function getPrintFieldString() {
-        return $this->getFieldsString ( self::HIDE_FIELD_PRINT );
+    public function getPrintFieldString($table_alias="") {
+        return $this->getFieldsString ( self::HIDE_FIELD_PRINT,$table_alias );
     }
-    private function getFieldsString($hideState) {
+    private function getFieldsString($hideState,$table_alias="") {
         $r = array ();
         foreach ( $this->getNoHideFields ( $hideState ) as $key => $val ) {
             if (isset ( $val ["field"] ))
-                $r [] = $val ["field"];
+                $r [] = $table_alias.$val ["field"];
             else if (isset ( $val ["name"] ))
-                $r [] = $val ["name"];
+                $r [] = $table_alias.$val ["name"];
             else
-                $r [] = $key;
+                $r [] = $table_alias.$key;
         }
         return implode ( ",", $r );
     }
@@ -169,13 +166,15 @@ class DxExtCommonModel extends Model {
     public function getModelInfoMd5(){
         return md5(json_encode($this->modelInfo));
     }
-    private function setCacheListFields(){
-        $cacheFile = 'dict_cache_'.$this->name."_listFields_".$this->getListFieldsMd5();
+    private function getCacheListFields($fieldsMd5){
+        $cacheFile = 'dict_cache_'.$this->name."_listFields_".$fieldsMd5;
+        $info = S($cacheFile);
+        if(!empty($info) && !APP_DEBUG) return $info;
+
         $tListFields   = array();
         foreach($this->listFields as $key=>$field){
             $tListFields[isset($field["name"])?$field["name"]:$key] = $this->getOneListField($key,$field);
         }
-
         //转换Model的自动验证规则为formValidation形式
         //dump($this->_validate);
         $tempValid  = $this->convertValid($this->_validate);
@@ -187,8 +186,10 @@ class DxExtCommonModel extends Model {
         }
 
         S($cacheFile,$tListFields);
-        $this->cacheListFields  = $tListFields;
+        $this->cacheListFields[$fieldsMd5]  = $tListFields;
+        return $tListFields;
     }
+
     private function getOneListField($key,$field){
         if(!isset($field["name"])) $field["name"]   = $key;
         switch($field["type"]){
@@ -234,6 +235,7 @@ class DxExtCommonModel extends Model {
                 break;
         }
         if(intval($field["width"])<1) $field["width"] = "80";
+        if(intval($field["tdCols"])<1) $field["tdCols"] = 1;
 
         //规整数据的enum字段，默认使用valChange替换，没有valChange字段，则从数据库获取enum的字段定义数据
         if(empty($field["valChange"]) && array_key_exists("type", $field) && ($field["type"]=="enum" || $field["type"]=="set" || $field["type"]=="select")){
@@ -248,10 +250,11 @@ class DxExtCommonModel extends Model {
         }else if(is_array($field["valChange"])){
             //将字典表，转换为valChange数据
             if(isset($field["valChange"]["model"])){
-                if($this->name==$field["valChange"]["model"])
+                if($this->name==$field["valChange"]["model"]){
                     $m    = $this;
-                else
+                }else{
                     $m    = D($field["valChange"]["model"]);
+                }
                 $tValC  = $m->getCacheDictTableData();
             }else if(array_key_exists("sql",$field["valChange"])){
                 //使用SQL获得valChange映射
