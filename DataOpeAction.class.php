@@ -89,21 +89,26 @@ class DataOpeAction extends DxExtCommonAction{
      * @param $fields_list array 要导出的的数据的属性.默认使用model->getExportFields().<br/>
      * 格式说明array('field'=>array('name'=>"field", 'title'=>"Tittle in list"));
      * @param $subject string 标题.
+     * @param $otherInfo array  除数据外的其他信息，比如月份。
      * @return */
-    protected function export($data, $type="xls", $fields_list=null, $subject=null,$customHeader=null){
+    protected function export($data, $type="xls", $fields_list=null, $subject=null,$customHeader=null,$otherInfo=array(),$exportname=null){
         $model  = $this->model;
         if(empty($model)) die("model为空!");
 
         if($fields_list===null){
             $fields_list = $model->getExportFields();
         }
+        
         if($subject===null){
             $subject    = $this->model->getModelInfo("title");
-            $exportname = $this->model->getModelInfo("title").".".$type;
         }else{
             $subject    = $subject;
+        }
+
+        if($exportname===null){
             $exportname = $subject.".".$type;
         }
+
         if($customHeader===null){
             $customHeader   = $this->model->getModelInfo("gridHeader");
         }
@@ -121,6 +126,8 @@ class DataOpeAction extends DxExtCommonAction{
         $this->assign("subject",$subject);
         $this->assign("listFields",$fields_list);
         $this->assign('objectData',$data);
+        $this->assign('otherInfo',$otherInfo);
+        
         if(!empty($customHeader)) $this->assign("customHeader",$customHeader);
 
         $this->display("data_export");
@@ -216,9 +223,7 @@ class DataOpeAction extends DxExtCommonAction{
 
     /* 追加数据 **/
     public function add(){
-        //print_r($_REQUEST);die("99");
         $model  = $this->model;
-        // dump($model);die();
         if(empty($model)) die();
 
         //判断是否为修改数据
@@ -231,7 +236,9 @@ class DataOpeAction extends DxExtCommonAction{
         $this->assign( "listFields",$listFields);
         $this->assign ( "modelInfo", $model->getModelInfo());
         $this->assign ( "modelName", $model->getModelName());
-
+        fb::log($listFields);
+        
+        $fieldDefaultVal = $model->getListFieldDefault();
         if($pkId>0){
             //要修改的 数据内容
             $where   = array($model->getPk()=>$pkId);
@@ -241,10 +248,9 @@ class DataOpeAction extends DxExtCommonAction{
             }else{
                 $this->error('要修改的数据不存在!请确认操作是否正确!');
             }
-        }else{
-            $vo = $model->getListFieldDefault();
         }
-        $recordDataInfo = array_merge($vo,$_REQUEST);
+        $recordDataInfo = array_merge($fieldDefaultVal,$vo);
+        $recordDataInfo = array_merge($recordDataInfo,$_REQUEST);
         $this->assign('recordDataInfo', $recordDataInfo);
         //引用于模板继承，使用变量作为模板文件
         $this->assign('dx_data_edit', DXINFO_PATH."/DxTpl/data_edit.html");

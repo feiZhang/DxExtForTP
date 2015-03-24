@@ -124,21 +124,49 @@ class DxExtCommonModel extends Model {
 
         $fieldsMd5 = $this->getListFieldsMd5();
         if(empty($this->cacheListFields[$fieldsMd5]) || APP_DEBUG){
-            return $this->getCacheListFields($fieldsMd5);
+            $listFs = $this->getCacheListFields($fieldsMd5);
         }else{
-            return $this->cacheListFields[$fieldsMd5];
+            $listFs = $this->cacheListFields[$fieldsMd5];
         }
+        return $listFs;
     }
     //获取字段的默认值，在新增数据时，需要
     public function getListFieldDefault(){
         $default = array();
         foreach($this->getListFields() as $name=>$field){
             if(array_key_exists("default",$field)){
-                $default[$name] = $field["default"];
+                $d  = $field['default'];
+                if(is_array($d)){
+                    switch($d["type"]){
+                    case "func":
+                        $func=$d["value"];
+                        if(function_exists($func)){
+                            $field["default"]=call_user_func_array($func, $d["other_info"]);
+                        }
+                        break;
+                    case "session":
+                        $default[$name] = session($d["val"]);
+                        break;
+                    }
+                }else{
+                    $default[$name] = $field["default"];
+                }
+
+                switch($field["type"]){
+                    case "date":
+                        if($field["default"]=="now"){
+                            //date("Y-m-d H:i:s");
+                            $default[$name] = date(str_replace(array("yyyy","MM","dd","HH","mm","ss"),array("Y","m","d","H","i","s"),$field["valFormat"]));
+                        }
+                    break;
+                    case "canton":
+                        if(empty($default[$name])) $default[$name] = C("ROOT_CANTON_FDN");
+                    break;
+                }
             }
         }
         return $default;
-    }    
+    }
 
     // 将数据列表Grid要显示的字段，整合为一个字符串，作为SELECT 语句的字段列表
     public function getListFieldString($table_alias="") {
@@ -194,13 +222,13 @@ class DxExtCommonModel extends Model {
         if(!isset($field["name"])) $field["name"]   = $key;
         switch($field["type"]){
             case "canton":
-                $field["width"] = "180";
-                if(empty($field["default"])) $field["default"] = session("canton_fdn");
-                if(empty($field["default"])) $field["default"] = C("ROOT_CANTON_FDN");
+                if(empty($field["width"])) $field["width"] = "180";
                 $field["valChange"] = "";   //因为canton的valchange内容太多，所以放到页面头部直接载入，每个field中不再体现。
-                $data_change    = $this->getModelInfo("data_change");
-                $data_change[$field["name"]] = "cantonFdnToText";
-                $this->setModelInfo("data_change",$data_change);
+                if(!($field["hide"] & self::HIDE_FIELD_DATA)){
+                    $data_change    = $this->getModelInfo("data_change");
+                    $data_change[$field["name"]] = "cantonFdnToText";
+                    $this->setModelInfo("data_change",$data_change);
+                }
                 break;
             case "selectselectselect":
                 $field["width"] = "180";
@@ -273,27 +301,6 @@ class DxExtCommonModel extends Model {
             }
             if(is_array($tValC)) $field["valChange"] = $tValC;
             else $field["valChange"] = array();
-        }
-
-        if(isset($field["default"])){
-            //设置默认值
-            $d  = $field['default'];
-            if(is_array($d)){
-                if(count($d)>=2){
-                    switch($d[0]){
-                    case "func":
-                        $func=$d[1];
-                        if(function_exists($func)){
-                            $param_arr=$d;
-                            //移除前两个元素
-                            array_shift($param_arr);
-                            array_shift($param_arr);
-                            $field["default"]=call_user_func_array($func, $param_arr);
-                        }
-                        break;
-                    }
-                }
-            }
         }
         return $field;
     }
@@ -602,7 +609,8 @@ class DxExtCommonModel extends Model {
         $tDpFields = C('DP_POWER_FIELDS');
         $tDpFields      = array_merge($tDpFields,$this->DP_POWER_FIELDS);
         //dump($this->getModelName());dump($tDpFields);
-        if(is_array($tDpFields) && sizeof($tDpFields)>0 && (!array_key_exists("DP_ADMIN", $_SESSION) || !$_SESSION["DP_ADMIN"])){        //为了提高代码执行效率
+        if(is_array($tDpFields) && sizeof($tDpFields)>0 && (!array_key_exists("DP_ADMIN", $_SESSION) || !$_SESSION["DP_ADMIN"])){
+            //为了提高代码执行效率
             //某些模块不需要进行数据域验证，比如：登录；；管理员也不受此限制
             if(!DxFunction::checkNotAuth(C('DP_NOT_CHECK_ACTION'))){
                 //方法一、是将表名直接转换为一个SQL子语句。。。这个要处理UPDATE太麻烦。
@@ -711,14 +719,7 @@ class DxExtCommonModel extends Model {
     }
 
     public function getCacheDictTableData(){
-        $userId = intval(session(C("USER_AUTH_KEY")));
-        //如果没有初始化
-        if(empty($this->cacheDictDatas)){
-            $this->cacheDictDatas   = S('dict_cache_'.$this->name."_".$userId."_dict");
-            //dump($this->cacheDictDatas);
-            if(empty($this->cacheDictDatas)) $this->setCacheDictTableData();
-        }
-        return $this->cacheDictDatas;
+        return $this->setCacheDictTableData();
     }
     /**
      * 设置缓存，公共的字典缓存是大家共享的，比如：老人类型，，私有的缓存是各自单独存放，比如职工信息
@@ -727,18 +728,25 @@ class DxExtCommonModel extends Model {
     protected function setCacheDictTableData(){
         if($this->getModelInfo("dictType")=="mySelf") $userId   = intval(session(C("USER_AUTH_KEY")));
         else $userId    = 0;
-        $dictConfig = $this->getModelInfo("dictTable");
+        $cacheFileName = 'dict_cache_'.$this->name."_".$userId."_dict";
+        $this->cacheDictDatas = S($cacheFileName);
+        if(!empty($this->cacheDictDatas) && !APP_DEBUG){
+            return $this->cacheDictDatas;
+        }
 
+        $dictConfig = $this->getModelInfo("dictTable");
         if(!empty($dictConfig)) {
             if(is_array($dictConfig)) $dictConfig   = implode(",",$dictConfig); //兼容老格式
             if(sizeof(explode(",",$dictConfig))<2) $dictConfig  = $this->getPk().",".$dictConfig;   //使用主键作为key
             $tV = $this->field($dictConfig)->select();
+            fb::log($this->getLastSQL());
             if($tV){
                 $this->cacheDictDatas = DxFunction::arrayToArray($tV);
             }
-            return S('dict_cache_'.$this->name."_".$userId."_dict",$this->cacheDictDatas);
+            S($cacheFileName,$this->cacheDictDatas);
+            return $this->cacheDictDatas;
         }
-        return 0;
+        return array();
     }
 
     /**
@@ -1331,14 +1339,12 @@ class DxExtCommonModel extends Model {
         foreach ($this->listFields as $tszFieldName=>$thFieldInfo){
             $thTableFieldInfo    =  $this->fnTableFieldInfo($thFieldInfo);
             if(!empty($thTableFieldInfo)){
-                if(empty($thTableFieldInfo['size'])) $tszSize = "";
-                else $tszSize = sprintf('(%d)',$thTableFieldInfo['size']);
                 if($thFieldInfo['pk']){
                     $thFieldSql[$tszFieldName]    = sprintf('    `%s` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT "%s%s",PRIMARY KEY (`%1$s`)',
                                                             $tszFieldName,$thFieldInfo['title'],$thFieldInfo['note']);
                 }else{
-                    $thFieldSql[$tszFieldName]    = sprintf('    `%s` %s%s NOT NULL DEFAULT "%s" COMMENT "%s%s"',
-                                                            $tszFieldName,$thTableFieldInfo['type'],$tszSize,
+                    $thFieldSql[$tszFieldName]    = sprintf('    `%s` %s NOT NULL DEFAULT "%s" COMMENT "%s%s"',
+                                                            $tszFieldName,$thTableFieldInfo['type'],
                                                             $thFieldInfo['default'],$thFieldInfo['title'],$thFieldInfo['note']);
                 }
             }
@@ -1351,7 +1357,7 @@ class DxExtCommonModel extends Model {
         //$this->query($tszCreateTableSql);
         echo implode("\n",$sql);
     }
-    public function fnTableFieldInfo($thFieldInfo){
+    public function fnTableFieldInfo(&$thFieldInfo){
         if(empty($thFieldInfo) || !is_array($thFieldInfo)){
             return false;
         }else{
@@ -1363,56 +1369,58 @@ class DxExtCommonModel extends Model {
                 //默认情况下按照
                 switch ($thFieldInfo['type']) {
                     case 'canton':
-                        $tszType     = 'VARCHAR';
-                        $tiTsize     = 64;
+                        $tszType     = 'VARCHAR(64)';
                         break;
                     case 'date':
                         $tszType     = 'TIMESTAMP';
-                        if(strlen($thFieldInfo["valFormat"])<11){
-                            if(strpos($thFieldInfo["valFormat"],"yyyy")){
-                                $tszType     = 'date';
-                            }else{
-                                $tszType     = 'time';
-                            }
-                        }
+                        $thFieldInfo["default"] = "0000-00-00 00:00:00";
+                        // if(strlen($thFieldInfo["valFormat"])<11){
+                        //     if(strpos($thFieldInfo["valFormat"],"yyyy")){
+                        //         $tszType     = 'date';
+                        //     }else{
+                        //         $tszType     = 'time';
+                        //     }
+                        // }
                         break;
                     case 'uploadFile':
-                        $tszType     = 'VARCHAR';
                         $tiTsize     = 2048*8;
+                        $tszType     = 'VARCHAR('.$tiTsize.")";
                         break;
                     case 'int':
                         $tiTsize     = ($thFieldInfo['size'])?intval($thFieldInfo['size']):11;
-                        if($tiTsize<4) $tszType = "unsigned TINYINT";
-                        else if($tiTsize<6) $tszType = "unsigned SMALLINT";
-                        else $tszType     = 'unsigned INT';
+                        if($tiTsize<4) $tszType = "TINYINT(".$tiTsize.") unsigned";
+                        else if($tiTsize<6) $tszType = "SMALLINT(".$tiTsize.") unsigned";
+                        else $tszType     = 'INT('.$tiTsize.") unsigned";
+                        $thFieldInfo["default"] = "0";
                         break;
                     case 'select':
                         if(empty($thFieldInfo["multiple"])){
-                            $tszType     = 'unsigned TINYINT';
-                            $tiTsize     = 4;
+                            $tszType     = 'TINYINT(4) unsigned';
+                            $thFieldInfo["default"] = "0";
                         }else{
-                            $tszType     = 'VARCHAR';
-                            $tiTsize     = 128;
+                            $tszType     = 'VARCHAR(128)';
                         }
                         break;
                     case 'set':
-                        $tszType     = 'VARCHAR';
-                        $tiTsize     = 128;
+                        $tszType     = 'VARCHAR(128)';
                         break;
                     case 'enum':
-                        $tszType     = 'unsigned TINYINT';
-                        $tiTsize     = 4;
+                        $tszType     = 'TINYINT(4) unsigned';
+                        $thFieldInfo["default"] = "0";
                         break;
                     case 'string' :
                     case 'password':
                     case "cutPhoto":
                     default:
-                        $tszType    = 'VARCHAR';
-                        $tiTsize    = 256;
+                        if(intval($thFieldInfo["width"])<1000){
+                            $tiTsize    = 128;
+                        }else{
+                            $tiTsize    = 256*8*4;
+                        }
+                        $tszType    = 'VARCHAR('.$tiTsize.")";
                         break;
                 }
                 $thFieldInfo['type'] = $tszType;
-                $thFieldInfo['size'] = $tiTsize;
                 return $thFieldInfo;
         }
     }

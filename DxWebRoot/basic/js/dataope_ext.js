@@ -174,6 +174,16 @@ function dataOpeSearch(formId){
         dxGrid.query("");
     }
 }
+//导出按钮
+function dataOpeExport(formId){
+    var url = "";
+    if(formId!=undefined && formId!=''){
+        url = dxGrid.urladd(URL_URL + "/get_datalist?export=xls",$("#" + formId).serialize());
+    }else{
+        url = URL_URL + "/get_datalist?export=xls";
+    }
+    window.open(url);
+}
 
 function resetPasswd(config){
     $.dialog({

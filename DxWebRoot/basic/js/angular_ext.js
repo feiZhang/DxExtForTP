@@ -28,7 +28,7 @@ dxAngularM.controller("dataEditCtrl",function($scope,$http,$rootScope){
                     /* 传入配置参数,可配参数列表看umeditor.config.js */
                     toolbar: ['undo redo | bold italic underline']
                 });
-                console.log($("script#editer_" + val.name));
+                //console.log($("script#editer_" + val.name));
             $("script#editer_" + val.name).data("UM",tUM);
         }
     });
@@ -85,6 +85,8 @@ dxAngularM.filter('fdnStrToArray', function() {
     return function(fdn) {
         if(fdn==undefined || fdn==null || fdn==0){
             return new Array();
+        }else{
+            fdn = "0." + fdn;
         }
         var ta = fdn.split(".");
         ta.pop();
@@ -104,7 +106,8 @@ dxAngularM.filter('fdnToText', function() {
         ta = ta.pop();
         if(ta==undefined || ta==null || ta==0 || ta=="") return '';
         */
-        return fdnTexts[fdn].full_name;
+        if(fdnTexts[fdn]==undefined) return "";
+        else return fdnTexts[fdn].full_name;
     }
 });
 

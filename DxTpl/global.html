@@ -2,6 +2,7 @@ var cantonFdnTree = new Array();
 var cantonData = {$CantonData};
 var cantonIdValChange = new Array();
 var cantonLength = cantonData.length;
+var fdn;
 //var tempCantonFdn = null;
 for (i=0;i<cantonLength;++i) {
     /*
@@ -12,8 +13,13 @@ for (i=0;i<cantonLength;++i) {
     */
     cantonIdValChange[cantonData[i].pkid] = cantonData[i];
     if (undefined == cantonFdnTree[cantonData[i].parent_id]) {
-        cantonFdnTree[cantonData[i].parent_id] = new Array();
+        if(cantonData[i].parent_id==0){
+            cantonFdnTree[cantonData[i].parent_id] = new Array();
+        }else{
+            //console.log(cantonData[i].parent_id);
+            fdn = cantonIdValChange[cantonData[i].parent_id]['fdn'];
+            cantonFdnTree[cantonData[i].parent_id] = new Array({pkid:0,'parent_id':0,'name':'请选择','full_name':'','fdn':fdn,'canton_id':0});
+        }
     }
     cantonFdnTree[cantonData[i].parent_id].push(cantonData[i]);
 };
-

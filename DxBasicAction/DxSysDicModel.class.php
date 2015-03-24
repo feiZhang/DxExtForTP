@@ -9,7 +9,7 @@ class DxSysDicModel extends DxExtCommonModel {
                                     }",
             ),
         "parent_id" => array("title"=>"父类型","valChange"=>array("model"=>"SysDic"),'hide'=>07777),
-        "type" => array ('title' => '类型','readOnly'=>06,'hide'=>01,'display_none'=>06),
+        "type" => array ('title' => '类型','readOnly'=>04,'hide'=>01,'display_none'=>06),
         "name" => array ('title' => '类别',"width"=>"100"),
         "memo" => array ('title' => '备注',"width"=>"300"),
     );

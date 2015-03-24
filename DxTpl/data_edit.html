@@ -7,7 +7,7 @@
     </eq>
 
     <link href="__DXPUBLIC__/min/g=dataListCss" rel="stylesheet" type="text/css" />
-    <script src="__DXPUBLIC__/public/DatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script src="__DXPUBLIC__/public/WDatePicker/WdatePicker.js" type="text/javascript"></script>
     <script src="__DXPUBLIC__/public/sigma_grid/gt_grid_all.js" type="text/javascript"></script>
 
     <eq name="Think.config.APP_DEBUG" value="true">
@@ -74,24 +74,28 @@ printf("var recordDataFields = %s;",str_replace("{","{ ",json_encode($listFields
 <block name="dataEditFormTable">
     <table class="table table-bordered">
         <?php
-        if(empty($modelInfo["addPageColumnNum"])) $modelInfo["addPageColumnNum"] = 1;
+        if(empty($modelInfo["addPageColumnNum"])) $addPageColumnNum = 1;
+        else $addPageColumnNum = intval($modelInfo["addPageColumnNum"]);
         $fieldSize = sizeof($showFields);$fieldIndex = 0;
         reset($showFields);
         $field = current($showFields);
         while($field!==false){
             $fieldInput="";
             printf("<tr class=\"itemAddTr\">\\n");
-            for($i=$modelInfo["addPageColumnNum"];$i>0;--$i){
+            for($i=$addPageColumnNum;$i>0;--$i){
+                $fieldTdCols = intval($field["tdCols"]);
                 if($fieldIndex<$fieldSize){
                     printf("<td class='text-right'>%s:</td>\\n",$field["title"]);
-                    printf("<td>%s</td>\\n",DxFunction::createFieldInput($field));
+                    printf("<td colspan='%d'>%s</td>\\n",$fieldTdCols,DxFunction::createFieldInput($field));
                     $field = next($showFields);
+                    $fieldTdCols = ($fieldTdCols-1)/2;
                 }else{
                     $field = false;
                     printf("<td class='text-right'></td>\\n");
                     printf("<td></td>\\n");
                 }
                 ++$fieldIndex;
+                $i -= $fieldTdCols;
             }
             echo "</tr>\\n";
         }

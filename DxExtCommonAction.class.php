@@ -150,7 +150,7 @@ class DxExtCommonAction extends Action {
         }
         if(!empty($m) && $m->create()){
             $v = false;
-            //fb::log($_REQUEST,$m);
+            fb::log($_REQUEST);
             if(intval($_REQUEST[$pkId])>0){
                 $v = $m->save();
                 if($v!==false) $v = $_REQUEST[$pkId];

@@ -10,12 +10,13 @@ class DxCantonModel extends DxExtCommonModel {
 
     public function getSelectSelectSelect($fdn){
         $list       = S("Cache_SELECT_SELECT_SELECT_Canton");
-        if(empty($list)){
+        if(empty($list) || APP_DEBUG){
             if(empty($fdn)){
-                $list = $this->field("canton_id pkid,name,parent_id,fdn,full_name")->select();
+                $list = $this->field("canton_id pkid,name,parent_id,fdn,full_name")->order("fdn ASC")->select();
             }else{
-                $list = $this->where(array("fdn",array("like",$fdn."%")))->field("canton_id pkid,name,parent_id,fdn,full_name")->select();
+                $list = $this->where(array("fdn",array("like",$fdn."%")))->field("canton_id pkid,name,parent_id,fdn,full_name")->order("fdn ASC")->select();
             }
+            fb::log($this->getLastSQL());
             foreach($list as $kk=>$ll){
                 $list[$kk]["canton_id"] = intval($ll["canton_id"]);
                 $list[$kk]["parent_id"] = intval($ll["parent_id"]);
