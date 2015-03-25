@@ -223,20 +223,23 @@ class DxExtCommonModel extends Model {
         switch($field["type"]){
             case "canton":
                 if(empty($field["width"])) $field["width"] = "180";
-                $field["valChange"] = "";   //因为canton的valchange内容太多，所以放到页面头部直接载入，每个field中不再体现。
-                if(!($field["hide"] & self::HIDE_FIELD_DATA)){
-                    $data_change    = $this->getModelInfo("data_change");
-                    $data_change[$field["name"]] = "cantonFdnToText";
-                    $this->setModelInfo("data_change",$data_change);
-                }
+                $field["valChange"] = "";   
+                //因为canton的valchange内容太多，所以放到页面头部直接载入，每个field中不再体现。一个表中可能有多个canton字段。
+                // canton字段统一使用textTo属性进行字段值保存，避免展示的时候，进行数据转换。
+                // if(!($field["hide"] & self::HIDE_FIELD_DATA)){
+                //     $data_change    = $this->getModelInfo("data_change");
+                //     $data_change[$field["name"]] = "cantonFdnToText";
+                //     $this->setModelInfo("data_change",$data_change);
+                // }
                 break;
             case "selectselectselect":
                 $field["width"] = "180";
                 if(isset($field["valChange"]["model"])){
-                    if($this->name==$field["valChange"]["model"])
+                    if($this->name==$field["valChange"]["model"]){
                         $m    = $this;
-                    else
+                    }else{
                         $m    = D($field["valChange"]["model"]);
+                    }
 
                     $allDataVal = $m->getSelectSelectSelect();
                     $fdnTreeData = array();

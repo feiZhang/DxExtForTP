@@ -187,6 +187,7 @@ textTo:将某个字典关联字段的id值对应的数据保存到某字段，�
 	
 		字符串:直接做为默认值. 为防止数据出现混乱,默认值在readonly及编辑时不生效.
 		数组:最少两个元素,第一个元素表示值的类型,为func时,第二个值为函数名,之后的数据为函数的参数.如array('func', 'test', 'p1', 'p2'),则调用test('p1', 'p2');
+16. tdCols:字段在新增修改时，占用多少列。
 
 例子：参考Demo程序
 
@@ -211,20 +212,20 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
         6.暂时不再支持使用 createFieldInput 方法，生成查询输入框（两个Canton会互相影响）
         例子(使用bootstrap样式):
             <span class="add-on">老人姓名:</span>
-            <input type="text" class="dataOpeSearch z_input likeRight likeLeft" name="name" id="name" value="" style="width:60px;"/>
+            <input type="text" class="z_input" name="name" id="name" value="" style="width:60px;"/>
             <span class="add-on">
             审核:
-            <input type="radio" class="dataOpeSearch" name="check_state" id="check_state" value="1"/>通过
-            <input type="radio" class="dataOpeSearch" name="check_state" id="check_state" value="2"/>异常
-            <input type="radio" class="dataOpeSearch" name="check_state" id="check_state" value="" checked/>不限
+            <input type="radio" name="check_state" id="check_state" value="1"/>通过
+            <input type="radio" name="check_state" id="check_state" value="2"/>异常
+            <input type="radio" name="check_state" id="check_state" value="" checked/>不限
             </span>
             <span class="add-on">
             年龄从：
-            <input type="text" class="dataOpeSearch" id="egt_age" name="egt_age" value="">到
-            <input type="text" class="dataOpeSearch" id="elt_age" name="elt_age" value="">
+            <input type="text" id="egt_age" name="egt_age" value="">到
+            <input type="text" id="elt_age" name="elt_age" value="">
             </span>
-            <button class="btn" onclick=\'javascript:dataOpeSearch(true);\' type="button" id="allLaoren">查询</button>
-            <button onclick="javascript:dataOpeSearch(false);" class="btn" id="item_query_all">全部数据</button>
+            <button class="btn" onclick=\'javascript:dataOpeSearch("dataListSearch");\' type="button" id="allLaoren">查询</button>
+            <button onclick="javascript:dataOpeSearch("");" class="btn" id="item_query_all">全部数据</button>
 
 7. dictTable:字典表值字段,格式1. dictTable="title"（生成以主键为key，值字段数据为值的 数组) 格式2:dictTable="keyField,keyField,..,valueField");(其中keyField是作为数据关联的字段)   根据这个配置，程序自动将字典表转换为valChange的普通模式，这些数组会被缓存到Runtime得Data目录
 8. dictType:字典表的类型，可以是 "mySelf" 和 公共(默认)。公共的字典缓存是大家共享的，比如：老人类型，私有的缓存是各自单独存放，比如:职工信息,每个养老院添加老人选择护理员时，只选自己的职工

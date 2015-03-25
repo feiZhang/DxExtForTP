@@ -3,7 +3,6 @@
  * 比如：区域选取
  */
 var cantonData          = new Array();
-var cantonDataNoTree    = new Array();
 var cantonInit          = false;
 (function($){
     /**
@@ -13,7 +12,7 @@ var cantonInit          = false;
      }); 
      */
     /**
-     * data {[parent_id:1,canton_id:1,title:"郑州",val:""],[parent_id:1,canton_id:1,title:"郑州",val:""]} json格式的数据信息..
+     * data {[parent_id:1,pkid:1,title:"郑州",val:""],[parent_id:1,pkid:1,title:"郑州",val:""]} json格式的数据信息..
      * cantonDomId          canton数据的dom元素的id
      * defaultKey           默认选择的数据 可以是数组
      * rootKey              树的根ID
@@ -38,11 +37,12 @@ var cantonInit          = false;
                                 cantonData[data[i].parent_id] = new Array();
                             }
                             cantonData[data[i].parent_id].push(data[i]);
-                            cantonDataNoTree[data[i].canton_id] = data[i];
                         };
                     },dataType:'json',async:false});
             }
-            tree    = cantonData;
+            tree = cantonData;
+        }else{
+            tree = data;
         }
 
         var containerDom    = $("#" + containerDomId);
@@ -77,20 +77,19 @@ var cantonInit          = false;
                 }
             });
             
-            if(rootKey!=undefined){
-                if (rootKey!=undefined){
-                    rootKey     = parseInt(rootKey);
-                    if(showRootKey==true){
-                        var t   = new Array();
-                        t.push(cantonDataNoTree[rootKey]);
-                        _this.createSelect(t);
-                    }else{
-                        _this.createSelect(tree[rootKey]);
-                    }
-                }else
-                    _this.createSelect(tree[0]);
-                _this.setDefaultSelect(rootKey);
+            if(rootKey!=undefined && rootKey!=''){
+                rootKey     = parseInt(rootKey);
+                if(showRootKey==true){
+                    var t   = new Array();
+                    t.push(tree[rootKey]);
+                    _this.createSelect(t);
+                }else{
+                    _this.createSelect(tree[rootKey]);
+                }
+            }else{
+                _this.createSelect(tree[0]);
             }
+            _this.setDefaultSelect(defaultKey);
         }
         //选取某个数据后，触发，生成下级选取列表
         _this.select = function(key) {
@@ -103,11 +102,11 @@ var cantonInit          = false;
                 var strHtml = "<div class=\"cantonDiv\" style=\"display:inline\"><select class='autowidth' name='aCanton' type='canton'>";
                 strHtml += "<option value=\"\">请选择</option>";
                 for(i=0;i<dataLength; i++) {
-                    if (undefined != data[i]) {
-                        if (undefined != data[i].val) {
-                            strHtml += "<option key=\"" + data[i].canton_id + "\" value=\""+ data[i].val +"\">" + data[i].title + "</option>";
+                    if (undefined != data[i] && data[i].name!='请选择') {
+                        if (undefined != data[i].fdn) {
+                            strHtml += "<option key=\"" + data[i].pkid + "\" value=\""+ data[i].fdn +"\">" + data[i].name + "</option>";
                         }else{
-                            strHtml += "<option key=\"" + data[i].canton_id + "\" value=\""+ data[i].canton_id +"\">" + data[i].title + "</option>";
+                            strHtml += "<option key=\"" + data[i].pkid + "\" value=\""+ data[i].pkid +"\">" + data[i].name + "</option>";
                         }
                     }
                 }

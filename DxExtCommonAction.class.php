@@ -83,7 +83,7 @@ class DxExtCommonAction extends Action {
         //一个Model可能被两个Module使用，但是显示的界面不同。。:机构管理－》监测指标
         //一个Module的同一个页面，不同用户显示的界面不同。。:机构管理－》监测指标
         //相同model的add 和 edit 页面，listFields完全相同，但是显示内容可以不同。
-        if($this->model instanceof DxExtCommModel){
+        if(method_exists($this->model,"getModelInfoMd5")){
             $cacheAliaName = "_".$cacheType."_".$this->model->getModelInfoMd5()."_".$this->model->getListFieldsMd5()."_".session('role_id');
         }else{
             //PublicAction 没有model
@@ -369,6 +369,7 @@ class DxExtCommonAction extends Action {
         $model->ip          = get_client_ip()."_".$_SERVER["REMOTE_ADDR"];
         $model->action      = $actionName;
         $model->module      = $moduleName;
+        $model->other_info  = $_SERVER['HTTP_USER_AGENT'];
 
         $action_name        = $this->cacheActionList["allAction"][$model->module][$model->action];
 

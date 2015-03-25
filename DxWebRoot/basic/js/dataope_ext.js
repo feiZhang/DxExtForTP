@@ -333,10 +333,11 @@ function formSubmitComplete(form, r){
                 // 最后一个可能为空选
                 var tvvv = $(this).find('option:selected').attr('text_name');
                 if(tvvv!=undefined && tvvv!=""){
-                    $("input" + "#" + toId).val(tvvv);
+                    $("#" + toId).val(tvvv);
                 }
-            }else
+            }else{
                 $("input" + "#" + toId).val($(this).find('option:selected').text());
+            }
         });
 
         //触发savedata事件,用于支持fckeditor保存数据.

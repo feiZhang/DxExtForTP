@@ -190,7 +190,8 @@ class DxBasicAction extends Action {
      */
     public function globalJs(){
         //Canton的缓存数据,用于生成 selectselectselect 
-        $this->assign("CantonData",str_replace("{","{ ",json_encode(D("Canton")->getSelectSelectSelect())));
+        $cantonInfo = D("Canton")->getSelectSelectSelect();
+        $this->assign("CantonData",str_replace("{","{ ",json_encode($cantonInfo)));
         $this->display("global");
     }
 
