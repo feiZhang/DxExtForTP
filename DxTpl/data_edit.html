@@ -42,6 +42,22 @@
         padding: 2px;
 }
 </style>
+<?php
+    //将display_none的分离开，否则display_none都在数组末尾会出现空行。
+    $showFields = array();
+    $hideFields = array();
+    $initValueJs = array();
+    foreach($listFields as $kkk => $vvv){
+        if($vvv["display_none"]){
+            $hideFields[$kkk] = $vvv;
+        }else{
+            $showFields[$kkk] = $vvv;
+        }
+        if(!empty($recordDataInfo[$kkk])){
+            $initValueJs[] = "\$('form#itemAddForm #".$kkk."').val(recordDataInfo.".$kkk.");\n";
+        }
+    }
+?>
 <script>
 <!--
 <literal>
@@ -51,6 +67,12 @@ printf("var recordDataInfo = %s;",str_replace("{","{ ",json_encode($recordDataIn
 printf("var recordDataFields = %s;",str_replace("{","{ ",json_encode($listFields)));
 </php>
 </literal>
+
+$(function(){
+    <?php
+    echo implode("",$initValueJs);
+    ?>
+});
 -->
 </script>
 
@@ -58,19 +80,6 @@ printf("var recordDataFields = %s;",str_replace("{","{ ",json_encode($listFields
 
 <form id="itemAddForm" ng-controller="dataEditCtrl" class="form-inline">
 <input type='text' style="display:none" ng-model='isEdit' value='' id='dataIsEdit' />
-    <?php
-        //将display_none的分离开，否则display_none都在数组末尾会出现空行。
-        $showFields = array();
-        $hideFields = array();
-        foreach($listFields as $kkk => $vvv){
-            if($vvv["display_none"]){
-                $hideFields[$kkk] = $vvv;
-            }else{
-                $showFields[$kkk] = $vvv;
-            }
-        }
-    ?>
-
 <block name="dataEditFormTable">
     <table class="table table-bordered itemAddTable">
         <?php

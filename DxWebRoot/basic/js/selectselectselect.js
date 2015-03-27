@@ -12,6 +12,7 @@ var cantonInit          = false;
      }); 
      */
     /**
+     * containerDom         显示被加到目标dom元素的id
      * data {[parent_id:1,pkid:1,title:"郑州",val:""],[parent_id:1,pkid:1,title:"郑州",val:""]} json格式的数据信息..
      * cantonDomId          canton数据的dom元素的id
      * defaultKey           默认选择的数据 可以是数组
@@ -19,13 +20,12 @@ var cantonInit          = false;
      * selectEven           选择数据后的回调函数
      * completeEven         select构建完成后的回调函数
      */
-    $.selectselectselect = function (data,cantonDomId,defaultKey,rootKey,selectEven,completeEven,showRootKey,toTextName) {
+    $.selectselectselect = function (containerDom,data,cantonDomId,defaultKey,rootKey,selectEven,completeEven,showRootKey,toTextName) {
         if(typeof this !== 'object'){
             //强制进行new操作
-            return new $.selectselectselect(data,cantonDomId,defaultKey,rootKey,selectEven,completeEven,showRootKey,toTextName);
+            return new $.selectselectselect(containerDom,data,cantonDomId,defaultKey,rootKey,selectEven,completeEven,showRootKey,toTextName);
         }
 
-        var containerDomId  = "selectselectselect_" + cantonDomId; // containerDomId       显示被加到目标dom元素的id
         var tree            = new Array();
         if(data==0 || data==undefined || data=="" || data.length < 1){
             if(cantonInit == false){
@@ -45,9 +45,11 @@ var cantonInit          = false;
             tree = data;
         }
 
-        var containerDom    = $("#" + containerDomId);
         var _this           = this;
-        $("input#"+cantonDomId).change(function(){
+        if($(containerDom).find("input#"+cantonDomId).val()!=""){
+            defaultKey = $(containerDom).find("input#"+cantonDomId).val()
+        }
+        $(containerDom).find("input#"+cantonDomId).change(function(){
             _this.setDefaultSelect($(this).val());
         });
         //将data数据重组为多个数组数据
@@ -72,8 +74,8 @@ var cantonInit          = false;
                 if(selectEven!=0 && selectEven!=undefined){
                     selectEven(valSelect);
                 }else{
-                    $("#"+cantonDomId).attr("text",$(valSelect).find("option:selected").attr("key"));
-                    $("#"+cantonDomId).attr("text",$(valSelect).val());
+                    $(containerDom).find("input#"+cantonDomId).attr("text",$(valSelect).find("option:selected").attr("key"));
+                    $(containerDom).find("input#"+cantonDomId).val($(valSelect).val());
                 }
             });
             
@@ -133,7 +135,7 @@ var cantonInit          = false;
 
                 if (defaultKey.constructor == Array) {
                     $.each(defaultKey, function(i, item){
-                        $("#"+containerDomId+" select[type='canton']").each(function(j){
+                        $(containerDom).find("select[type='canton']").each(function(j){
                             var selectItem = $(this).find("option[key='"+parseInt(item,10)+"']");
                             if (null != selectItem.get(0)) {
                                 selectItem.attr("selected", true);
@@ -143,7 +145,7 @@ var cantonInit          = false;
                     });
                 } else if (defaultKey.constructor == Number) {
                     if(defaultKey!=0 && $("select[type='canton']").length>0){
-                        $("#"+containerDomId+" select[type='canton']").each(function(i){
+                        $(containerDom).find("select[type='canton']").each(function(i){
                             $(this).find("option[key='"+defaultKey+"']").attr("selected", true);
                             if($(this).find("option[key='"+defaultKey+"']").length>0)$(this).change();
                         });

@@ -11,12 +11,12 @@ class DxFieldInput{
             $inputRV = "";
             if($fieldSet["readOnly"]!==true){
                 if($fieldSet["type"]=="canton" || $fieldSet["type"]=="selectselectselect"){
-                    $inputRV = DxFieldInput::createInputHtml($fieldSet);
+                    $inputRV = DxFieldInput::createInputHtml($fieldSet,$defaultVal);
                 }else{
-                    $inputRV = DxFieldInput::createInputHtml_Angular($fieldSet);
+                    $inputRV = DxFieldInput::createInputHtml_Angular($fieldSet,$defaultVal);
                 }
             }else if(!empty($defaultVal)){
-                $inputRV = sprintf("<input type='hidden' name='%s' value='%s' />",$fieldSet["name"],$defaultVal);
+                $inputRV = sprintf("<input type='hidden' name='%s' value='' />",$fieldSet["name"]);
             }
 
             //显示视图模式的内容
@@ -51,7 +51,7 @@ class DxFieldInput{
     }
 
     //使用angular生成输入框。
-    static private function createInputHtml_Angular($fieldSet){
+    static private function createInputHtml_Angular($fieldSet,$defaultVal=""){
             switch($fieldSet["type"]){
             case "editer":
                 $inputRV = sprintf('<script id="editer_%s" name="editer_%s" type="text/plain" style="width:500px;height:200px;">',$fieldSet["name"],$fieldSet["name"]);
@@ -262,27 +262,29 @@ class DxFieldInput{
     }
 
     //普通的输入框生成。
-    static public function createInputHtml($fieldSet){
+    static public function createInputHtml($fieldSet,$defaultVal=""){
         if(empty($fieldSet["searchName"])) $fieldSet["searchName"] = $fieldSet["name"];
         switch($fieldSet["type"]){
             case "canton":
             case "selectselectselect":
-                if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo" textTo="%s>',$fieldSet['textTo']);
+                $rootFdnId = $fieldSet["canton"]["rootCantonId"];
+                if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo" textTo="%s',$fieldSet['textTo']);
                 else $inputAddr = "";
-                $inputRV = sprintf('<span id="selectselectselect_%1$s"></span>
-                    <input type="hidden" name="%3$s" id="%1$s" value="" class="autowidth %2$s" />'
-                    ,$fieldSet["name"],$inputAddr,$fieldSet["searchName"]);
-                $rootCantonId = $fieldSet["canton"]["rootCantonId"];
+                $spanIdRandom = "selectselectselect_".mt_rand(1000,9999);
+                $inputRV = sprintf('<span id="%4$s">
+                    <input type="hidden" name="%3$s" id="%1$s" value="" class="autowidth%2$s" />
+                    </span>'
+                    ,$fieldSet["name"],$inputAddr,$fieldSet["searchName"],$spanIdRandom);
                 $inputRV .= sprintf('
                                         <script>
                                         $(function(){
-                                            $.selectselectselect(cantonFdnTree,"%1$s","%2$s","1",function(t){
+                                            $.selectselectselect($("#%4$s"),cantonFdnTree,"%1$s","%2$s","1",function(t){
                                                 $("#%1$s").attr("text",$(t).find("option:selected").attr("key"));
                                                 $("#%1$s").val($(t).val());
                                             },"",false,"%3$s");
                                         });
                                         </script>
-                                    ',$fieldSet["name"],$rootCantonId,$fieldSet["textTo"]);
+                                    ',$fieldSet["name"],$rootFdnId,$fieldSet["textTo"],$spanIdRandom);
                 break;
             case "dialogSelect":
                 /*
