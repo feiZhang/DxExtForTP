@@ -1,6 +1,6 @@
 <?php
 class DxFieldInput{
-    static function create($fieldSet){
+    static function create($fieldSet,$defaultVal=""){
         if(empty($fieldSet)) return "";
         // searchPara 将字段转换为查询框的时候，需要附加的字段
         if(!empty($fieldSet["editor"])){
@@ -10,7 +10,13 @@ class DxFieldInput{
 
             $inputRV = "";
             if($fieldSet["readOnly"]!==true){
-                $inputRV = DxFieldInput::createInputHtml_Angular($fieldSet);
+                if($fieldSet["type"]=="canton" || $fieldSet["type"]=="selectselectselect"){
+                    $inputRV = DxFieldInput::createInputHtml($fieldSet);
+                }else{
+                    $inputRV = DxFieldInput::createInputHtml_Angular($fieldSet);
+                }
+            }else if(!empty($defaultVal)){
+                $inputRV = sprintf("<input type='hidden' name='%s' value='%s' />",$fieldSet["name"],$defaultVal);
             }
 
             //显示视图模式的内容
@@ -257,66 +263,15 @@ class DxFieldInput{
 
     //普通的输入框生成。
     static public function createInputHtml($fieldSet){
-            switch($fieldSet["type"]){
-            case "editer":
-                $inputRV = sprintf('<script id="editer_%s" name="editer_%s" type="text/plain" style="width:500px;height:200px;">',$fieldSet["name"],$fieldSet["name"]);
-                $inputRV .= '</script>';
-                break;
-            case "uploadFile":
-                if(empty($fieldSet['upload']['buttonValue'])) $uploadButtonValue = "新增文件";
-                else $uploadButtonValue = $fieldSet['upload']['buttonValue'];
-                $sysUploadImgType = C("SysSetting.UPLOAD_IMG_FILETYPE")==""?C("UPLOAD_IMG_FILETYPE"):C("SysSetting.UPLOAD_IMG_FILETYPE");
-                $uploadFileType = empty($fieldSet["upload"]["filetype"])?$sysUploadImgType:$fieldSet["upload"]["filetype"];
-                $uploadFileNums = intval($fieldSet["upload"]["maxNum"])<0?1:intval($fieldSet["upload"]["maxNum"]);
-                if($uploadFileNums>1){
-                    $uploadButtonValue .= "最多".$uploadFileNums."个";
-                }
-                //默认文件最大大小为2M
-                $uploadFileMaxSize = empty($fieldSet["upload"]["maxSize"])?1024*1024*2:intval($fieldSet["upload"]["maxSize"]);
-
-                $uploadOption = array(
-                        "acceptFileTypes"=>$uploadFileType,
-                        "maxNumberOfFiles"=>$uploadFileNums,
-                        "maxFileSize"=>$uploadFileMaxSize,
-                        "downLoadBaseUrl"=>C("UPLOAD_BASE_URL"),
-                        );
-
-                $inputRV = sprintf('
-                        <div id="%1$s">
-                        <table class="table table-striped">
-                            <tbody class="files" data-toggle="modal-gallery" data-target="#modal-gallery"></tbody>
-                        </table>
-                        <span ng-show="isEdit" class="btn btn-success fileinput-button">
-                            <i class="icon-plus icon-white"></i>
-                            <span>%2$s</span>
-                            <input type="file" name="files[]" multiple />
-                        </span>
-                        <div class="span4 fileupload-progress">
-                            <div class="fade progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100">
-                                <div class="bar" style="width:0%;"></div>
-                            </div>
-                            <div class="progress-extended">&nbsp;</div>
-                        </div>
-                        <input type="text" alt="uploadFile" ng-hide="true" ng-model="dataInfo.%1$s" name="old_%1$s" id="%1$s" value="" uploadOption=\'%4$s\' />
-                        </div>
-                        ',
-                        $fieldSet["name"],$uploadButtonValue,$uploadFileType,DxFunction::escapeJson($uploadOption));
-                break;
-            case "cutPhoto":
-                $defaultPhoto = C("CUT_PHOTO_DEFAULT_IMG");
-                $inputRV = sprintf('<a href="javascript:if($(\'#dataIsEdit\').val()==\'1\'){showUploadPhoto($(\'img#%1$s\'),$(\'input#%1$s\'));}"> 
-                    <img id="%1$s" src="__APP__/Basic/showImg?f={{dataInfo.%1$s}}" onerror="src=\'__DXPUBLIC__/basic/images/%2$s\'" title="点击编辑相片" alt="点击编辑相片" width="96" height="100" border=0 />
-                    </a> 
-                    <input type="text" ng-hide="true" name="%1$s" value="" id="%1$s"/>
-                    <input type="text" ng-hide="true" name="old_%1$s" ng-model="dataInfo.%1$s" value="" />',
-                    $fieldSet["name"],$defaultPhoto);
-                break;
+        if(empty($fieldSet["searchName"])) $fieldSet["searchName"] = $fieldSet["name"];
+        switch($fieldSet["type"]){
             case "canton":
             case "selectselectselect":
                 if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo" textTo="%s>',$fieldSet['textTo']);
                 else $inputAddr = "";
-                $inputRV = sprintf('<span id="selectselectselect_%1$s"></span><input type="hidden" name="%1$s%%" id="%1$s" value="" class="dataOpeSearch likeRight%2$s" />'
-                    ,$fieldSet["name"],$inputAddr);
+                $inputRV = sprintf('<span id="selectselectselect_%1$s"></span>
+                    <input type="hidden" name="%3$s" id="%1$s" value="" class="autowidth %2$s" />'
+                    ,$fieldSet["name"],$inputAddr,$fieldSet["searchName"]);
                 $rootCantonId = $fieldSet["canton"]["rootCantonId"];
                 $inputRV .= sprintf('
                                         <script>
@@ -324,11 +279,11 @@ class DxFieldInput{
                                             $.selectselectselect(cantonFdnTree,"%1$s","%2$s","1",function(t){
                                                 $("#%1$s").attr("text",$(t).find("option:selected").attr("key"));
                                                 $("#%1$s").val($(t).val());
-                                            });
+                                            },"",false,"%3$s");
                                         });
                                         </script>
-                                    ',$fieldSet["name"],$rootCantonId);
-            break;
+                                    ',$fieldSet["name"],$rootCantonId,$fieldSet["textTo"]);
+                break;
             case "dialogSelect":
                 /*
                 $dialogSelectTemp = sprintf('
@@ -457,7 +412,7 @@ class DxFieldInput{
                         $fieldSet["name"],round(intval($fieldSet["width"])/1000),$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputType,$validateMsg);
                 }
                 break;
-            }
+        }
         return $inputRV;
     }
 }

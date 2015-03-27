@@ -30,7 +30,7 @@ class DxExtCommonAction extends Action {
 
     function _initialize() {
         $url    =   C("LOGIN_URL");
-        if($url[0]!="/" || substr($url,0,4)!="http"){
+        if($url[0]!="/" && substr($url,0,4)!="http"){
             C("LOGIN_URL",U($url));
         }
 
@@ -423,7 +423,7 @@ class DxExtCommonAction extends Action {
         //有些model显示的内容是多表关联，所以不能使用getDbFields
         $dbFields   = $model->getListFields();
         foreach($_REQUEST as $key=>$val){
-            if (strlen($val)<1 && empty($val)) continue;
+            if (empty($val) && strlen($val)<1) continue;
             $fieldAdd   = "";
             if( substr($key,0,4)=="egt_" ){
                 $key        = substr($key,4);

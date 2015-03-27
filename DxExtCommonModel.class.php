@@ -139,13 +139,21 @@ class DxExtCommonModel extends Model {
                 if(is_array($d)){
                     switch($d["type"]){
                     case "func":
-                        $func=$d["value"];
+                        $func = $d["value"];
                         if(function_exists($func)){
-                            $field["default"]=call_user_func_array($func, $d["other_info"]);
+                            $default[$name] = call_user_func_array($func, $d["other_info"]);
+                        }
+                        break;
+                    case "class":
+                        if(class_exists($d["value"]["className"])){
+                            if(method_exists($d["value"]["className"],$d["value"]["methodName"])){
+                                $classObj = new $d["value"]["className"];
+                                $default[$name] = call_user_func_array(array($classObj,$d["value"]["methodName"]), $d["other_info"]);
+                            }
                         }
                         break;
                     case "session":
-                        $default[$name] = session($d["val"]);
+                        $default[$name] = $_SESSION[$d["value"]];
                         break;
                     }
                 }else{
@@ -163,6 +171,10 @@ class DxExtCommonModel extends Model {
                         if(empty($default[$name])) $default[$name] = C("ROOT_CANTON_FDN");
                     break;
                 }
+            }
+            //将valChange转换为字符数据。
+            if(array_key_exists("valChange", $field) && !empty($default[$name])){
+                $default[$name."_textTo"] = $field["valChange"][$default[$name]];
             }
         }
         return $default;
@@ -332,14 +344,12 @@ class DxExtCommonModel extends Model {
         foreach($this->getListFields() as $name=>$field){
             //修改和新增时隐藏可以分别定义      新增和修改时的readOnly可以分别定义
             if(!($field["hide"] & self::HIDE_FIELD_ADD) && $pkId==0){
-                if(!isset($field["name"])) $field["name"]   = $name;
                 $f[$field["name"]]  = $field;
-                $f[$field["name"]]["readOnly"]  = (bool)($field["readOnly"] & self::HIDE_FIELD_ADD);
+                $f[$field["name"]]["readOnly"]      = (bool)($field["readOnly"] & self::HIDE_FIELD_ADD);
                 $f[$field["name"]]["display_none"]  = (bool)($field["display_none"] & self::HIDE_FIELD_ADD);
             }else if(!($field["hide"] & self::HIDE_FIELD_EDIT) && $pkId>0){
-                if(!isset($field["name"])) $field["name"]   = $name;
                 $f[$field["name"]]  = $field;
-                $f[$field["name"]]["readOnly"]  = (bool)($field["readOnly"] & self::HIDE_FIELD_EDIT);
+                $f[$field["name"]]["readOnly"]      = (bool)($field["readOnly"] & self::HIDE_FIELD_EDIT);
                 $f[$field["name"]]["display_none"]  = (bool)($field["display_none"] & self::HIDE_FIELD_EDIT);
             }
         }
@@ -729,7 +739,7 @@ class DxExtCommonModel extends Model {
      * 再调用字典表的时候一定要注意，不要调用到getListFields方法，否则如果两个Model相互 valChange 引用，则会导致镶嵌引用，死循环。
      * */
     protected function setCacheDictTableData(){
-        if($this->getModelInfo("dictType")=="mySelf") $userId   = intval(session(C("USER_AUTH_KEY")));
+        if($this->getModelInfo("dictType")=="mySelf") $userId   = intval($_SESSION[C("USER_AUTH_KEY")]);
         else $userId    = 0;
         $cacheFileName = 'dict_cache_'.$this->name."_".$userId."_dict";
         $this->cacheDictDatas = S($cacheFileName);

@@ -29,9 +29,9 @@ function dataOpeEdit(config){
     var data_id = config.id==undefined?0:config.id;
 
     var this_post_url   = URL_URL;
-    if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle=$("#modelInfo_editTitle").val();
-    if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle="修改";
-    if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url  = APP_URL + "/" + moduleName;
+    if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle = $("#modelInfo_editTitle").val();
+    if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle = "修改";
+    if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url = APP_URL + "/" + moduleName;
 
     var saveButton = {
                 id:"ok",
@@ -58,6 +58,10 @@ function dataOpeEdit(config){
                     return false;
                 }
             },saveButton]:[$.extend(saveButton,{disabled:false})];
+
+    if(config.onlyShow==true){
+        showButton = [];
+    }
     var editDialog = $.dialog({
         id:"editObject",
         title:dialogTitle,
@@ -111,6 +115,38 @@ function dataOpeDelete(config){
             _this.button({id: 'ok',disabled: true},{id:'cancel',disabled:true});
 
             $.get(this_post_url+"/delete/"+config.id,function(data){
+                _this.time(2000).title("提示").content(data.info);
+                if(config.reloadPage=="1"){
+                    setInterval(function(){document.location.reload();},2000);
+                }else{
+                    if(data.status){
+                        if(Sigma.GridCache) Sigma.GridCache["theDataOpeGrid"].reload();
+                    }
+                }
+            },"json");
+            return false;
+        },
+        okValue:"确定",
+        cancel:function(){},
+        cancelValue:"取消"
+    });
+}
+function dataOpeSetStatus(config){
+    var this_post_url   = URL_URL;
+    var moduleName = config.moduleName;
+    var msg = config.msg;
+    if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url  = APP_URL + "/" + moduleName;
+    if(msg==undefined) msg="确定要执行此操作?";
+    $.dialog({
+        id:"setStatusDataOpeItem",
+        title:"提醒",
+        lock:true,
+        content:msg,
+        ok:function(){
+            _this   = this;
+            _this.button({id: 'ok',disabled: true},{id:'cancel',disabled:true});
+
+            $.post(this_post_url+"/save",{pkId:config.id,status:config.status},function(data){
                 _this.time(2000).title("提示").content(data.info);
                 if(config.reloadPage=="1"){
                     setInterval(function(){document.location.reload();},2000);
@@ -318,15 +354,16 @@ function _dataope_onCheckChange(obj){
 
 //数据验证后，自动执行此操作。
 function formSubmitComplete(form, r){
+    var formId = $(form).attr("id");
     var submitSuccess = $(form).data("submitSuccess");
     if(r){
         //将textTo的数据赋值
-        $("input.textTo[type='radio']").each(function(){
-            toId  = $(this).attr("textTo");
+        $("#" + formId +" input.textTo[type='radio']").each(function(){
+            toId  = $(this).attr("textto");
             $("input" + "#" + toId).val($(this).attr("text"));
         });
-        $("select.textTo").each(function(){
-            toId  = $(this).attr("textTo");
+        $("#" + formId +" select.textTo").each(function(){
+            toId  = $(this).attr("textto");
             if($(this).val()=="")
                 $("input" + "#" + toId).val("");
             else if($(this).hasClass("fdnSelectSelect")){

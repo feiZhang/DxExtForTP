@@ -72,7 +72,7 @@ printf("var recordDataFields = %s;",str_replace("{","{ ",json_encode($listFields
     ?>
 
 <block name="dataEditFormTable">
-    <table class="table table-bordered">
+    <table class="table table-bordered itemAddTable">
         <?php
         if(empty($modelInfo["addPageColumnNum"])) $addPageColumnNum = 1;
         else $addPageColumnNum = intval($modelInfo["addPageColumnNum"]);
@@ -85,8 +85,8 @@ printf("var recordDataFields = %s;",str_replace("{","{ ",json_encode($listFields
             for($i=$addPageColumnNum;$i>0;--$i){
                 $fieldTdCols = intval($field["tdCols"]);
                 if($fieldIndex<$fieldSize){
-                    printf("<td class='text-right'>%s:</td>\\n",$field["title"]);
-                    printf("<td colspan='%d'>%s</td>\\n",$fieldTdCols,DxFunction::createFieldInput($field));
+                    printf("<td class='text-right itemAddTdLabel'>%s:</td>\\n",$field["title"]);
+                    printf("<td colspan='%d' class='itemAddTdContent'>%s</td>\\n",$fieldTdCols,DxFunction::createFieldInput($field,$recordDataInfo[$field["name"]]));
                     $field = next($showFields);
                     $fieldTdCols = ($fieldTdCols-1)/2;
                 }else{
@@ -106,7 +106,7 @@ printf("var recordDataFields = %s;",str_replace("{","{ ",json_encode($listFields
     <?php
     $display_none_field = "";
     foreach($hideFields as $field){
-        $display_none_field .= DxFunction::createFieldInput($field);
+        $display_none_field .= DxFunction::createFieldInput($field,$recordDataInfo[$field["name"]]);
     }
     echo $display_none_field;
     ?>

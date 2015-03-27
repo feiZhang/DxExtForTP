@@ -361,7 +361,11 @@ class DxFunction{
             $dataList[$kk][$fieldName]  = $canton[$vv[$fieldName]];
         }
     }
-    
+    function myAccountCantonName($cantonFdn){
+        if(empty($cantonFdn)) $cantonFdn = $_SESSION["canton_fdn"];
+        $canton = D("Canton")->getCacheDictTableData();
+        return $canton[$cantonFdn];
+    }
     
             /*
             switch($field["type"]){
@@ -387,10 +391,10 @@ class DxFunction{
             }
              */
     //代码来源于Widget的randFile方法。
-    function createFieldInput($fieldSet){
-        $tplFile = dirname(__FILE__) . "/DxFieldInput.class.php";
-        import($tplFile);
-        return DxFieldInput::create($fieldSet);
+    function createFieldInput($fieldSet,$defaultVal){
+        // $tplFile = dirname(__FILE__) . "/DxFieldInput.class.php";
+        // include_once($tplFile);
+        return DxFieldInput::create($fieldSet,$defaultVal);
     }
 
     /**

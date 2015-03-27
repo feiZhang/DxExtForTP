@@ -101,8 +101,6 @@ class DataOpeAction extends DxExtCommonAction{
         
         if($subject===null){
             $subject    = $this->model->getModelInfo("title");
-        }else{
-            $subject    = $subject;
         }
 
         if($exportname===null){

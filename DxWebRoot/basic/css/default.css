@@ -77,3 +77,15 @@ td.d-main table.table-bordered td.text-right{
     text-decoration: none;
     color:#054B6E;
 }
+
+/* 修改数据界面的样式 */
+table.itemAddTable {
+  max-width: 800px;
+}
+td.itemAddTdLabel {
+  min-width: 80px;
+  max-width: 200px;
+}
+td.itemAddTdContent{
+
+}

@@ -19,10 +19,10 @@ var cantonInit          = false;
      * selectEven           选择数据后的回调函数
      * completeEven         select构建完成后的回调函数
      */
-    $.selectselectselect = function (data,cantonDomId,defaultKey,rootKey,selectEven,completeEven,showRootKey) {
+    $.selectselectselect = function (data,cantonDomId,defaultKey,rootKey,selectEven,completeEven,showRootKey,toTextName) {
         if(typeof this !== 'object'){
             //强制进行new操作
-            return new $.selectselectselect(data,cantonDomId,defaultKey,rootKey,selectEven,completeEven,showRootKey);
+            return new $.selectselectselect(data,cantonDomId,defaultKey,rootKey,selectEven,completeEven,showRootKey,toTextName);
         }
 
         var containerDomId  = "selectselectselect_" + cantonDomId; // containerDomId       显示被加到目标dom元素的id
@@ -99,14 +99,19 @@ var cantonInit          = false;
         _this.createSelect  = function(data){
             if (undefined != data) {
                 var dataLength = data.length;
-                var strHtml = "<div class=\"cantonDiv\" style=\"display:inline\"><select class='autowidth' name='aCanton' type='canton'>";
+                var strHtml = "<div class=\"cantonDiv\" style=\"display:inline\">";
+                strHtml += "<select class='autowidth fdnSelectSelect";
+                if(toTextName!=undefined && toTextName!=""){
+                    strHtml += " textTo";
+                }
+                strHtml += "' name='" + cantonDomId + "_selectselectselect' textTo='" + toTextName + "' type='canton'>";
                 strHtml += "<option value=\"\">请选择</option>";
                 for(i=0;i<dataLength; i++) {
                     if (undefined != data[i] && data[i].name!='请选择') {
                         if (undefined != data[i].fdn) {
-                            strHtml += "<option key=\"" + data[i].pkid + "\" value=\""+ data[i].fdn +"\">" + data[i].name + "</option>";
+                            strHtml += "<option text_name=\"" + data[i].full_name + "\" key=\"" + data[i].pkid + "\" value=\""+ data[i].fdn +"\">" + data[i].name + "</option>";
                         }else{
-                            strHtml += "<option key=\"" + data[i].pkid + "\" value=\""+ data[i].pkid +"\">" + data[i].name + "</option>";
+                            strHtml += "<option text_name=\"" + data[i].full_name + "\" key=\"" + data[i].pkid + "\" value=\""+ data[i].pkid +"\">" + data[i].name + "</option>";
                         }
                     }
                 }
@@ -150,7 +155,7 @@ var cantonInit          = false;
         _this.initData(data,rootKey);
         //对第一个下拉列表选择默认数据。
         if(defaultKey!=undefined) _this.setDefaultSelect(defaultKey);
-        if(completeEven!=undefined){
+        if(completeEven!=undefined && completeEven!=""){
             completeEven();
         }
         return _this;
