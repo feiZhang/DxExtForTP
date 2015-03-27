@@ -10,7 +10,7 @@ class DxFieldInput{
 
             $inputRV = "";
             if($fieldSet["readOnly"]!==true){
-                if($fieldSet["type"]=="canton" || $fieldSet["type"]=="selectselectselect"){
+                if($fieldSet["type"]=="canton" || $fieldSet["type"]=="selectselectselect" || $fieldSet["type"]=="select"){
                     $inputRV = DxFieldInput::createInputHtml($fieldSet,$defaultVal);
                 }else{
                     $inputRV = DxFieldInput::createInputHtml_Angular($fieldSet,$defaultVal);
@@ -32,11 +32,11 @@ class DxFieldInput{
             case "select":
             case "set":
             case "dialogSelect":
-                if(!empty($fieldSet["textTo"]))
-                    $inputRV .= sprintf("<span ng-hide=\"%2\$s\" ng-bind=\"dataInfo.%1\$s\"></span>",$fieldSet["textTo"],$fieldSet["readOnly"]!==true?"isEdit":"");
-                else
-                    $inputRV .= sprintf("<span ng-hide=\"%2\$s\" ng-bind=\"dataInfo.%1\$s_textTo\"></span>",$fieldSet["name"],$fieldSet["readOnly"]!==true?"isEdit":"");
-
+                if(!empty($fieldSet["textTo"])){
+                    $inputRV .= sprintf("<span class=\"fieldShowValue\" id=\"dataInfo.%1\$s\"></span>",$fieldSet["textTo"]);
+                }else{
+                    $inputRV .= sprintf("<span class=\"fieldShowValue\" id=\"dataInfo.%1\$s_textTo\"></span>",$fieldSet["name"]);
+                }
                 break;
             case "password":
                 $inputRV .= sprintf("<span ng-hide=\"%1\$s\">******</span>",$fieldSet["readOnly"]!==true?"isEdit":"");
@@ -265,6 +265,16 @@ class DxFieldInput{
     static public function createInputHtml($fieldSet,$defaultVal=""){
         if(empty($fieldSet["searchName"])) $fieldSet["searchName"] = $fieldSet["name"];
         switch($fieldSet["type"]){
+            case "select":
+                $inputAddr = empty($fieldSet["multiple"])?"\"":"\" multiple";
+                if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo%s textTo="%s">',$inputAddr,$fieldSet['textTo']);
+                $inputRV = sprintf('<select name="%1$s" id="%1$s" class="autowidth%2$s>',$fieldSet["name"],$inputAddr);
+                $inputRV .= sprintf('<option value="">请选择</option>');
+                foreach($fieldSet["valChange"] as $key => $val){
+                    $inputRV .= sprintf("<option value=\"%s\">%s</option>",$key,DxFunction::escapeHtmlValue($val));
+                }
+                $inputRV .= sprintf('</select>');
+                break;
             case "canton":
             case "selectselectselect":
                 $rootFdnId = $fieldSet["canton"]["rootCantonId"];
@@ -371,16 +381,6 @@ class DxFieldInput{
                 $inputRV = sprintf('<input style="width:%4$dpx" type="text" ng-show="isEdit" ng-model="dataInfo.%1$s" name="%1$s" id="%1$s" value="" placeholder="%2$s" onfocus="%3$s" 
                                             class="Wdate datepicker" ng-class="isEdit | validClass:isAdd:\'%6$s\':\'%5$s\'" />',
                     $fieldSet["name"],$fieldSet["note"],DxFunction::escapeHtmlValue("WdatePicker(".json_encode($dateFormat).")"),intval($fieldSet["width"])+15,$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
-                break;
-            case "select":
-                $inputAddr = empty($fieldSet["multiple"])?"":" multiple";
-                if(!empty($fieldSet["textTo"])) $inputAddr = sprintf('%s class="textTo" textTo="%s">',$inputAddr,$fieldSet['textTo']);
-                $inputRV = sprintf('<select name="%s" id="%s" class_add="%s" class_edit="%s" class="autowidth"%s>',$fieldSet["name"],$fieldSet["name"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputAddr);
-                $inputRV .= sprintf('<option value="">请选择</option>');
-                foreach($fieldSet["valChange"] as $key => $val){
-                    $inputRV .= sprintf("<option value=\"%s\">%s</option>",$key,DxFunction::escapeHtmlValue($val));
-                }
-                $inputRV .= sprintf('</select>');
                 break;
             case "password":
                 $inputRV = sprintf('<input style="width:120px" ng-model="dataInfo.%1$s" type="password" name="%1$s" id="%1$s" placeholder="%2$s" ng-show="isEdit" class="dataOpeSearch likeRight likeLeft" class_add="%3$s" class_edit="%4$s" value="" />',

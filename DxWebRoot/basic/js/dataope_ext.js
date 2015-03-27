@@ -64,12 +64,14 @@ function dataOpeEdit(config){
     }
     var editDialog = $.dialog({
         id:"editObject",
+        skin:"editObjectArtDialog",
         title:dialogTitle,
         content:'正在加载页面!<img src="' + DX_PUBLIC + '/public/loading.gif" />',
         esc:true,
         padding:0,
-        lock:true,
+        lock:artDialogLock,
         cancelValue:"关闭",
+        zIndex:8888,
         cancel:function(){},
         initialize:function(){
             var theThis     = this;
@@ -82,10 +84,14 @@ function dataOpeEdit(config){
                 $(theThis.dom.main).contents().find("input#dataIsEdit").trigger('change');
                 $(theThis.dom.main).contents().find(":input:visible").not(".Wdate").eq(0).focus();
                 $("form#itemAddForm").attr("action",this_post_url);
+
+                //IE6 select 标签遮挡 div 的 Bug，
+                $("div.editObjectArtDialog").bgiframe();
             });
         },
         button:showButton
     });
+
     function startEdit(theDialog){
         $(theDialog.dom.main).contents().find("input#dataIsEdit").val(1);
         $(theDialog.dom.main).contents().find("input#dataIsEdit").trigger('input');
@@ -107,8 +113,9 @@ function dataOpeDelete(config){
     if(msg==undefined) msg="确定要删除此数据?";
     $.dialog({
         id:"deleteDataOpeItem",
+        skin:"editObjectArtDialog",
         title:"提醒",
-        lock:true,
+        lock:artDialogLock,
         content:msg,
         ok:function(){
             _this   = this;
@@ -139,8 +146,9 @@ function dataOpeSetStatus(config){
     if(msg==undefined) msg="确定要执行此操作?";
     $.dialog({
         id:"setStatusDataOpeItem",
+        skin:"editObjectArtDialog",
         title:"提醒",
-        lock:true,
+        lock:artDialogLock,
         content:msg,
         ok:function(){
             _this   = this;
@@ -166,8 +174,9 @@ function dataOpeSetStatus(config){
 function dataOpeListDialog(config){
     $.dialog({
         id:"dataOpeListDialog",
+        skin:"editObjectArtDialog",
         title:config.title || "列表",
-        lock:true,
+        lock:artDialogLock,
         content:'正在加载页面!<img src="' + DX_PUBLIC + '/public/loading.gif" />',
         padding:0,
         ok:function(){
@@ -224,6 +233,7 @@ function dataOpeExport(formId){
 function resetPasswd(config){
     $.dialog({
         id: 'Prompt',
+        skin:"editObjectArtDialog",
         fixed: true,
         lock: true,
         title:"重置密码",
@@ -264,8 +274,9 @@ function resetPasswd(config){
 function showUploadPhoto(img,imgValueInput){
     $.dialog({
         id:"upload_cut_photo",
+        skin:"editObjectArtDialog",
         title:"上传头像",
-        lock:true,
+        lock:artDialogLock,
         ok:function(){
             var xyz = $("#selectXY");
             if(xyz.text()==""){

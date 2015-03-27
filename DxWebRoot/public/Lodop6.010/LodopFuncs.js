@@ -50,7 +50,7 @@ function getLodop(oOBJECT,oEMBED){
         if (is64IE) 
         msg = "Error:"+strHtm64_Install;else
         msg = "Error:"+strHtmInstall;
-        $.dialog({title:'提示',content:msg,esc:true,lock:true});
+        $.dialog({title:'提示',content:msg,esc:true,lock:artDialogLock});
          return LODOP; 
     }
 }

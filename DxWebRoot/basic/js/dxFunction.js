@@ -122,7 +122,7 @@ function showDealDialog() {
     var dialog_options = {
             id:"showDataOpeItem",
             title:"提醒",
-            lock:true,
+            lock:artDialogLock,
             content:msg_options.beforemsg,
             ok:function(){
                 var theThis     = this;

@@ -15,7 +15,7 @@
         <span style="vertical-align: middle;font-size: 22px;font-weight: bold;">{$modelInfo.modelTitle}</span>
         </literal>
 
-        <form id="dataListSearch">
+        <form id="dataListSearch" style="padding:0; margin:0;">
             <php>
             //searchHtml中可以存放动态的数据，比如：员工组
             if(!empty($modelInfo["searchHTML"])){
@@ -50,9 +50,11 @@
     </div>
     </notempty>
 
+    <notempty name="modelInfo.helpInfo">
     <div id="grid-help-info">
         {$modelInfo["helpInfo"]}
     </div>
+    </notempty>
 
     <!-- 如果有选择框，则此处可以填充选择框已选定的内容 -->
     <notempty name="modelInfo.hasCheckBox">
