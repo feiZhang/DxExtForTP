@@ -34,11 +34,13 @@ class DxExtCommonAction extends Action {
             C("LOGIN_URL",U($url));
         }
 
+        fb::log("REQUEST");
         fb::log($_REQUEST);
         $this->cacheActionList  = DxFunction::getModuleActionForMe();
 
-        if(!in_array(ACTION_NAME,array("get_datalist")))
+        if(!in_array(ACTION_NAME,array("get_datalist"))){
             $log_id =   $this->writeActionLog();
+        }
 
         if(C("DISABLE_ACTION_AUTH_CHECK")!==true){
             if (!DxFunction::checkNotAuth(C('NOT_AUTH_ACTION'),C('REQUIST_AUTH_ACTION'))){
@@ -148,9 +150,11 @@ class DxExtCommonAction extends Action {
             $_POST[$m->getPk()] = $_REQUEST[$pkId];
             $_REQUEST[$m->getPk()] = $_REQUEST[$pkId];
         }
-        if(!empty($m) && $m->create()){
+        if(!empty($m)){
+            $v = $m->create();
+        }
+        if($v!==false){
             $v = false;
-            fb::log($_REQUEST);
             if(intval($_REQUEST[$pkId])>0){
                 $v = $m->save();
                 if($v!==false) $v = $_REQUEST[$pkId];
@@ -374,7 +378,10 @@ class DxExtCommonAction extends Action {
         $action_name        = $this->cacheActionList["allAction"][$model->module][$model->action];
 
         //更新菜单的点击次数
-        D("Menu")->updateClickTimes(array("module_name"=>$model->module,"action_name"=>$model->action));
+        $menuModel = D("Menu");
+        if($menuModel){
+            $menuModel->updateClickTimes(array("module_name"=>$model->module,"action_name"=>$model->action));
+        }
 
         if(sizeof($action_name)>1){
             $action_name    = DxFunction::argsInRequest($action_name,$_REQUEST);

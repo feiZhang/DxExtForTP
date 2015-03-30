@@ -42,7 +42,10 @@
         padding: 2px;
 }
 </style>
-<?php
+
+<script>
+<!--
+<php>
     //将display_none的分离开，否则display_none都在数组末尾会出现空行。
     $showFields = array();
     $hideFields = array();
@@ -53,26 +56,25 @@
         }else{
             $showFields[$kkk] = $vvv;
         }
+    }
+</php>
+<literal>
+<php>
+    //将默认数据填充到数据框中，但是不能放在上面，上面是在第一次编译中使用。这个是动态数据。
+    $initValueJs = array();
+    foreach($listFields as $kkk => $vvv){
         if(!empty($recordDataInfo[$kkk])){
-            $initValueJs[] = "\$('form#itemAddForm #".$kkk."').val(recordDataInfo.".$kkk.");\n";
+            $initValueJs[] = "\$('form#itemAddForm #".$kkk."').val(recordDataInfo.".$kkk.");";
         }
     }
-?>
-<script>
-<!--
-<literal>
+</php>
 var dataIsEdit = '{\\$Think.request.isEdit}';
 <php>
 printf("var recordDataInfo = %s;",str_replace("{","{ ",json_encode($recordDataInfo)));
 printf("var recordDataFields = %s;",str_replace("{","{ ",json_encode($listFields)));
+printf(implode("",$initValueJs));
 </php>
 </literal>
-
-$(function(){
-    <?php
-    echo implode("",$initValueJs);
-    ?>
-});
 -->
 </script>
 

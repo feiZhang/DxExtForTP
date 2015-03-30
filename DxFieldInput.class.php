@@ -10,13 +10,14 @@ class DxFieldInput{
 
             $inputRV = "";
             if($fieldSet["readOnly"]!==true){
-                if($fieldSet["type"]=="canton" || $fieldSet["type"]=="selectselectselect" || $fieldSet["type"]=="select"){
+                if($fieldSet["type"]=="canton" || $fieldSet["type"]=="selectselectselect"){
+                    //angular生成的select多一个空的option，最新版也是有这个bug
                     $inputRV = DxFieldInput::createInputHtml($fieldSet,$defaultVal);
                 }else{
                     $inputRV = DxFieldInput::createInputHtml_Angular($fieldSet,$defaultVal);
                 }
             }else if(!empty($defaultVal)){
-                $inputRV = sprintf("<input type='hidden' name='%s' value='' />",$fieldSet["name"]);
+                $inputRV = sprintf("<input type='hidden' name='%1\$s' id='%1\$s' value='' />",$fieldSet["name"]);
             }
 
             //显示视图模式的内容
@@ -33,9 +34,9 @@ class DxFieldInput{
             case "set":
             case "dialogSelect":
                 if(!empty($fieldSet["textTo"])){
-                    $inputRV .= sprintf("<span class=\"fieldShowValue\" id=\"dataInfo.%1\$s\"></span>",$fieldSet["textTo"]);
+                    $inputRV .= sprintf("<span ng-hide=\"%2\$s\" class=\"fieldShowValue\" ng-bind=\"dataInfo.%1\$s\"></span>",$fieldSet["textTo"],$fieldSet["readOnly"]!==true?"isEdit":"");
                 }else{
-                    $inputRV .= sprintf("<span class=\"fieldShowValue\" id=\"dataInfo.%1\$s_textTo\"></span>",$fieldSet["name"]);
+                    $inputRV .= sprintf("<span ng-hide=\"%2\$s\" class=\"fieldShowValue\" ng-bind=\"dataInfo.%1\$s_textTo\"></span>",$fieldSet["name"],$fieldSet["readOnly"]!==true?"isEdit":"");
                 }
                 break;
             case "password":

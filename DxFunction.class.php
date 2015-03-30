@@ -242,7 +242,8 @@ class DxFunction{
         $menuM  = null;
         if(empty($allAction)){
             $menuM          = D('Menu');
-            //if($menuM instanceof Model) return array();    //如果没有自定义Menu的Model，则表示没有启用此功能。
+            if(!method_exists($menuM,"getModelInfoMd5")) return array();    //如果没有自定义Menu的Model，则表示没有启用此功能。
+
             $allAction      = array();
             $action_list    = $menuM->getAllAction();
             foreach($action_list as $l){

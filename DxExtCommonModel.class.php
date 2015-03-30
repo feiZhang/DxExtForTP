@@ -825,7 +825,7 @@ class DxExtCommonModel extends Model {
     }
     protected function _before_update(&$data, $options) {
         parent::_before_update($data, $options);
-        $this->myAutoOperation($data,self::MODEL_UPDATE);
+        $this->autoOperation($data,self::MODEL_UPDATE);
         return true;
     }
     protected function _after_update($data, $options){
@@ -849,7 +849,8 @@ class DxExtCommonModel extends Model {
     }
     protected function _before_insert(&$data, $options) {
         parent::_before_insert($data, $options);
-        $this->myAutoOperation($data,self::MODEL_INSERT);
+        //autoOperation 在TP中，只在create中执行。。要让他在任何地方执行。
+        $this->autoOperation($data,self::MODEL_INSERT);
         return true;
     }
     protected function _after_insert($data,$options) {
@@ -1073,22 +1074,30 @@ class DxExtCommonModel extends Model {
     }
     /**
      * copy自TP，因为是private，所以无法访问。。只能复制出来.
-     * 增加1.如果没有传递此字段的值，并且设置属性为ignore则对其进行忽略,,如果有值，则不进行自动填充
+     * 增加
+     * 1. 如果没有传递此字段的值，并且设置属性为ignore则对其进行忽略.....好像这个没有用了。
+     * 2. 如果有值，则不进行自动填充
      */
-    protected function myAutoOperation(&$data,$type) {
+    protected function autoOperation(&$data,$type) {
+        if(!empty($this->options['auto'])) {
+            $_auto   =   $this->options['auto'];
+            unset($this->options['auto']);
+        }elseif(!empty($this->_auto)){
+            $_auto   =   $this->_auto;
+        }
         // 自动填充
-        if(!empty($this->_auto)) {
-            foreach ($this->_auto as $auto){
-
+        if(isset($_auto)) {
+            foreach ($_auto as $auto){
+                
                 //框架添加的代码
-                if(!array_key_exists($auto[5],$data) && $auto[5]=="ignore") continue;
+                // if(!array_key_exists($auto[1],$data) && $auto[3]=="ignore") continue;
                 if(!empty($data[$auto[0]])) continue;       //如果有这个值，则不要覆盖。
 
                 // 填充因子定义格式
                 // array('field','填充内容','填充条件','附加规则',[额外参数])
                 if(empty($auto[2])) $auto[2] = self::MODEL_INSERT; // 默认为新增的时候自动填充
                 if( $type == $auto[2] || $auto[2] == self::MODEL_BOTH) {
-                    switch($auto[3]) {
+                    switch(trim($auto[3])) {
                         case 'function':    //  使用函数进行填充 字段的值作为参数
                         case 'callback': // 使用回调方法
                             $args = isset($auto[4])?(array)$auto[4]:array();
@@ -1098,11 +1107,15 @@ class DxExtCommonModel extends Model {
                             if('function'==$auto[3]) {
                                 $data[$auto[0]]  = call_user_func_array($auto[1], $args);
                             }else{
-                                $data[$auto[0]]  = call_user_func_array(array(&$this,$auto[1]), $args);
+                                $data[$auto[0]]  =  call_user_func_array(array(&$this,$auto[1]), $args);
                             }
                             break;
                         case 'field':    // 用其它字段的值进行填充
                             $data[$auto[0]] = $data[$auto[1]];
+                            break;
+                        case 'ignore': // 为空忽略
+                            if(''===$data[$auto[0]])
+                                unset($data[$auto[0]]);
                             break;
                         case 'string':
                         default: // 默认作为字符串填充
@@ -1118,54 +1131,11 @@ class DxExtCommonModel extends Model {
      * 重写了create方法，因为原来的create方法，只接受 POST，改为REQUEST
      */
     public function create($data='',$type='') {
-        // 如果没有传值默认取POST数据
         if(empty($data)) {
             $data    =   $_REQUEST;
-        }elseif(is_object($data)){
-            $data   =   get_object_vars($data);
         }
-        // 验证数据
-        if(empty($data) || !is_array($data)) {
-            $this->error = L('_DATA_TYPE_INVALID_');
-            return false;
-        }
-
-        // 检查字段映射
-        $data = $this->parseFieldsMap($data,0);
-
-        // 状态
-        $type = $type?$type:(!empty($data[$this->getPk()])?self::MODEL_UPDATE:self::MODEL_INSERT);
-
-        // 数据自动验证
-        if(!$this->autoValidation($data,$type)) return false;
-
-        // 表单令牌验证
-        if(C('TOKEN_ON') && !$this->autoCheckToken($data)) {
-            $this->error = L('_TOKEN_ERROR_');
-            return false;
-        }
-
-        // 验证完成生成数据对象
-        if($this->autoCheckFields) { // 开启字段检测 则过滤非法字段数据
-            $vo   =  array();
-            foreach ($this->fields as $key=>$name){
-                if(substr($key,0,1)=='_') continue;
-                $val = isset($data[$name])?$data[$name]:null;
-                //保证赋值有效
-                if(!is_null($val)){
-                    $vo[$name] = (MAGIC_QUOTES_GPC && is_string($val))?   stripslashes($val)  :  $val;
-                }
-            }
-        }else{
-            $vo   =  $data;
-        }
-
-        // 创建完成对数据进行自动处理
-        $this->myAutoOperation($vo,$type);
-        // 赋值当前数据对象
-        $this->data =   $vo;
-        // 返回创建的数据以供其他调用
-        return $vo;
+        $data = parent::create($data,$type);
+        return $data;
     }
 
     /**
