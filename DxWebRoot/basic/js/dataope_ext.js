@@ -22,7 +22,10 @@ function dataOpeEdit(config){
         }
         if(config.ok !== undefined) config.ok(form,msg);
     }
-
+    var submitCheck = function(){
+        return true;
+    }
+    if(config.submitCheck!=undefined) submitCheck = config.submitCheck;
     var moduleName = config.moduleName;
     var dialogTitle = config.title;
     var urlPara = config.data==undefined?"":config.data;
@@ -46,6 +49,7 @@ function dataOpeEdit(config){
                     }
                     theForm.data("editDialog",editDialog);
                     theForm.data("submitSuccess",editFormSubmitSuccess);
+                    theForm.data("submitCheck",submitCheck);
                     theForm.submit();
                     return false;
                 }
@@ -367,7 +371,12 @@ function _dataope_onCheckChange(obj){
 function formSubmitComplete(form, r){
     var formId = $(form).attr("id");
     var submitSuccess = $(form).data("submitSuccess");
-    if(r){
+    var submitCheck = $(form).data("submitCheck");
+    var formCheck = true;
+    if(submitCheck!=undefined && typeof(eval(submitCheck)) == "function"){
+        formCheck = submitCheck(form);
+    }
+    if(r && formCheck){
         //将textTo的数据赋值
         $("#" + formId +" input.textTo[type='radio']").each(function(){
             toId  = $(this).attr("textto");

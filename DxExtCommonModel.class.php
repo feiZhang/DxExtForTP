@@ -278,6 +278,7 @@ class DxExtCommonModel extends Model {
                 break;
         }
         if(intval($field["width"])<1) $field["width"] = "80";
+        if(intval($field["export_width"])<1) $field["export_width"] = $field["width"];
         if(intval($field["tdCols"])<1) $field["tdCols"] = 1;
 
         //规整数据的enum字段，默认使用valChange替换，没有valChange字段，则从数据库获取enum的字段定义数据

@@ -266,7 +266,7 @@ td
     <x:ExcelWorkbook>
      <x:ExcelWorksheets>
       <x:ExcelWorksheet>
-       <x:Name>天窗点外作业计划单</x:Name>
+       <x:Name>{$subject}</x:Name>
        <x:WorksheetOptions>
         <x:DefaultRowHeight>300</x:DefaultRowHeight>
         <x:StandardWidth>2218</x:StandardWidth>
@@ -301,29 +301,18 @@ td
     <x:ExcelName>
      <x:Name>Print_Titles</x:Name>
      <x:SheetIndex>1</x:SheetIndex>
-     <x:Formula>=天窗点外作业计划单!$1:3</x:Formula>
+     <x:Formula>={$subject}!$1:3</x:Formula>
     </x:ExcelName>
     <x:ExcelName>
      <x:Name>Print_Titles</x:Name>
      <x:SheetIndex>1</x:SheetIndex>
-     <x:Formula>=天窗点外作业计划单!$1:3</x:Formula>
+     <x:Formula>={$subject}!$1:3</x:Formula>
     </x:ExcelName>
    </xml>
   <![endif]-->
  </head>
  <body link="blue" vlink="purple">
-  <table width="1605.50" border="0" cellpadding="0" cellspacing="0" style='width:802.75pt;border-collapse:collapse;table-layout:fixed;'>
-   <col width="49.50" style='mso-width-source:userset;mso-width-alt:1056;'/>
-   <col width="104" style='mso-width-source:userset;mso-width-alt:2218;'/>
-   <col width="121.50" style='mso-width-source:userset;mso-width-alt:2592;'/>
-   <col width="124.50" span="2" style='mso-width-source:userset;mso-width-alt:2656;'/>
-   <col width="135" style='mso-width-source:userset;mso-width-alt:2880;'/>
-   <col width="222" style='mso-width-source:userset;mso-width-alt:4736;'/>
-   <col width="414" style='mso-width-source:userset;mso-width-alt:8832;'/>
-   <col width="102" style='mso-width-source:userset;mso-width-alt:2176;'/>
-   <col width="81" style='mso-width-source:userset;mso-width-alt:1728;'/>
-   <col width="64.50" style='mso-width-source:userset;mso-width-alt:1376;'/>
-   <col width="63" style='mso-width-source:userset;mso-width-alt:1344;'/>
+  <table width="1605.50" border="0" cellpadding="0" cellspacing="0" style='border-collapse:collapse;table-layout:fixed;'>
     <notempty name="customHeader">
         {$customHeader}
     <else />
@@ -335,9 +324,9 @@ td
    </tr>
     </notempty>
    <tr height="54" style='height:27.00pt;mso-height-source:userset;mso-height-alt:540;'>
-    <td class="xl29" height="54" style='height:27.00pt;' x:str>序号</td>
+    <td class="xl29" height="54" style='height:27.00pt;width:70;' x:str>序号</td>
             <volist id="vo" name="listFields">
-    <td class="xl29" x:str>{$vo['title']}</td>
+              <td class="xl29" style="width:{$vo['export_width']}" x:str>{$vo['title']}</td>
             </volist>
    </tr>
         <volist id="vo" key="key" name="objectData">
@@ -356,21 +345,6 @@ td
         ?>
         </tr>
         </volist>
-   <![if supportMisalignedColumns]>
-    <tr width="0" style='display:none;'>
-     <td width="50" style='width:25;'></td>
-     <td width="104" style='width:52;'></td>
-     <td width="122" style='width:61;'></td>
-     <td width="125" style='width:62;'></td>
-     <td width="135" style='width:68;'></td>
-     <td width="222" style='width:111;'></td>
-     <td width="414" style='width:207;'></td>
-     <td width="102" style='width:51;'></td>
-     <td width="81" style='width:41;'></td>
-     <td width="65" style='width:32;'></td>
-     <td width="63" style='width:32;'></td>
-    </tr>
-   <![endif]>
   </table>
  </body>
 </html>

@@ -5,3 +5,5 @@
 *.swp
 *.swo
 .svn
+*.sublime-project
+*.sublime-workspace

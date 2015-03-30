@@ -2,7 +2,11 @@
 <html ng-app="dxApp">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=7" />
+<php>
+if(strpos($_SERVER["HTTP_USER_AGENT"],"MSIE 8.0")){
+    echo '<meta http-equiv="X-UA-Compatible" content="IE=7" />';
+}
+</php>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{$Think.config.SysSetting.SITE_TITLE}</title>
     <script>
