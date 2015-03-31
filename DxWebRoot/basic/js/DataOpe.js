@@ -75,6 +75,9 @@
             if(gridArgs.customRowAttribute != undefined && gridArgs.customRowAttribute != 0){
                 _this.gridOption.customRowAttribute = gridArgs.customRowAttribute;
             }
+            if(gridArgs.onComplete != undefined && gridArgs.onComplete != 0){
+                _this.gridOption.onComplete = gridArgs.onComplete;
+            }
             if(gridArgs.gridId != undefined && gridArgs.gridId != 0){
                 _this.gridOption.id = gridArgs.gridId;
             }else{
@@ -163,7 +166,6 @@
             }
 
             _this.mygrid    = new Sigma.Grid( gridOption );
-            if(config.onComplete != undefined) _this.mygrid.onComplete = config.onComplete;
             _this.mygrid.render();
         };
         //查询数据

@@ -34,7 +34,9 @@ class DataOpeAction extends DxExtCommonAction{
         $where          = array_merge($model->getDefaultWhere(),$this->defaultWhere,$this->_search());
         //使用Model连贯操作时，每一个连贯操作，都会往Model对象中赋值，如果嵌套使用Model的连贯操作，会覆盖掉原来已经存在的值，导致bug。
         if(isset($_REQUEST['export']) && !empty($_REQUEST['export'])){
-            $data_list  = $model->where($where)->field($fieldsStr)->order($model->getModelInfo("order"))->select();
+            $orderBy = $model->getModelInfo("export_order");
+            if(empty($orderBy)) $model->getModelInfo("order");
+            $data_list  = $model->where($where)->field($fieldsStr)->order($orderBy)->select();
         }else{
             if($enablePage){
                 $data_list  = $model->where($where)->field($fieldsStr)->limit( $start.",".$pageSize )->order($model->getModelInfo("order"))->select();

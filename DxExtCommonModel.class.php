@@ -58,6 +58,7 @@ class DxExtCommonModel extends Model {
         //modelInfo的初试值
         $modelInfoInit = array(
             "customRowAttribute"=>0,
+            "onComplete"=>0,
             "enablePage"=>1,
         );
         $this->modelInfo = array_merge($modelInfoInit,$this->modelInfo);

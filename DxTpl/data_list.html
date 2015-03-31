@@ -111,6 +111,7 @@ $(function(){
     dxGrid.init({ "gridId":"theDataOpeGrid","gridDiv":"dataList",",loadUrl":"","gridFields":gridFields,"datasetFields":datasetFields,"parentGridDiv":"dataListCon",
         "enablePage":"{$modelInfo['enablePage']}","enableExport":"{$modelInfo['enableExport']}","enablePrint":"{$modelInfo['enablePrint']}",
         "customRowAttribute":{$modelInfo['customRowAttribute']},
+        "onComplete":{$modelInfo['onComplete']},
         "stripeRows":"{$modelInfo['stripeRows']}","pkId":"{$pkId}"
         });
     dxGrid.setBaseURL("__URL__");

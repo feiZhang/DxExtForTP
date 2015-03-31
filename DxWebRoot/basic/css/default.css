@@ -89,3 +89,20 @@ td.itemAddTdLabel {
 td.itemAddTdContent{
 
 }
+
+/* grid中每行文字颜色 */
+tr.font-color-black{
+  color:black;
+}
+tr.font-color-red{
+  color:red;
+}
+tr.font-color-orange{
+  color:orange;
+}
+tr.font-color-blue{
+  color:blue;
+}
+tr.font-color-green{
+  color:green;
+}

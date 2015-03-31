@@ -172,7 +172,7 @@ class DxFunction{
             $filename = str_replace("+", "%20", $filename);
     //      $filename=iconv('utf-8', 'gbk', $filename);//防止文件名存储时乱码
         }else{
-            $filename=  sprintf("\"%s\"", $filename);
+            // $filename=  sprintf("\"%s\"", $filename);
         }
         return $filename;
     }
