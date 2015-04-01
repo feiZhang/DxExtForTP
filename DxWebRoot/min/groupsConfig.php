@@ -41,6 +41,7 @@ return array(
         $groupBasePath."/public/explain_prompt/jquery-impromptu.4.0.js",
         $groupBasePath."/basic/js/explain_prompt/explain.impromptu.js",
         $groupBasePath."/public/jquery-imgpreview.js",
+        $groupBasePath."/public/respond.js",
         $groupBasePath."/basic/js/DxShowMessage.js",
         $groupBasePath."/basic/js/dxFunction.js",
         $groupBasePath."/public/angular.js",
