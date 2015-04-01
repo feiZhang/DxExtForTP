@@ -1,10 +1,48 @@
+<!--[if lte IE 6]>
 <style>
 <!--
-body > .navbar {font-size:14px;margin:0;}
-/* Subnav */
-.subnav {
+.subnav-fixed .nav { 
+    margin: 0 auto;
     background-color: #045c9e;
     background-image: linear-gradient(to bottom, #0088cc 0%, #045c9e 100%);
+}
+.nav-tabs li {
+    background-color: #045c9e;
+}
+.nav-tabs li a {
+  color: #d9edf7;
+  BORDER-RIGHT: #045c9e 1px solid; 
+  BORDER-TOP: #045c9e 1px solid; 
+  DISPLAY: inline; 
+  FILTER: chroma(color=#045c9e); 
+  PADDING-BOTTOM: 8px;
+  BORDER-LEFT: #045c9e 1px solid;
+  LINE-HEIGHT: 20px;
+  PADDING-TOP: 8px;
+  BORDER-BOTTOM: #045c9e 1px solid; 
+  ZOOM: 1;
+  BACKGROUND-COLOR: #045c9e; 
+  moz-border-radius: 4px 4px 0 0; 
+  webkit-border-radius: 4px 4px 0 0; 
+  border-radius: 4px 4px 0 0
+}
+-->
+</style>
+<![endif]-->
+
+<style>
+<!--
+.navbar {
+  border-radius: 0px;
+  font-size:14px;
+  margin:0;
+}
+/*
+Subnav 
+    background-image: linear-gradient(to bottom, #0088cc 0%, #045c9e 100%);
+*/
+.subnav {
+    background-color: #045c9e;
     border: 1px solid #e5e5e5;width: 100%;background-repeat: repeat-x;
 }
 .subnav-fixed {
@@ -15,27 +53,41 @@ body > .navbar {font-size:14px;margin:0;}
     border-radius: 0;
     -webkit-box-shadow: inset 0 1px 0 #d9edf7, 0 1px 5px rgba(0, 0, 0, .1); 
     -moz-box-shadow: inset 0 1px 0 #d9edf7, 0 1px 5px rgba(0, 0, 0, .1);
+    /*
     box-shadow: inset 0 1px 0 #d9edf7, 0 1px 5px rgba(0, 0, 0, .1);
+    */
     filter: progid:DXImageTransform.Microsoft.gradient(enabled=false); 
 }
 .navbar-default {
-    min-height:40px;padding:0;
-    background:url(__DXPUBLIC__/basic/images/bg_menu_dongtai.png) #FFFFFF;
-    border:none;-webkit-border-radius:0px;-moz-border-radius: 0px;border-radius: 0px;
+    height:78px;
+    padding:0;
+    background:url(__PUBLIC__/image/header_background.png.jpg) no-repeat;
+    /*  top center; */
+    border:0;
 }
-.subnav-fixed .nav { margin: 0 auto; padding: 0 20px;}
-.subnav .nav > li > a {
+
+.subnav-fixed { margin: 0; padding: 0;}
+
+.nav-tabs {
+    border-bottom: 0;
+}
+
+.nav-tabs li a {
     margin: 0;
     color: #d9edf7;
-    padding-top:11px;
-    padding-bottom:11px;
+    padding-top:6px;
+    padding-bottom:16px;
     margin-top:1px; 
-    -webkit-border-radius: 0;-moz-border-radius: 0;border-radius: 0;}
-.subnav .nav > li > a:hover {
+    border-radius:0 0 0 0;
+}
+.nav-tabs li a:hover {
+    border-radius:0 0 0 0;
     margin-top:1px;
     color: #054b6e;
     background-color: #d9edf7;
     border-right-color: #d9edf7;
+    padding-top:6px;
+    padding-bottom:16px;
 }
 .subnav .nav > .active > a, .subnav .nav > .active > a:hover {
     padding-left: 13px;
@@ -44,37 +96,80 @@ body > .navbar {font-size:14px;margin:0;}
     background-color: #A8D4F3;
     border-right-color: #d9edf7;
     border-left: 0;
-    -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .05);
-    -moz-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .05);
     box-shadow: inset 0 3px 5px rgba(0, 0, 0, .05);
 }
 .menu-bar{
     font-size:16px;
 }
-.old-top li a{ padding:0 10px;}
-.old-top li{ line-height:28px;}
+.btn-success {
+  background-color: #5bb75b;
+  background-image: -moz-linear-gradient(top, #62c462, #51a351);
+  background-image: -ms-linear-gradient(top, #62c462, #51a351);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#62c462), to(#51a351));
+  background-image: -webkit-linear-gradient(top, #62c462, #51a351);
+  background-image: -o-linear-gradient(top, #62c462, #51a351);
+  background-image: linear-gradient(top, #62c462, #51a351);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#62c462', endColorstr='#51a351', GradientType=0);
+  border-color: #51a351 #51a351 #387038;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
+}
+.btn-success:hover,
+.btn-success:active,
+.btn-success.active,
+.btn-success.disabled,
+.btn-success[disabled] {
+  background-color: #51a351;
+}
+.btn-success:active,
+.btn-success.active {
+  background-color: #408140 \9;
+}
+.btn-txd a{ margin:0 3px;}
+.old-top li a{ padding:0 10px;color:#000000;}
+.old-top li{ line-height:35px;}
 .old-top{ vertical-align:middle; text-align:right; margin-top:0px;}
 -->
 </style>
+    
 <div class="navbar navbar-default global_title" role="navigation">
         <ul class="nav pull-left">
           <!--<li class=""> <a class="xst-tlog" href="#"><img src="images/logo.png" /></a> </li>-->
-          <li class="">
-            <h2><a class="xst-tlog" href="__ROOT__">{$Think.config.SysSetting.SITE_NAME}</a></h2>
+          <li style="margin-left:20px; margin-top:8px;">
+            <h2 style="display:none">{$Think.config.SysSetting.SITE_NAME}</h2>
           </li>
         </ul>
-        <ul class="list-unstyled old-top pull-right">
+        <ul class="list-unstyled old-top pull-right" style="margin-right:15px; margin-top:10px;">
           <li class="mini">
-            <i class="glyphicon glyphicon-download"></i> <a href="__APP__/jujiayewu.apk" target="_blank">安卓客户端下载</a> 
-            <i class="glyphicon glyphicon-home"></i> <a href="__APP__/Home/index" target="_top">首页</a> 
-            <i class="glyphicon glyphicon-off"></i> <a href="__APP__/Public/logout" target="_top">安全退出</a>
+                  <div id="mySysList" class="btn-txd">
+                      <volist name="Think.session.mySysList" id="vo">
+                          <a target="_blank" href="{$vo.host_uri}/oauth2.php?type=fromLogin" class="btn btn-default btn-success" role="button">
+                              {$vo.title}
+                          </a>
+                      </volist>
+                  </div>
           </li>
-          <li>登录者：<a href="#">{$Think.session.true_name}</a></li>
+          <li>
+              <!-- i class="glyphicon glyphicon-download"></i> <a href="__APP__/jujiayewu.apk" target="_blank">安卓客户端下载</a --> 
+              <i class="glyphicon glyphicon-home"></i> <a href="__APP__/Home/main" target="main">首页</a> 
+              <i class="glyphicon glyphicon-off"></i> <a href="__APP__/Public/logout" target="_top">安全退出</a> 
+              <i class="glyphicon glyphicon-book"></i> <a href="__APP__/Public/showSysMsg/2" target="_blank">使用帮助</a> 
+              登录者:{$Think.session.true_name}
+          </li>
         </ul>
 </div>
 <!--top end-->
 
 <div class="subnav subnav-fixed menu-bar global_top_menu">
+    <div style="float:left">
+      <ul class="nav nav-tabs">
+        <li>
+          <a>首页</a>
+        </li>
+      </ul>
+    </div>
+    <div style="float:right;">
     <ul class="nav nav-tabs">
         <?php
         $menu_args = $_GET;
@@ -96,15 +191,17 @@ body > .navbar {font-size:14px;margin:0;}
         for($i=0;$i<$max;++$i){
             if($menu[$i]['module_name'] == MODULE_NAME && $menu[$i]['action_name']==ACTION_NAME && ($menu[$i]["args"]=="" || $menu[$i]["args"]==$menu_args_str)) $active = "active";
             else $active = "";
-            printf('<li class="%s"><a href="__APP__/%s/%s%s">%s</a></li>',$active,$menu[$i]["module_name"],$menu[$i]["action_name"],$menu[$i]["args"],$menu[$i]["menu_name"]);
+            printf('<li class="%s"><a target="main" href="__APP__/%s/%s%s">%s</a></li>',$active,$menu[$i]["module_name"],$menu[$i]["action_name"],$menu[$i]["args"],$menu[$i]["menu_name"]);
         }
         if($menu_size!=$max){
             printf('<li class="dropdown"><a href="#" data-toggle="dropdown" class="dropdown-toggle">其他<b class="caret"></b></a><ul class="dropdown-menu">');
             for($i=$max;$i<$menu_size;++$i){
-                printf('<li><a href="__APP__/%s/%s%s">%s</a></li>',$menu[$i]["module_name"],$menu[$i]["action_name"],$menu[$i]["args"],$menu[$i]["menu_name"]);
+                printf('<li><a target="main" href="__APP__/%s/%s%s">%s</a></li>',$menu[$i]["module_name"],$menu[$i]["action_name"],$menu[$i]["args"],$menu[$i]["menu_name"]);
             }
             printf('</ul></li>');
         }
         ?>
     </ul>
+    </div>
+    <div style="clear:both;"></div>
 </div>

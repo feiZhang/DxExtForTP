@@ -3,10 +3,13 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <php>
-if(strpos($_SERVER["HTTP_USER_AGENT"],"MSIE 8.0")){
-    echo '<meta http-equiv="X-UA-Compatible" content="IE=7" />';
+$ie = false;
+$liulanqi = $_SERVER["HTTP_USER_AGENT"];
+if($startLlq = strpos($liulanqi,"MSIE")){
+  $ie = intval(substr($liulanqi,$startLlq+5,3));
 }
 </php>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{$Think.config.SysSetting.SITE_TITLE}</title>
     <script>
@@ -39,6 +42,11 @@ if(BowerSys.ie && BowerSys.ie=="6.0"){
     <link href="__PUBLIC__/css/default.css" rel="stylesheet" type="text/css" />
     <script type="text/javascript" src="__DXPUBLIC__/min/g=headerJs"></script>
     </eq>
+
+  <!--[if lte IE 6]>
+  <link rel="stylesheet" type="text/css" href="__DXPUBLIC__/public/bsie/bootstrap-ie6.css">
+  <link rel="stylesheet" type="text/css" href="__DXPUBLIC__/public/bsie/ie.css">
+  <![endif]-->
 
 </head>
 
