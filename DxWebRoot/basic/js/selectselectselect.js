@@ -19,6 +19,7 @@ var cantonInit          = false;
      * rootKey              树的根ID
      * selectEven           选择数据后的回调函数
      * completeEven         select构建完成后的回调函数
+     * toTextName           这个暂时不用，使用hide的input进行textTo设置。
      */
     $.selectselectselect = function (containerDom,data,cantonDomId,defaultKey,rootKey,selectEven,completeEven,showRootKey,toTextName) {
         if(typeof this !== 'object'){
@@ -104,16 +105,16 @@ var cantonInit          = false;
                 var strHtml = "<div class=\"cantonDiv\" style=\"display:inline\">";
                 strHtml += "<select class='autowidth fdnSelectSelect";
                 if(toTextName!=undefined && toTextName!=""){
-                    strHtml += " textTo";
+                    strHtml += " textTo' textTo='" + toTextName;
                 }
-                strHtml += "' name='" + cantonDomId + "_selectselectselect' textTo='" + toTextName + "' type='canton'>";
+                strHtml += "' name='" + cantonDomId + "_selectselectselect' type='canton'>";
                 strHtml += "<option value=\"\">请选择</option>";
                 for(i=0;i<dataLength; i++) {
                     if (undefined != data[i] && data[i].name!='请选择') {
                         if (undefined != data[i].fdn) {
-                            strHtml += "<option text_name=\"" + data[i].full_name + "\" key=\"" + data[i].pkid + "\" value=\""+ data[i].fdn +"\">" + data[i].name + "</option>";
+                            strHtml += "<option short_name=\"" + data[i].name + "\" full_name=\"" + data[i].full_name + "\" key=\"" + data[i].pkid + "\" value=\""+ data[i].fdn +"\">" + data[i].name + "</option>";
                         }else{
-                            strHtml += "<option text_name=\"" + data[i].full_name + "\" key=\"" + data[i].pkid + "\" value=\""+ data[i].pkid +"\">" + data[i].name + "</option>";
+                            strHtml += "<option short_name=\"" + data[i].name + "\" full_name=\"" + data[i].full_name + "\" key=\"" + data[i].pkid + "\" value=\""+ data[i].pkid +"\">" + data[i].name + "</option>";
                         }
                     }
                 }

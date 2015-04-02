@@ -60,14 +60,16 @@ class DxExtCommonAction extends Action {
                     redirect(C("LOGIN_URL"),0,"");
                 }
                 //判断用户是否有当前动作操作权限
-                $privilege = $this->check_action_privilege();
-                if (!$privilege) {  //无权限
-                    if($log_id){
-                        $this->updateActionLog($log_id);
+                if(C("DISABLE_ACTION_OPERATE_CHECK")!==true){
+                    $privilege = $this->check_action_privilege();
+                    if (!$privilege) {  //无权限
+                        if($log_id){
+                            $this->updateActionLog($log_id);
+                        }
+                        if(C('LOG_RECORD')) Log::save();
+                        $this->success("您无权访问此页面!","showmsg");
+                        exit;
                     }
-                    if(C('LOG_RECORD')) Log::save();
-                    $this->success("您无权访问此页面!","showmsg");
-                    exit;
                 }
             }
         }
