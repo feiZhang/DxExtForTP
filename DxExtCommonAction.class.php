@@ -380,9 +380,11 @@ class DxExtCommonAction extends Action {
         $action_name        = $this->cacheActionList["allAction"][$model->module][$model->action];
 
         //更新菜单的点击次数
-        $menuModel = D("Menu");
-        if($menuModel){
-            $menuModel->updateClickTimes(array("module_name"=>$model->module,"action_name"=>$model->action));
+        if(C("ENABLE_MENU_CLICK_TIMES")){
+            $menuModel = D("Menu");
+            if($menuModel){
+                $menuModel->updateClickTimes(array("module_name"=>$model->module,"action_name"=>$model->action));
+            }
         }
 
         if(sizeof($action_name)>1){

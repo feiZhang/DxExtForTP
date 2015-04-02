@@ -57,9 +57,23 @@ class DxMenuModel extends  DxExtCommonModel{
         return $data;
     }
     public function updateClickTimes($where){
-        if(in_array("click_times",$this->getDbFields())){
-            $this->where($where)->save(array("click_times"=>array("exp","click_times+1")));
+        $info = $this->where($where)->select();
+        $mcM = D("MenuClick");
+        if($mcM){
+            foreach($info as $data){
+                $where["user_id"] = $_SESSION[C("USER_AUTH_KEY")];
+                $where["menu_id"] = $data["menu_id"];
+                $rv = $mcM->where($where)->save(array("click_times"=>array("exp","click_times+1")));
+                if($rv===false || $rv<1){
+                    $where["click_times"] = 1;
+                    $mcM->add($where);
+                    // dump($mcM->getLastSQL());dump($info);die();
+                }
+            }
         }
+        // if(in_array("click_times",$this->getDbFields())){
+        //     $this->where($where)->save(array("click_times"=>array("exp","click_times+1")));
+        // }
     }
 }
 

@@ -217,3 +217,10 @@ CREATE TABLE `duty` (
   PRIMARY KEY (`duty_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+-- 菜单点击数量
+DROP TABLE IF EXISTS `menu_click`;
+CREATE TABLE `menu_click` (
+  `menu_id` int unsigned NOT NULL,
+  `click_times` bigint unsigned NOT NULL,
+  `user_id` int unsigned NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='菜单点击数量';
