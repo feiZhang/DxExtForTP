@@ -104,9 +104,11 @@ var cantonInit          = false;
                 var dataLength = data.length;
                 var strHtml = "<div class=\"cantonDiv\" style=\"display:inline\">";
                 strHtml += "<select class='autowidth fdnSelectSelect";
-                if(toTextName!=undefined && toTextName!=""){
-                    strHtml += " textTo' textTo='" + toTextName;
-                }
+
+                // if(toTextName!=undefined && toTextName!=""){
+                //     strHtml += " textTo' textTo='" + toTextName;
+                // }
+                
                 strHtml += "' name='" + cantonDomId + "_selectselectselect' type='canton'>";
                 strHtml += "<option value=\"\" short_name=\"\" full_name=\"\" key=\"\">请选择</option>";
                 for(i=0;i<dataLength; i++) {

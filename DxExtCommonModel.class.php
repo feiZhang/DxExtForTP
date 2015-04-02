@@ -236,6 +236,7 @@ class DxExtCommonModel extends Model {
         switch($field["type"]){
             case "canton":
                 if(empty($field["width"])) $field["width"] = "180";
+                if(!empty($field['textTo']) && empty($field["texttoattr"])) $field["texttoattr"] = "full_name";
                 $field["valChange"] = "";   
                 //因为canton的valchange内容太多，所以放到页面头部直接载入，每个field中不再体现。一个表中可能有多个canton字段。
                 // canton字段统一使用textTo属性进行字段值保存，避免展示的时候，进行数据转换。
@@ -246,6 +247,7 @@ class DxExtCommonModel extends Model {
                 // }
                 break;
             case "selectselectselect":
+                if(!empty($field['textTo']) && empty($field["texttoattr"])) $field["texttoattr"] = "full_name";
                 $field["width"] = "180";
                 if(isset($field["valChange"]["model"])){
                     if($this->name==$field["valChange"]["model"]){
