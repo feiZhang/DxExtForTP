@@ -373,28 +373,37 @@ function formSubmitComplete(form, r){
     var submitSuccess = $(form).data("submitSuccess");
     var submitCheck = $(form).data("submitCheck");
     var formCheck = true;
+    var toId = "";
+    var texttoattr = "";
     if(submitCheck!=undefined && typeof(eval(submitCheck)) == "function"){
         formCheck = submitCheck(form);
     }
     if(r && formCheck){
         //将textTo的数据赋值
-        $("#" + formId +" input.textTo[type='radio']").each(function(){
+        $("#" + formId +" input.textTo[type='radio']:checked").each(function(){
             toId  = $(this).attr("textto");
-            $("input" + "#" + toId).val($(this).attr("text"));
+            $("#" + formId + " #" + toId).val($(this).attr("text"));
         });
         $("#" + formId +" select.textTo").each(function(){
             toId  = $(this).attr("textto");
             if($(this).val()=="")
-                $("input" + "#" + toId).val("");
+                $("#" + formId + " #" + toId).val("");
             else if($(this).hasClass("fdnSelectSelect")){
                 // 最后一个可能为空选
                 var tvvv = $(this).find('option:selected').attr('text_name');
                 if(tvvv!=undefined && tvvv!=""){
-                    $("#" + toId).val(tvvv);
+                    $("#" + formId + " #" + toId).val(tvvv);
                 }
             }else{
-                $("input" + "#" + toId).val($(this).find('option:selected').text());
+                $("#" + formId + " #" + toId).val($(this).find('option:selected').text());
             }
+        });
+        //selectselect的选取值。。不再使用selectselect生成的select进行textTo取值。
+        $("#" + formId +" input.textTo[type='hidden']").each(function(){
+            toId  = $(this).attr("textto");
+            texttoattr = $(this).attr("texttoattr");
+            if(texttoattr==undefined || texttoattr=="") texttoattr = 'text';
+            $("#" + formId + " #" + toId).val($(this).attr(texttoattr));
         });
 
         //触发savedata事件,用于支持fckeditor保存数据.

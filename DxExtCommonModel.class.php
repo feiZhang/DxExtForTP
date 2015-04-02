@@ -733,31 +733,57 @@ class DxExtCommonModel extends Model {
         }
     }
 
-    public function getCacheDictTableData(){
-        return $this->setCacheDictTableData();
+    public function getCacheDictTableData($dictConfig=""){
+        return $this->setCacheDictTableData($dictConfig);
     }
     /**
      * 设置缓存，公共的字典缓存是大家共享的，比如：老人类型，，私有的缓存是各自单独存放，比如职工信息
      * 再调用字典表的时候一定要注意，不要调用到getListFields方法，否则如果两个Model相互 valChange 引用，则会导致镶嵌引用，死循环。
+     * 因为能获得临时的字典内容(参数$dictConfig)，所以，数据变动时，要清除所有的cache。
      * */
-    protected function setCacheDictTableData(){
+    protected function deleteCacheDictTableData(){
+            $cacheNames = S('dict_cache_'.$this->name);
+            if(!empty($cacheNames)){
+                foreach ($cacheNames as $key => $value) {
+                    S($cacheNames,null);
+                }
+            }
+    }
+    protected function setCacheDictTableData($dictConfig=""){
+        if(empty($dictConfig)){
+            $dictConfig = $this->getModelInfo("dictTable");
+        }
+        if(is_array($dictConfig)){
+            $configMd5 = md5(json_encode($dictConfig));
+        }else{
+            $configMd5 = md5($dictConfig);
+        }
+
         if($this->getModelInfo("dictType")=="mySelf") $userId   = intval($_SESSION[C("USER_AUTH_KEY")]);
         else $userId    = 0;
-        $cacheFileName = 'dict_cache_'.$this->name."_".$userId."_dict";
+        $cacheFileName = 'dict_cache_'.$this->name."_".$userId."_".$configMd5."_dict";
         $this->cacheDictDatas = S($cacheFileName);
         if(!empty($this->cacheDictDatas) && !APP_DEBUG){
             return $this->cacheDictDatas;
         }
 
-        $dictConfig = $this->getModelInfo("dictTable");
         if(!empty($dictConfig)) {
-            if(is_array($dictConfig)) $dictConfig   = implode(",",$dictConfig); //兼容老格式
+            if(is_array($dictConfig)) $dictConfig = implode(",",$dictConfig); //兼容老格式
             if(sizeof(explode(",",$dictConfig))<2) $dictConfig  = $this->getPk().",".$dictConfig;   //使用主键作为key
             $tV = $this->field($dictConfig)->select();
             fb::log($this->getLastSQL());
             if($tV){
                 $this->cacheDictDatas = DxFunction::arrayToArray($tV);
             }
+            //缓存cacheName。用于清除缓存。
+            $cacheNames = S('dict_cache_'.$this->name);
+            if(empty($cacheNames)){
+                $cacheNames = array($cacheFileName);
+            }else{
+                $cacheNames[] = $cacheFileName;
+            }
+            S('dict_cache_'.$this->name,$cacheNames);
+
             S($cacheFileName,$this->cacheDictDatas);
             return $this->cacheDictDatas;
         }
@@ -823,6 +849,7 @@ class DxExtCommonModel extends Model {
             $m  = D("FulltextSearch");
             $m->where(array("object"=>$this->name,"pkid"=>array("in",$this->getPkIdFromWhere($options["where"]))))->delete();
         }
+        $this->deleteCacheDictTableData();
         $this->setCacheDictTableData();
     }
     protected function _before_update(&$data, $options) {
@@ -835,6 +862,7 @@ class DxExtCommonModel extends Model {
         //更新textTo数据
         $this->updateTextTo($data,false);
         //更新字典表缓存
+        $this->deleteCacheDictTableData();
         $this->setCacheDictTableData();
         //更新全文检索表
         if(C("FULLTEXT_SEARCH") && $this->getModelInfo("toString")!=""){
@@ -858,6 +886,7 @@ class DxExtCommonModel extends Model {
     protected function _after_insert($data,$options) {
         $this->save_data_data_change_log($data, $options, "insert");
         //缓存字典表数据 For 数据引用的字典表，数据转换。
+        $this->deleteCacheDictTableData();
         $this->setCacheDictTableData();
         if(C("FULLTEXT_SEARCH") && $this->getModelInfo("toString")!=""){
             $m  = D("FulltextSearch");

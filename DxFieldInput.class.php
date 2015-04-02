@@ -264,12 +264,13 @@ class DxFieldInput{
 
     //普通的输入框生成。
     static public function createInputHtml($fieldSet,$defaultVal=""){
+        //生成search输入框的时候，会增加searchName，从而使id和name不同。。因为input的id一直使用name进行填充。这里只好新增searchName，以区分name（id）
         if(empty($fieldSet["searchName"])) $fieldSet["searchName"] = $fieldSet["name"];
         switch($fieldSet["type"]){
             case "select":
                 $inputAddr = empty($fieldSet["multiple"])?"\"":"\" multiple";
                 if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo%s textTo="%s">',$inputAddr,$fieldSet['textTo']);
-                $inputRV = sprintf('<select name="%1$s" id="%1$s" class="autowidth%2$s>',$fieldSet["name"],$inputAddr);
+                $inputRV = sprintf('<select name="%3$s" id="%1$s" class="autowidth%2$s>',$fieldSet["name"],$inputAddr,$fieldSet["searchName"]);
                 $inputRV .= sprintf('<option value="">请选择</option>');
                 foreach($fieldSet["valChange"] as $key => $val){
                     $inputRV .= sprintf("<option value=\"%s\">%s</option>",$key,DxFunction::escapeHtmlValue($val));
@@ -279,8 +280,13 @@ class DxFieldInput{
             case "canton":
             case "selectselectselect":
                 $rootFdnId = $fieldSet["canton"]["rootCantonId"];
-                if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo" textTo="%s',$fieldSet['textTo']);
-                else $inputAddr = "";
+                if(!empty($fieldSet["textTo"])){
+                    if(!empty($fieldSet["texttoattr"])){
+                        $inputAddr = sprintf(' textTo" textTo="%s" texttoattr="%s',$fieldSet['textTo'],$fieldSet["texttoattr"]);
+                    }else{
+                        $inputAddr = sprintf(' textTo" textTo="%s',$fieldSet['textTo']);
+                    }
+                }else $inputAddr = "";
                 $spanIdRandom = "selectselectselect_".mt_rand(1000,9999);
                 $inputRV = sprintf('<span id="%4$s">
                     <input type="hidden" name="%3$s" id="%1$s" value="" class="autowidth%2$s" />
@@ -290,108 +296,14 @@ class DxFieldInput{
                                         <script>
                                         $(function(){
                                             $.selectselectselect($("#%4$s"),cantonFdnTree,"%1$s","%2$s","1",function(t){
-                                                $("#%1$s").attr("text",$(t).find("option:selected").attr("key"));
+                                                $("#%1$s").attr("key",$(t).find("option:selected").attr("key"));
+                                                $("#%1$s").attr("short_name",$(t).find("option:selected").attr("short_name"));
+                                                $("#%1$s").attr("full_name",$(t).find("option:selected").attr("full_name"));
                                                 $("#%1$s").val($(t).val());
-                                            },"",false,"%3$s");
+                                            },"",false,"");
                                         });
                                         </script>
                                     ',$fieldSet["name"],$rootFdnId,$fieldSet["textTo"],$spanIdRandom);
-                break;
-            case "dialogSelect":
-                /*
-                $dialogSelectTemp = sprintf('
-                <div id="dialogSelectShowDialog_%s" class="modal fade bs-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" aria-hidden="true">
-                    <div class="modal-dialog modal-lg">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                <h4 class="modal-title" id="myLargeModalLabel">%s</h4>
-                            </div>
-                            <div class="modal-body">
-                                {{ dialogSelectMsg }}
-                                <table class="table table-bordered">
-                                    <tr ng-repeat="dataInfo in dialogSelectDataList">
-                                        <td ng-repeat="field in dialogSelectShowFields">{{dataInfo.field}}</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>',$fieldSet["name"],$fieldSet["dialogSelect"]["title"]);
-                $inputRV = sprintf('<input type="button" data-target="#dialogSelectShowDialog_%s" value="%s" class="btn btn-info btn-sm" data-toggle="modal" ng-click=\'dialogSelectField(%s,"%s");\' />',
-                                            $fieldSet["name"],$fieldSet["dialogSelect"]["title"],DxFunction::escapeJson($fieldSet["dialogSelect"]),$fieldSet['textTo']);
-                $inputRV .= $dialogSelectTemp;
-                */
-                $inputRV = sprintf('
-                                    <input type="text" style="width:80px" readonly id="%1$s" ng-class="isEdit | validClass:isAdd:\'%6$s\':\'%5$s\'" />
-                                    <div class="input-group input-group-sm">
-                                        <input type="text" class="form-control" style="width:140px" placeholder="%4$s" id="%1$s_select">
-                                        <span class="input-group-btn">
-                                            <input type="button" class="btn btn-default" onclick=\'javascript:dialogSelectField(%2$s,"%3$s",$(this),$("#%1$s_select").val());\' value="查" />
-                                        </span>
-                                    </div>
-                                    ',
-                                            $fieldSet["name"],DxFunction::escapeJson($fieldSet["dialogSelect"]),$fieldSet['textTo'],$fieldSet["dialogSelect"]["title"],
-                                            $fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
-                break;
-            case "enum":
-                $inputType = "radio";
-                if(!empty($fieldSet["textTo"])) $inputType = sprintf("%s\" class=\"textTo\" textTo=\"%s",$inputType,$fieldSet["textTo"]);
-                $inputRV = sprintf('<span ng-show="isEdit">');
-                $inputRV .= sprintf('<span ng-repeat="(key,val) in dataFields.%s.valChange">',$fieldSet["name"]);
-                $inputRV .= sprintf("<input type=\"%1\$s\" name=\"%2\$s\" id=\"%2\$s\" value=\"{{key}}\" text=\"{{val}}\" 
-                                                ng-model=\"dataInfo.%2\$s\" ng-class=\"isEdit | validClass:isAdd:'%4\$s':'%3\$s'\" />{{val}}",
-                        $inputType,$fieldSet["name"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
-                $inputRV .= '</span>';
-                /*
-                foreach($fieldSet["valChange"] as $key => $val){
-                    $inputRV .= sprintf("<input type=\"%1\$s\" name=\"%2\$s\" id=\"%2\$s\" value=\"%3\$s\" text=\"%4\$s\" ng-model=\"dataInfo.%2\$s\" ng-class=\"isEdit | validClass:isAdd:'%6\$s':'%5\$s'\" />%4\$s",
-                        $inputType,$fieldSet["name"],$key,DxFunction::escapeHtmlValue($val),$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
-                }
-                */
-                $inputRV .= sprintf('</span>');
-                break;
-            case "set":
-                $inputType = "checkbox";
-                if(!empty($fieldSet["textTo"])) $inputType = sprintf("%s\" class=\"textTo\" textTo=\"%s",$inputType,$fieldSet["textTo"]);
-                $inputRV = sprintf('<span ng-show="isEdit">');
-                $inputRV .= sprintf('<span ng-repeat="(key,val) in dataFields.%s.valChange">',$fieldSet["name"]);
-                $inputRV .= sprintf("<input type=\"%1\$s\" name=\"%2\$s[]\" id=\"%2\$s\" value=\"{{key}}\" text=\"{{val}}\" 
-                                        ng-checked=\"dataInfo.%2\$s | checkBoxChecked:key\" ng-class=\"isEdit | validClass:isAdd:'%4\$s':'%3\$s'\" />{{val}}",
-                        $inputType,$fieldSet["name"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
-                $inputRV .= '</span>';
-                /*
-                foreach($fieldSet["valChange"] as $key => $val){
-                    $inputRV .= sprintf("<input type=\"%1\$s\" name=\"%2\$s[]\" id=\"%2\$s\" value=\"%3\$s\" text=\"%4\$s\" ng-checked=\"dataInfo.%2\$s | checkBoxChecked:'%3\$s'\" ng-class=\"isEdit | validClass:isAdd:'%6\$s':'%5\$s'\" />%4\$s",
-                        $inputType,$fieldSet["name"],$key,DxFunction::escapeHtmlValue($val),$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
-                }
-                */
-                $inputRV .= sprintf('</span>');
-                $inputRV .= sprintf("<span ng-hide=\"isEdit\" ng-bind=\"dataFields.%1\$s.valChange[dataInfo.%1\$s]\"></span>",$fieldSet["name"]);
-                break;
-            case "date":
-                //设置弹出的格式及限制条件
-                $dateFormat = array("dateFmt"=>$fieldSet['valFormat']);
-                $fieldSet["width"] = intval($fieldSet["width"]) + strlen($fieldSet['valFormat']);//由于列表页面和修改页面的字体大小不同，所以这里要作个微调
-                if(!empty($fieldSet['maxvalue'])){
-                    $dateFormat['maxDate'] = $fieldSet['maxvalue'];
-                }
-                if(!empty($fieldSet['minvalue'])){
-                    $dateFormat['minDate'] = $fieldSet['minvalue'];
-                }
-                $inputRV = sprintf('<input style="width:%4$dpx" type="text" ng-show="isEdit" ng-model="dataInfo.%1$s" name="%1$s" id="%1$s" value="" placeholder="%2$s" onfocus="%3$s" 
-                                            class="Wdate datepicker" ng-class="isEdit | validClass:isAdd:\'%6$s\':\'%5$s\'" />',
-                    $fieldSet["name"],$fieldSet["note"],DxFunction::escapeHtmlValue("WdatePicker(".json_encode($dateFormat).")"),intval($fieldSet["width"])+15,$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
-                break;
-            case "password":
-                $inputRV = sprintf('<input style="width:120px" ng-model="dataInfo.%1$s" type="password" name="%1$s" id="%1$s" placeholder="%2$s" ng-show="isEdit" class="dataOpeSearch likeRight likeLeft" class_add="%3$s" class_edit="%4$s" value="" />',
-                    $fieldSet["name"],$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
-                break;
-            case "idcard"://身份证号
-                $inputRV = sprintf('<input ng-model="dataInfo.%1$s" style="width:150px" type="idcard" onblur="checkIdCard(this.value,{%5$s})" 
-                                            name="%1$s" id="%1$s" placeholder="%2$s" ng-show="isEdit" ng-class="isEdit | validClass:isAdd:\'%4$s\':\'%3$s\'" value="" %6$s />',
-                    $fieldSet["name"],$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$fieldSet["idcard"],$validateMsg);
-                if(empty($inputType)) $inputType = "idcard";
                 break;
             case "string":
             case "text":
@@ -406,13 +318,12 @@ class DxFieldInput{
             default:
                 if(empty($inputType)) $inputType = "text";
                 if($fieldSet["width"]<1000){
-                    $inputRV = sprintf('<input ng-model="dataInfo.%1$s" style="width:%6$dpx" type="%5$s" name="%1$s" id="%1$s" placeholder="%2$s" ng-show="isEdit" 
-                                            ng-class="isEdit | validClass:isAdd:\'%4$s\':\'%3$s\'" %7$s />',
-                        $fieldSet["name"],$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputType,$fieldSet["width"],$validateMsg);
+                    $inputRV = sprintf('<input style="width:%6$dpx" type="%5$s" name="%8$s" id="%1$s" placeholder="%2$s" %7$s />',
+                        $fieldSet["name"],$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputType,$fieldSet["width"],$validateMsg,$fieldSet["searchName"]);
                 }else{
-                    $inputRV = sprintf('<textarea ng-model="dataInfo.%1$s" rows="%2$d" style="width:400px" name="%1$s" id="%1$s" placeholder="%3$s" 
+                    $inputRV = sprintf('<textarea ng-model="dataInfo.%1$s" rows="%2$d" style="width:400px" name="%8$s" id="%1$s" placeholder="%3$s" 
                                                 ng-class="isEdit | validClass:isAdd:\'%5$s\':\'%4$s\'" ng-show="isEdit" %7$s></textarea>',
-                        $fieldSet["name"],round(intval($fieldSet["width"])/1000),$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputType,$validateMsg);
+                        $fieldSet["name"],round(intval($fieldSet["width"])/1000),$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputType,$validateMsg,$fieldSet["searchName"]);
                 }
                 break;
         }

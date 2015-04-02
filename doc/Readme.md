@@ -155,6 +155,7 @@ listFields属性详解：
 textTo:将某个字典关联字段的id值对应的数据保存到某字段，比如：设置到org\_id上的textTo="org\_name",表示，存储org\_id对应的机构名称到org\_name，org\_name为冗余字段，主要方便实现，通过机构名称 模糊查询,功能在dataope_ext中实现，绑定数据的change方法..org\_name字段设置为隐藏字段
 	
 		与字段的textTo对应的是modelInfo的textTo，在id对应的数据改变时，更新关联的数据。
+        texttoattr:属性与textTo属性共同使用。表示textTo的值，放在哪个属性中。主要供selectselectselect使用，判定使用name还是full_name进行填充。
 		
 8. valChange:数据转换，将表存储的key转换为对应的vaule，将userid转换显示为username，[固定转换\关联表转换\SQL语句转换]，比如：
 

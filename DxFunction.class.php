@@ -356,11 +356,14 @@ class DxFunction{
                 $dataList[$kk][$fieldName]  = implode("<br \>",$t);
         }
     }
-    function cantonFdnToText(&$dataList,$fieldName){
-        $canton = D("Canton")->getCacheDictTableData();
+    function cantonFdnToText(&$dataList,$fieldName,$dictConfig=""){
+        $canton = D("Canton")->getCacheDictTableData($dictConfig);
         foreach($dataList as $kk=>$vv){
             $dataList[$kk][$fieldName]  = $canton[$vv[$fieldName]];
         }
+    }
+    function cantonFdnToName(&$dataList,$fieldName){
+        self::cantonFdnToText($dataList,$fieldName,array("fdn","name"));
     }
     function myAccountCantonName($cantonFdn){
         if(empty($cantonFdn)) $cantonFdn = $_SESSION["canton_fdn"];

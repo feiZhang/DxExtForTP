@@ -106,7 +106,7 @@ class DataOpeAction extends DxExtCommonAction{
         }
 
         if($exportname===null){
-            $exportname = $subject.".".$type;
+            $exportname = $subject;
         }
 
         if($customHeader===null){

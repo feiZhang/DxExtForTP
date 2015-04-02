@@ -28,7 +28,8 @@ return array (
 
     //--偶尔需要变动的
     'DELETE_TAGS' => array ("delete_status" => "1" ),
-    'DISABLE_ACTION_AUTH_CHECK' => false,//关闭操作权限验证
+    'DISABLE_ACTION_AUTH_CHECK' => false,       //关闭登录验证
+    'DISABLE_ACTION_OPERATE_CHECK' => false,    //关闭操作权限验证
     'LOGIN_URL' => "Public/login",//登录页面
     'URL_MODEL' => 2,
     'DEFAULT_THEME' => '',
