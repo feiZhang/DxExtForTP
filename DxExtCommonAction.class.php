@@ -38,7 +38,7 @@ class DxExtCommonAction extends Action {
         fb::log($_REQUEST);
         $this->cacheActionList  = DxFunction::getModuleActionForMe();
 
-        if(!in_array(ACTION_NAME,array("get_datalist"))){
+        if(!(in_array(ACTION_NAME,array("get_datalist")) && empty($_REQUEST))){
             $log_id =   $this->writeActionLog();
         }
 
@@ -370,7 +370,7 @@ class DxExtCommonAction extends Action {
         //过滤不需要保存的日志
         $actionName = empty($actionName)?ACTION_NAME:$actionName;
         $moduleName = empty($moduleName)?MODULE_NAME:$moduleName;
-        if(in_array($model->module."-".$model->action,C("NOT_OPERATION_LOG"))) return;
+        if(in_array($moduleName."-".$actionName,C("NOT_OPERATION_LOG"))) return;
         $model = D('OperationLog');
         $model->ip          = get_client_ip()."_".$_SERVER["REMOTE_ADDR"];
         $model->action      = $actionName;

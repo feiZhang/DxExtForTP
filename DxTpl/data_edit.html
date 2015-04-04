@@ -61,10 +61,20 @@
 <literal>
 <php>
     //将默认数据填充到数据框中，但是不能放在上面，上面是在第一次编译中使用。这个是动态数据。
+    //angular生成的数据，会自动填充默认值。。。canton和selectselect不适用angular生成（生成异常，多一个空options）
     $initValueJs = array();
     foreach($listFields as $kkk => $vvv){
         if(!empty($recordDataInfo[$kkk])){
-            $initValueJs[] = "\$('form#itemAddForm #".$kkk."').val(recordDataInfo.".$kkk.");";
+            switch($vvv["type"]){
+                case "enum":
+                    break;
+                case "set":
+                    // $initValueJs[] = "\$('form#itemAddForm #".$kkk."').val(recordDataInfo.".$kkk.");";
+                    break;
+                default:
+                    $initValueJs[] = "\$('form#itemAddForm #".$kkk."').val(recordDataInfo.".$kkk.");";
+                break;
+            }
         }
     }
 </php>
@@ -72,7 +82,7 @@ var dataIsEdit = '{\\$Think.request.isEdit}';
 <php>
 printf("var recordDataInfo = %s;",str_replace("{","{ ",json_encode($recordDataInfo)));
 printf("var recordDataFields = %s;",str_replace("{","{ ",json_encode($listFields)));
-printf(implode("",$initValueJs));
+printf("%s",implode("",$initValueJs));
 </php>
 </literal>
 -->

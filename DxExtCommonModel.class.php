@@ -469,7 +469,7 @@ class DxExtCommonModel extends Model {
     /**
      * 使用相套sql语句，代替视图
      * 1.请勿将where条件写在  函数的参数中，请使用where进行where参数传递
-     * 2.Model在select后，进行update或者delete操作，需要恢复table值，否则操作失败
+     * 2.Model在select后，进行update或者delete操作，需要恢复table值，否则操作失败....查询完成后自动清空了option所以，无需恢复。
      */
     public function getDefaultWhere(){
         return $this->defaultWhere;
@@ -499,6 +499,19 @@ class DxExtCommonModel extends Model {
             //$options["table"]   = $orgTableName;
         }else{
             $res  = parent::select($options);
+        }
+        return $res;
+    }
+    public function getField($field,$sepa=null) {
+        if(!empty($this->viewTableName)){
+            //$orgTableName    = $options["table"];
+            $this->options["table"]   = $this->viewTableName;
+            $this->viewTableIsSelect = true;
+            $res  = parent::getField($field,$sepa);
+            $this->viewTableIsSelect = false;
+            //$options["table"]   = $orgTableName;
+        }else{
+            $res  = parent::getField($field,$sepa);
         }
         return $res;
     }

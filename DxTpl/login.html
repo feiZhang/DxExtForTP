@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>{$Think.config.SysSetting.SITE_TITLE}</title>
+<link href="__DXPUBLIC__/public/artDialog5/skins/default.css" rel="stylesheet" type="text/css" />
+<style>
+<!--
+body{ margin:0 }
+.login-top{ background:url(__DXPUBLIC__/basic/images/login_bg_top.gif) repeat-x; height:86px;}
+.login-980{ width:960px; margin:0 auto;}
+.login-left{color: #FFFFFF; float: left; font-size: 30px; font-weight: bold; line-height: 86px; width: 550px;}
+.login-right{ color: #FFFFFF; float: right; font-size: 14px; padding-top: 56px;  width: 380px;}
+.login-right span{}
+.login-center{ background:url(__DXPUBLIC__/basic/images/login_ext_xian.gif) repeat-x;}
+.login-cen9{width:960px; margin:0 auto; height:425px; background:url(__DXPUBLIC__/basic/images/login-bg-main.jpg) top center no-repeat;}
+.login-cenleft{ float: left; height: 400px; width: 600px;}
+.login-cenright{float: left; height: 280px; padding: 105px 0 0 0; width: 280px;}
+.log-input,.log-input01 {border: 1px solid #98999B; font-size:14px; height: 26px;  line-height: 26px; padding-left: 5px;}
+.log-input,.log-input0 {width:160px;}
+.log-input01,.log-input02 {width:80px;}
+.log-input0,.log-input02 {background: none repeat scroll 0 0 #FEF3AB; border: 1px solid #C9DD6A; height: 26px; font-size:14px; line-height: 26px; padding-left: 5px;}
+.log-button,.log-button{border: medium none; color: #FFFFFF; cursor: pointer; font-size: 14px; height: 30px; width: 70px;}
+.log-button{ background: url("__DXPUBLIC__/basic/images/login-button.png") no-repeat scroll 0 0 transparent;}
+.log-button01{ background: url("__DXPUBLIC__/basic/images/login-button.png") no-repeat scroll 0 -64px transparent;}
+.log-button:hover{ background: url("__DXPUBLIC__/basic/images/login-button.png") no-repeat scroll 0 -32px transparent;}
+.log-button01:hover{ background: url("__DXPUBLIC__/basic/images/login-button.png") no-repeat scroll 0 -96px transparent;}
+.log-button01 ,.log-button01{ border: medium none; color: #FFFFFF; cursor: pointer; font-size: 14px; height: 30px; width: 70px;}
+.login-footer{ width:960px; margin:0 auto; text-align:center;}
+-->
+</style>
+<script type="text/javascript" src="__DXPUBLIC__/public/Jquery/jquery-1.8.2.js"></script>
+<script type="text/javascript" src="__DXPUBLIC__/public/artDialog5/source/jquery.artDialog.js"></script>
+<script type="text/javascript" src="__DXPUBLIC__/public/artDialog5/source/artDialog.plugins.js"></script>
+<script>
+if(($.browser.msie && self.frameElement) || (!$.browser.msie && top!=this)){
+     top.location.href       = '__URL__/login';
+}
+</script>
+        <script type="text/javascript">
+            function fleshVerify(){
+                //重载验证码
+                var timenow = new Date().getTime();
+                document.getElementById('verifyImg').src= '__URL__/verify/'+timenow;
+            }
+
+            (function($){
+                $(function(){
+                    /*输入框获得焦点后和其他输入框样式区别显示*/
+                    $('input[type="text"],input[type="password"],textarea,select').live('focus', function(){
+                        var obj=$(this);
+                        if(obj.hasClass('Wdate')){
+                            obj.addClass("log-input0");
+                        }else{
+                            obj.addClass("log-input0");
+                        }
+                    }).live('blur', function(){
+                        $(this).removeClass("log-input0");
+                    });
+                    /*页面的第一个输入框默认获取焦点，用于提高操作效率*/
+                    $('input:first[type=\"text\"]').focus();
+                    /*输入框如果输入回车，自动转换为tab*/
+                    $("form").submit(function(){
+                        if($("input#username").val()==""){
+                            $("input#username").focus();
+                            return false;
+                        }
+                        if($("input#password").val()==""){
+                            $("input#password").focus();
+                            return false;
+                        }
+                        if($("input#seccode").val()==""){
+                            $("input#seccode").focus();
+                            return false;
+                        }
+                    });
+                })
+            })(jQuery);
+        </script>
+    </head>
+    <body>
+        <div class="login-top">
+            <div class="login-980">
+                <div class="login-left">{$Think.config.SysSetting.SITE_NAME}</div>
+                <div class="login-right">今天是:<span>{$serverDate}&nbsp;&nbsp; {$week}</span> &nbsp;&nbsp;您的IP:<span>{$clientIp}</span></div>
+            </div>
+        </div>
+        <!--center start-->
+        <div class="login-center">
+            <div class="login-cen9">
+                <div class="login-cenleft"></div>
+                <div class="login-cenright">
+                    <form action="__URL__/checkLogin" method="post" >
+                        <table width="99%" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td height="35" width="29%">&nbsp;</td>
+                                <td width="65%">&nbsp;</td>
+                                <td width="6%">&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="45" align="right" valign="middle">用户名：</td>
+                                <td>
+                                    <label>
+                                    <input class="log-input" type="text" name="username" id="username" onFocus="this.className='log-input0'" onBlur="this.className='log-input'" value="{$Think.config.TEST_USERNAME}" />
+                                    </label>
+                                </td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="45" align="right" valign="middle">密 码：</td>
+                                <td>
+                                    <label>
+                                        <input class="log-input" type="password" name="password" id="password" onFocus="this.className='log-input0'" onBlur="this.className='log-input'" value="{$Think.config.TEST_USERPASS}" />
+                                    </label>
+                                </td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="45" align="right" valign="middle">验证码：</td>
+                                <td><label>
+                                    <input class="log-input01" type="text" name="seccode" id="seccode" onFocus="this.className='log-input02'" onBlur="this.className='log-input01'" value="{$Think.config.TEST_USERVERIFY}" />
+                                    </label>&nbsp;<A HREF="javascript:fleshVerify()"><IMG SRC="__URL__/verify/" name="verifyImg" BORDER="0" align="absmiddle" id="verifyImg" width="70" height="27" title="如果您无法识别验证码，请点图片更换"/></td>
+                                <td>&nbsp;</td>
+                            </tr>
+                            <tr>
+                                <td height="60">&nbsp;</td>
+                                <td><label>
+                                        <input type="submit" class="log-button" name="button" id="login-button" value="登 录" />
+                                    </label>&nbsp;
+                                    <label>
+                                        <input type="reset" class="log-button01" name="button2" id="reset-button" value="重 置" />
+                                    </label></td>
+                                <td>&nbsp;</td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--center end-->
+            <script>
+            $(function(){
+                if($.browser.msie && ($.browser.version=="6.0" || $.browser.version=="7.0")){
+                    var firefox    = '<a href="http://firefox.com.cn/" target="firefox">FireFox</a>';
+                    var chrome     = '<a href="http://www.google.cn/intl/zh-CN/chrome/browser/" target="chrome">Chrome</a>';
+                    var ie         = '<a href="http://windows.microsoft.com/zh-CN/internet-explorer/downloads/ie" target="IE">IE8</a>';
+                    var osVersion  = navigator.userAgent.split(";")[2];
+                    var osV        = osVersion.substr(osVersion.length-3,1);
+                    switch(osV)
+                    {
+                    case "5":
+                        ie         = '<a href="http://windows.microsoft.com/zh-CN/internet-explorer/downloads/ie" target="IE">IE8</a>';
+                        break;
+                    default:
+                        ie         = '<a href="http://windows.microsoft.com/zh-CN/internet-explorer/downloads/ie" target="IE">IE9</a>';
+                        break;
+                    } 
+                    $("#ie6Message").html('您现在使用的是IE6\\IE7浏览器，无法体验最新的Web功能，请您使用' + ie + '或更高版本IE浏览器，推荐您使用'+chrome + '或' + firefox +'，获取更好用户体验').show();
+                    $.dialog.alert('您现在使用的是IE6\\IE7浏览器，无法体验最新的Web功能，请您使用' + ie + '或更高版本IE浏览器，推荐您使用'+chrome + '或' + firefox +'，获取更好用户体验');
+                }
+            });
+            </script>
+        <div class="login-footer">
+            <div id="ie6Message" style="display:none;color:red">
+                 
+            </div>
+            <br/><br />
+            {$Think.config.SysSetting.SITE_COPYRIGHT}
+        </div>
+    </body>
+</html>
