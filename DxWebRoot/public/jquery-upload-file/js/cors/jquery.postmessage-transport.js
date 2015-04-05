@@ -1,5 +1,5 @@
 /*
- * jQuery postMessage Transport Plugin 1.1.2
+ * jQuery postMessage Transport Plugin 1.1
  * https://github.com/blueimp/jQuery-File-Upload
  *
  * Copyright 2011, Sebastian Tschan
@@ -9,16 +9,14 @@
  * http://www.opensource.org/licenses/MIT
  */
 
-/* global define, require, window, document */
+/*jslint unparam: true, nomen: true */
+/*global define, window, document */
 
 (function (factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {
         // Register as an anonymous AMD module:
         define(['jquery'], factory);
-    } else if (typeof exports === 'object') {
-        // Node/CommonJS:
-        factory(require('jquery'));
     } else {
         // Browser globals:
         factory(window.jQuery);
@@ -66,9 +64,8 @@
                 xhrUpload = options.xhr().upload;
             return {
                 send: function (_, completeCallback) {
-                    counter += 1;
                     var message = {
-                            id: 'postmessage-transport-' + counter
+                            id: 'postmessage-transport-' + (counter += 1)
                         },
                         eventName = 'message.' + message.id;
                     iframe = $(
