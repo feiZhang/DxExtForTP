@@ -9,10 +9,21 @@ function showDialog(strTitle, strContent) {
 }
 
 //日期比较,是否第一个时间大于第二个时间
-function dayu_time(firstTime,secondTime){
+function dayu_time(firstTime,secondTime,isServer){
+    var nowTime = new Date().getTime();
+    if(isServer===true){
+        $.ajax({
+            url:APP_ROOT + "/Basic/now",
+            success:function(msg){
+                nowTime = Number(msg.info)*1000;
+            },
+            async:false,
+            dataType:"json"
+        });
+    }
     if(undefined==firstTime) return false;
-    firstTime = Date.parse(firstTime);
-    secondTime = secondTime==undefined?new Date().getTime():Date.parse(secondTime);
+    firstTime = firstTime=="now"?nowTime:Date.parse(firstTime);
+    secondTime = (secondTime==undefined || secondTime=="now")?nowTime:Date.parse(secondTime);
     if(firstTime-secondTime>0) return true;
     else return false;
 }

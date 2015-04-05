@@ -1,5 +1,8 @@
 <?php
 class DxBasicAction extends Action {
+    function now(){
+        $this->ajaxReturn(1,time(),0);
+    }
     function clearCache(){
         //很奇怪的现象，如果success放在之后，则会生成的临时文件Temp权限为000，导致无法写入。。
         $this->success("清除完成!",__ROOT__);
@@ -42,7 +45,7 @@ class DxBasicAction extends Action {
      * 上传文件
      * */
     public function upload_file(){
-        require_once (DXINFO_PATH."/Vendor/UploadHandler.class.php");
+        require_once (DXINFO_PATH."/Vendor/UploadHandler.php");
         $upload_handler = new UploadHandler(array(
             "validate"      => '/\.(gif|jpe?g|png)$/i',
             "upload_dir"    =>  C('TEMP_FILE_PATH')."/",
