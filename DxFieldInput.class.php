@@ -74,7 +74,6 @@ class DxFieldInput{
                         "acceptFileTypes"=>$uploadFileType,
                         "maxNumberOfFiles"=>$uploadFileNums,
                         "maxFileSize"=>$uploadFileMaxSize,
-                        "downLoadBaseUrl"=>C("UPLOAD_BASE_URL"),
                         );
 
                 $inputRV = sprintf('

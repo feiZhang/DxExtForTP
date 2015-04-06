@@ -348,7 +348,7 @@ class DxFunction{
             $t  = array();
             $fs = json_decode($vv[$fieldName],true);
             foreach($fs as $file){
-                $t[]    = sprintf("<a href='%s/Basic/download?f=%s&n=%s' download='%s' target='download'>%s</a>",__ROOT__,urlencode($file["url"]),urlencode($file["real_name"]),htmlentities($file["real_name"],ENT_QUOTES,'UTF-8'),htmlentities($file["real_name"],ENT_QUOTES,'UTF-8'));
+                $t[]    = sprintf("<a href='%s&n=%s' download='%s' target='download'>%s</a>",$file["url"],urlencode($file["real_name"]),htmlentities($file["real_name"],ENT_QUOTES,'UTF-8'),htmlentities($file["real_name"],ENT_QUOTES,'UTF-8'));
             }
             if(sizeof($t)==1){
                 $dataList[$kk][$fieldName]  = $t[0];

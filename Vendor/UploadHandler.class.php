@@ -600,19 +600,22 @@ class UploadHandler
             return;
         }
         $file_name = $this->get_file_name_param();
+        $down_name = empty($_GET["n"])?$file_name:$_GET["n"];
         if ($this->is_valid_file_object($file_name)) {
             $file_path = $this->get_upload_path($file_name, $this->get_version_param());
             if (is_file($file_path)) {
-                if (!preg_match($this->options['inline_file_types'], $file_name)) {
-                    $this->header('Content-Description: File Transfer');
-                    $this->header('Content-Type: application/octet-stream');
-                    $this->header('Content-Disposition: attachment; filename="'.$file_name.'"');
+                if (true || !preg_match($this->options['inline_file_types'], $file_name)) {
+                    //发送Http Header信息 开始下载
+                    $this->header("Pragma: public");
+                    $this->header('Content-Encoding: none');
+                    // $this->header("Content-type: ".$type);
+                    $this->header('Content-Disposition: attachment; filename="'.$down_name.'"');
                     $this->header('Content-Transfer-Encoding: binary');
                 } else {
                     // Prevent Internet Explorer from MIME-sniffing the content-type:
                     $this->header('X-Content-Type-Options: nosniff');
                     $this->header('Content-Type: '.$this->get_file_type($file_path));
-                    $this->header('Content-Disposition: inline; filename="'.$file_name.'"');
+                    $this->header('Content-Disposition: inline; filename="'.$down_name.'"');
                 }
                 $this->header('Content-Length: '.$this->get_file_size($file_path));
                 $this->header('Last-Modified: '.gmdate('D, d M Y H:i:s T', filemtime($file_path)));

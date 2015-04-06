@@ -38,10 +38,10 @@
             <td class="error" colspan="2"><span class="label label-important">Error</span> {%=file.error%}</td>
         {% } else { %}
             <td class="preview">{% if (file.thumbnail_url) { %}
-                <a href="{%=o.options.downLoadBaseUrl%}{%=file.url%}" title="{%=file.name%}" rel="gallery" download="{%=file.name%}" target="download"><img src="{%=o.options.downLoadBaseUrl%}{%=file.thumbnail_url%}"></a>
+                <a href="{%=file.url%}" title="{%=file.name%}" rel="gallery" download="{%=file.name%}" target="download"><img src="{%=file.thumbnail_url%}"></a>
             {% } %}</td>
             <td class="name">
-                <a href="__ROOT__/Basic/download?f={%=file.url%}&n={%=file.real_name%}" title="{%=file.name%}" download="{%=file.name%}" target="download">{%=file.real_name%}</a>
+                <a href="{%=file.url%}&n={%=file.real_name%}" title="{%=file.name%}" download="{%=file.name%}" target="download">{%=file.real_name%}</a>
 				<input type="hidden" name="{%=o.options.inputFieldName%}[]" value="{%=JSON.stringify(file)%}" />
             </td>
             <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>

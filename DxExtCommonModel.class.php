@@ -1023,9 +1023,9 @@ class DxExtCommonModel extends Model {
                         foreach($uploadField as $fieldName){
                             $files  = json_decode($dataL[$fieldName],true);
                             foreach($files as $file){
-                                unlink(C("UPLOAD_BASE_PATH").dirname($file["url"])."/".$file["name"]);
-                                if(!empty($file["thumbnail_url"])){
-                                    unlink(C("UPLOAD_BASE_PATH").dirname($file["thumbnail_url"])."/thumbnail_".$file["name"]);
+                                unlink(C("UPLOAD_BASE_PATH")."/".$file["file_path"]);
+                                if(!empty($file["thumbnail_file_path"])){
+                                    unlink(C("UPLOAD_BASE_PATH")."/".$file["thumbnail_file_path"]);
                                 }
                             }
                         }

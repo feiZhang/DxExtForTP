@@ -41,17 +41,19 @@ class DxBasicAction extends Action {
     public function upload_photo(){
         $this->display("DxBasic:upload_photo");
     }
+
     /**
      * 上传文件
      * */
     public function upload_file(){
-        require_once (DXINFO_PATH."/Vendor/UploadHandler.php");
+        require_once (DXINFO_PATH."/Vendor/UploadHandler.class.php");
         $upload_handler = new UploadHandler(array(
             "validate"      => '/\.(gif|jpe?g|png)$/i',
-            "upload_dir"    =>  C('TEMP_FILE_PATH')."/",
-            "upload_url"    =>  "/",
+            "upload_dir"    => C('TEMP_FILE_PATH')."/",
+            "script_url"    => __ACTION__,
+            "download_via_php" => true,
             'image_versions' => array(
-                'thumbnail'=>array(
+                'thumbnail' => array(
                     'max_width'     => 350,
                     'max_height'    => 150
                 )

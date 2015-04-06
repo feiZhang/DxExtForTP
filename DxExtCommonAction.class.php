@@ -191,7 +191,7 @@ class DxExtCommonAction extends Action {
                 $cunzai = false;
                 foreach($value as $nv_key=>$nv){
                     if($nv["url"]==$v["url"]){
-                        //"real_name":"1411270.png","name":"13565930481411270.png","file_path":"20121227\/13565930481411270.png","size":109886,"type":"image\/png","url":".\/ORGA\/Runtime\/TMMP_IMG\/20121227\/13565930481411270.png","thumbnail_url":".\/ORGA\/Runtime\/TMMP_IMG\/thumbnail\/20121227\/13565930481411270.png","delete_url":"http:\/\/job\/yanglaoyuan2\/?file=13565930481411270.png","delete_type":"DELETE"
+                        //[{"real_name":"5.png","name":"14282445155.png","file_path":"20150405\/14282445155.png","size":35287,"type":"image\/png","url":"\/Xitongwangluotu\/2015_04\/14282445155.png","thumbnail_url":"\/Xitongwangluotu\/2015_04\/thumbnail_14282445155.png","delete_url":"\/andiao\/www\/Basic\/upload_file?file=14282445155.png","delete_type":"DELETE"}]
                         $cunzai = true;
                         $value[$nv_key]["cunzai"]   = true;
                         break;
@@ -199,9 +199,9 @@ class DxExtCommonAction extends Action {
                 }
                 $old_val[$ov_key]["cunzai"] = $cunzai;
                 if($cunzai===false){
-                    unlink(C("UPLOAD_BASE_PATH").dirname($old_val[$ov_key]["url"])."/".$old_val[$ov_key]["name"]);
-                    if(!empty($old_val[$ov_key]["thumbnail_url"])){
-                        unlink(C("UPLOAD_BASE_PATH").dirname($old_val[$ov_key]["thumbnail_url"])."/thumbnail_".$old_val[$ov_key]["name"]);
+                    unlink(C("UPLOAD_BASE_PATH")."/".$old_val[$ov_key]["file_path"]);
+                    if(!empty($old_val[$ov_key]["thumbnail_file_path"])){
+                        unlink(C("UPLOAD_BASE_PATH")."/".$old_val[$ov_key]["thumbnail_file_path"]);
                     }
                 }
             }
@@ -209,10 +209,13 @@ class DxExtCommonAction extends Action {
 
         foreach($value as $tkey=>$tval){
             if($tval["cunzai"]!==tre){
-                $value[$tkey]["url"]    = DxFunction::move_file(C("TEMP_FILE_PATH").dirname($tval["url"])."/".$tval["name"],"/".$modelName,"dateY_m");
+                $value[$tkey]["file_path"] = DxFunction::move_file(C("TEMP_FILE_PATH")."/".$tval["file_path"],"/".$modelName,"dateY_m");
+                $value[$tkey]["url"] = __ROOT__."/Basic/download?f=".$value[$tkey]["file_path"];
                 if(!empty($tval["thumbnail_url"])){
-                    $value[$tkey]["thumbnail_url"]  = DxFunction::move_file(C("TEMP_FILE_PATH").dirname($tval["thumbnail_url"])."/".$tval["name"],"/".$modelName,"dateY_m","thumbnail_".$tval["name"]);
+                    $value[$tkey]["thumbnail_file_path"] = DxFunction::move_file(C("TEMP_FILE_PATH")."/thumbnail/".$tval["file_path"],"/".$modelName,"dateY_m","thumbnail_".$tval["name"]);
+                    $value[$tkey]["thumbnail_url"] = __ROOT__."/Basic/download?f=".$value[$tkey]["thumbnail_file_path"];
                 }
+                $value[$tkey]["delete_type"] = "GET";
             }
         }
         if($returnJson)
