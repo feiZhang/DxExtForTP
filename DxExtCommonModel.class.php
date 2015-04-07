@@ -119,8 +119,7 @@ class DxExtCommonModel extends Model {
     /**
      * 重新整理listFields数据，将原始的listFields转换为运行时状态。比如：valChange的转换。
      */
-    public function getListFields($reNew=false,$original=false){
-        Log::write($this->name."->getListFields",LOG::INFO);
+    public function getListFields($onlyCache=false,$original=false){
         if($original) return $this->listFields;
 
         $fieldsMd5 = $this->getListFieldsMd5();
@@ -129,7 +128,21 @@ class DxExtCommonModel extends Model {
         }else{
             $listFs = $this->cacheListFields[$fieldsMd5];
         }
-        return $listFs;
+        
+        if($onlyCache){
+            fb::log($listFs,$this->name."->getListFieldsCache");
+            return $listFs;
+        }else{        
+            //valCahnge数据。
+            $rvFields = array();
+            foreach($listFs as $key=>$field){
+                if($field["valChangeReadOnly"]!=true){
+                    $rvFields[$key] = $this->getFieldValChange($field);
+                }
+            }
+            fb::log($rvFields,$this->name."->getListFields");
+            return $rvFields;
+        }
     }
     //获取字段的默认值，在新增数据时，需要
     public function getListFieldDefault(){
@@ -191,7 +204,7 @@ class DxExtCommonModel extends Model {
     }
     private function getFieldsString($hideState,$table_alias="") {
         $r = array ();
-        foreach ( $this->getNoHideFields ( $hideState ) as $key => $val ) {
+        foreach ( $this->getNoHideFields ( $hideState,true ) as $key => $val ) {
             if (isset ( $val ["field"] ))
                 $r [] = $table_alias.$val ["field"];
             else if (isset ( $val ["name"] ))
@@ -249,21 +262,6 @@ class DxExtCommonModel extends Model {
             case "selectselectselect":
                 if(!empty($field['textTo']) && empty($field["texttoattr"])) $field["texttoattr"] = "full_name";
                 $field["width"] = "180";
-                if(isset($field["valChange"]["model"])){
-                    if($this->name==$field["valChange"]["model"]){
-                        $m    = $this;
-                    }else{
-                        $m    = D($field["valChange"]["model"]);
-                    }
-
-                    $allDataVal = $m->getSelectSelectSelect();
-                    $fdnTreeData = array();
-                    foreach($allDataVal as $d){
-                        if(!is_array($fdnTreeData[$d["parent_id"]])) $fdnTreeData[$d["parent_id"]] = array();
-                        array_push($fdnTreeData[$d["parent_id"]],$d);
-                    }
-                    $field["fdnChange"] = $fdnTreeData;
-                }
                 break;
             case "date":
                 if(empty($field["valFormat"])) $field["valFormat"] = "yyyy-MM-dd";
@@ -294,7 +292,34 @@ class DxExtCommonModel extends Model {
                 unset($field["valChange"][0]);
                 $field["valChange"]    = array_combine($field["valChange"],$field["valChange"]);
             }else $field["valChange"] = array();
-        }else if(is_array($field["valChange"])){
+            $field["valChangeReadOnly"] = false;
+        }
+        if($field["valChangeReadOnly"]){
+            $field = $this->getFieldValChange($field);
+        }
+        return $field;
+    }
+    //valChange分为固定和不固定的，固定的可以直接缓存到cache中，不固定的要每次获取（比如：对应到字典表的能够人工定义的数据）
+    private function getFieldValChange($field){
+        if($field["type"]=="selectselectselect"){
+            if(isset($field["valChange"]["model"])){
+                if($this->name==$field["valChange"]["model"]){
+                    $m    = $this;
+                }else{
+                    $m    = D($field["valChange"]["model"]);
+                }
+
+                $allDataVal = $m->getSelectSelectSelect();
+                $fdnTreeData = array();
+                foreach($allDataVal as $d){
+                    if(!is_array($fdnTreeData[$d["parent_id"]])) $fdnTreeData[$d["parent_id"]] = array();
+                    array_push($fdnTreeData[$d["parent_id"]],$d);
+                }
+                $field["fdnChange"] = $fdnTreeData;
+            }
+        }
+
+        if(is_array($field["valChange"])){
             //将字典表，转换为valChange数据
             if(isset($field["valChange"]["model"])){
                 if($this->name==$field["valChange"]["model"]){
@@ -320,6 +345,7 @@ class DxExtCommonModel extends Model {
             }
             if(is_array($tValC)) $field["valChange"] = $tValC;
             else $field["valChange"] = array();
+            fb::log($field,$this->name."-fieldsValChange");
         }
         return $field;
     }
@@ -392,11 +418,11 @@ class DxExtCommonModel extends Model {
     /**
      * 获取某个类型未隐藏的字段列表。
      */
-    private function getNoHideFields($hideTag){
+    private function getNoHideFields($hideTag,$cacheFields=false){
         //编辑数据的字段列表，编辑数据时，要隐藏某些字段
         $f  = array();
         $frozen=array();
-        foreach($this->getListFields() as $key=>$field){
+        foreach($this->getListFields($cacheFields) as $key=>$field){
             //默认导出所有的列
             if(!($field["hide"] & $hideTag)){
                 $fieldName  = empty($field['name'])?$key:$field['name'];
@@ -443,10 +469,11 @@ class DxExtCommonModel extends Model {
                     }else if(is_array($field["valChange"])){
                         //set 存储的数据是json数据；
                         if($field["type"]=="set"){
-                            if($field["valFormat"]=="json")
+                            if($field["valFormat"]=="json"){
                                 $valueToJson    = "if(value[0]=='['){value = eval(value);var r='';$(value).each(function(i,v){r+=valChangeDatas[v]+' ';});return r;}else{return value;}";
-                            else
+                            }else{
                                 $valueToJson    = "if(value=='') return '';var value = value.split(',');var r='';$(value).each(function(i,v){if(valChangeDatas[v]!=undefined) r+=valChangeDatas[v]+' ';});return r;";
+                            }
                         }
                         else $valueToJson   = "return valChangeDatas[value];";
                     }
@@ -462,7 +489,7 @@ class DxExtCommonModel extends Model {
                 $datasetFields[]    = $datasetField;
             }
         }
-        //dump($datasetFields);dump($gridFields);die();
+        // fb::log($datasetFields);fb::log($gridFields);
         return array("gridFields"=>$gridFields,"datasetFields"=>$datasetFields);
     }
 
@@ -757,17 +784,22 @@ class DxExtCommonModel extends Model {
      * 因为能获得临时的字典内容(参数$dictConfig)，所以，数据变动时，要清除所有的cache。
      * */
     protected function deleteCacheDictTableData(){
-            $cacheNames = S('dict_cache_'.$this->name);
-            if(!empty($cacheNames)){
-                foreach ($cacheNames as $key => $value) {
-                    S($cacheNames,null);
-                }
+        $cacheNames = S('dict_cache_'.$this->name);
+        fb::log($cacheNames,$this->name."-deleteCacheDictTableData");
+        if(!empty($cacheNames)){
+            foreach ($cacheNames as $key => $value) {
+                fb::log($value,$this->name."-deleteCacheDictTableData");
+                S($value,null);
             }
+            S('dict_cache_'.$this->name,null);
+        }
     }
     protected function setCacheDictTableData($dictConfig=""){
         if(empty($dictConfig)){
             $dictConfig = $this->getModelInfo("dictTable");
         }
+        if(empty($dictConfig)) return array();
+
         if(is_array($dictConfig)){
             $configMd5 = md5(json_encode($dictConfig));
         }else{
@@ -777,6 +809,7 @@ class DxExtCommonModel extends Model {
         if($this->getModelInfo("dictType")=="mySelf") $userId   = intval($_SESSION[C("USER_AUTH_KEY")]);
         else $userId    = 0;
         $cacheFileName = 'dict_cache_'.$this->name."_".$userId."_".$configMd5."_dict";
+        fb::log($cacheFileName,$this->name."-setCacheDictTableData");
         $this->cacheDictDatas = S($cacheFileName);
         if(!empty($this->cacheDictDatas) && !APP_DEBUG){
             return $this->cacheDictDatas;
@@ -794,10 +827,11 @@ class DxExtCommonModel extends Model {
             $cacheNames = S('dict_cache_'.$this->name);
             if(empty($cacheNames)){
                 $cacheNames = array($cacheFileName);
-            }else{
+            }else if(!in_array($cacheFileName,$cacheNames)){
                 $cacheNames[] = $cacheFileName;
             }
             S('dict_cache_'.$this->name,$cacheNames);
+            fb::log($cacheNames);
 
             S($cacheFileName,$this->cacheDictDatas);
             return $this->cacheDictDatas;
@@ -1035,7 +1069,6 @@ class DxExtCommonModel extends Model {
             $this->options  = $tOptions;
 
             $vvv = parent::delete($options);
-            fb::Log($this->getLastSQL());
             return $vvv;
         }
     }

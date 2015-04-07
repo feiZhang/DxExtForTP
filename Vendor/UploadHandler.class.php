@@ -601,6 +601,8 @@ class UploadHandler
         }
         $file_name = $this->get_file_name_param();
         $down_name = empty($_GET["n"])?$file_name:$_GET["n"];
+        $down_name = DxFunction::get_filename_bybrowser($down_name);
+        
         if ($this->is_valid_file_object($file_name)) {
             $file_path = $this->get_upload_path($file_name, $this->get_version_param());
             if (is_file($file_path)) {

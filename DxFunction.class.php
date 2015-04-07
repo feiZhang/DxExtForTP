@@ -166,13 +166,19 @@ class DxFunction{
     }
     // 根据浏览器类型决定文件名转换成什么编码，，，ie只能用gbk编码的文件名，firefox支持utf8
     function get_filename_bybrowser($filename){
-        $my_broswer=$_SERVER['HTTP_USER_AGENT'];
-        if(!preg_match("/Firefo|Chrome|Opera|Safari/", $my_broswer)){
+        $ie = false;
+        $liulanqi = $_SERVER["HTTP_USER_AGENT"];
+        if($startLlq = strpos($liulanqi,"MSIE")){
+          $ie = intval(substr($liulanqi,$startLlq+5,3));
+        }
+
+        if($ie!==false && $ie<10){
             $filename = urlencode($filename);
             $filename = str_replace("+", "%20", $filename);
-    //      $filename=iconv('utf-8', 'gbk', $filename);//防止文件名存储时乱码
+            // if($ie<7){
+            //     $filename = iconv('utf-8', 'gbk', $filename);//防止文件名存储时乱码
+            // }
         }else{
-            // $filename=  sprintf("\"%s\"", $filename);
         }
         return $filename;
     }
@@ -348,7 +354,7 @@ class DxFunction{
             $t  = array();
             $fs = json_decode($vv[$fieldName],true);
             foreach($fs as $file){
-                $t[]    = sprintf("<a href='%s&n=%s' download='%s' target='download'>%s</a>",$file["url"],urlencode($file["real_name"]),htmlentities($file["real_name"],ENT_QUOTES,'UTF-8'),htmlentities($file["real_name"],ENT_QUOTES,'UTF-8'));
+                $t[]    = sprintf("<a href='%s&n=%s' download='%s' target='download'>%s</a>",$file["url"],$file["real_name"],htmlentities($file["real_name"],ENT_QUOTES,'UTF-8'),htmlentities($file["real_name"],ENT_QUOTES,'UTF-8'));
             }
             if(sizeof($t)==1){
                 $dataList[$kk][$fieldName]  = $t[0];

@@ -163,6 +163,7 @@ textTo:将某个字典关联字段的id值对应的数据保存到某字段，�
 	     "valChange"=>array("model"=>"user","type"=>"basic_data_type") 注意:这里对应的model必须设置modelInfo的dictTable值才有效，原理：从数据库获取数据（modelInfo的dictTable决定字段），生成和上面一样的数据格式，树状数据时启用type属性,使用逗号隔开，取多维数据的具体值
      	 "valChange"=>array("sql"=>"select xxx,yyy,zzz from user")，使用SQL语句替代上面的Model，增加灵活性     	      	 
 
+9. valChangeReadonly:设置valChange是否缓存。如果对应用户能够修改的数据，设置为false。其他设置为true。默认为false。
 9. total:数据总计的字符覆盖，某些字段不需要总机结构，比如：区域，则设置此值，替代统计行的显示，一般设为空，但必须设置，不设置则使用计算结构显示
 10. danwei:数据框后面的数据单位说明，在列表界面也显示
 11. note:数据新增修改时，字段后面的说明文字，比如：“固定电话请加区号”

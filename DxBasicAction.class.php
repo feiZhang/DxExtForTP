@@ -18,7 +18,8 @@ class DxBasicAction extends Action {
             $f  = C("UPLOAD_BASE_PATH").$f;
             //ob_clean(); //清空缓冲区，防止文件内容下载多了
             if (file_exists($f)) {
-                $n  = DxFunction::get_filename_bybrowser(empty($_REQUEST["n"])?basename($_REQUEST["f"]):$_REQUEST["n"]);
+                $n = empty($_REQUEST["n"])?basename($_REQUEST["f"]):$_REQUEST["n"];
+                $n = DxFunction::get_filename_bybrowser($n);
                 require_once (DXINFO_PATH."/Vendor/Http.class.php");
                 Http::download($f, $n, $content = '', $expire = 180);
             } else {

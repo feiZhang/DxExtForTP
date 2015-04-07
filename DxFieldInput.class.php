@@ -62,7 +62,7 @@ class DxFieldInput{
                 if(empty($fieldSet['upload']['buttonValue'])) $uploadButtonValue = "新增文件";
                 else $uploadButtonValue = $fieldSet['upload']['buttonValue'];
                 $sysUploadImgType = C("SysSetting.UPLOAD_IMG_FILETYPE")==""?C("UPLOAD_IMG_FILETYPE"):C("SysSetting.UPLOAD_IMG_FILETYPE");
-                $uploadFileType = empty($fieldSet["upload"]["filetype"])?$sysUploadImgType:$fieldSet["upload"]["filetype"];
+                $uploadFileType = array_key_exists("filetype", $fieldSet["upload"])?$fieldSet["upload"]["filetype"]:$sysUploadImgType;
                 $uploadFileNums = intval($fieldSet["upload"]["maxNum"])<0?1:intval($fieldSet["upload"]["maxNum"]);
                 if($uploadFileNums>1){
                     $uploadButtonValue .= "最多".$uploadFileNums."个";

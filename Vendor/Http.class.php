@@ -187,6 +187,7 @@ class Http {
 		}else{
 			$type	 =	 "application/octet-stream";
 		}
+        if($type=="application/octet-stream") $type = "";
         //发送Http Header信息 开始下载
         header("Pragma: public");
         header("Cache-control: max-age=".$expire);

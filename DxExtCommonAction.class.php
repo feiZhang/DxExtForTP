@@ -14,6 +14,13 @@ class DxExtCommonAction extends Action {
     protected $haveHeaderMenu   = true;
 
     function __construct() {
+        $ie = false;
+        $liulanqi = $_SERVER["HTTP_USER_AGENT"];
+        if($startLlq = strpos($liulanqi,"MSIE")){
+          $ie = intval(substr($liulanqi,$startLlq+5,3));
+        }
+        C("IE_VER",$ie);
+
         if(empty($this->model)) $this->model  = D($this->getModelName());
         else $this->theModelName    = $this->model->name;
         if(empty($this->model)) $this->model = M();
@@ -210,10 +217,10 @@ class DxExtCommonAction extends Action {
         foreach($value as $tkey=>$tval){
             if($tval["cunzai"]!==tre){
                 $value[$tkey]["file_path"] = DxFunction::move_file(C("TEMP_FILE_PATH")."/".$tval["file_path"],"/".$modelName,"dateY_m");
-                $value[$tkey]["url"] = __ROOT__."/Basic/download?f=".$value[$tkey]["file_path"];
+                $value[$tkey]["url"] = __ROOT__."/Basic/download?f=".urlencode($value[$tkey]["file_path"]);
                 if(!empty($tval["thumbnail_url"])){
                     $value[$tkey]["thumbnail_file_path"] = DxFunction::move_file(C("TEMP_FILE_PATH")."/thumbnail/".$tval["file_path"],"/".$modelName,"dateY_m","thumbnail_".$tval["name"]);
-                    $value[$tkey]["thumbnail_url"] = __ROOT__."/Basic/download?f=".$value[$tkey]["thumbnail_file_path"];
+                    $value[$tkey]["thumbnail_url"] = __ROOT__."/Basic/download?f=".urlencode($value[$tkey]["thumbnail_file_path"]);
                 }
                 $value[$tkey]["delete_type"] = "GET";
             }
