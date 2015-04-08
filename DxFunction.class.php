@@ -376,7 +376,23 @@ class DxFunction{
         $canton = D("Canton")->getCacheDictTableData();
         return $canton[$cantonFdn];
     }
-    
+    function telToCallOut(&$dataList,$fieldNames){
+        $fieldNs = explode(",", $fieldNames);
+        if(!empty($fieldNs)){        
+            foreach($dataList as $kk=>$vv){
+                foreach($fieldNs as $fieldName){
+                    $tels = explode(",",$dataList[$kk][$fieldName]);
+                    $telToOut = array();
+                    foreach($tels as $tel){
+                        if(!empty($tel)){
+                            $telToOut[] = sprintf("<a href=\"javascript:callToOut('%1\$s');\">%1\$s</a>",$tel);
+                        }
+                    }
+                    $dataList[$kk][$fieldName]  = implode(",", $telToOut);
+                }
+            }
+        }
+    }
             /*
             switch($field["type"]){
                 case "password":
