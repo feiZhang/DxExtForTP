@@ -377,8 +377,9 @@ class DxFunction{
         return $canton[$cantonFdn];
     }
     function telToCallOut(&$dataList,$fieldNames){
+        if(empty($_SESSION('web_tels'))) return false;
         $fieldNs = explode(",", $fieldNames);
-        if(!empty($fieldNs)){        
+        if(!empty($fieldNs)){
             foreach($dataList as $kk=>$vv){
                 foreach($fieldNs as $fieldName){
                     $tels = explode(",",$dataList[$kk][$fieldName]);

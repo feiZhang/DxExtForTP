@@ -165,7 +165,7 @@ class DataOpeAction extends DxExtCommonAction{
         //因为Think模板引擎强制将所欲的{}认为是标签，进行解析，而在preg_**函数解析的过程中，会给所有的"加上\，则TP需要对解析出的函数执行 stripslashes，一切导致 \n变成了n，从而导致字段的js代码出错
         $this->assign("gridFields",str_replace("{","{ ",json_encode($gridField["gridFields"])));
         $this->assign("datasetFields",str_replace("{","{ ",json_encode($gridField["datasetFields"])));
-        $listFields = $model->getEditFields();
+        $listFields = $model->getListFields();
         $this->assign("listFields",$listFields);        //为了在Search中直接使用字段定义生成input框
         $this->assign("InitSearchPara",$this->_searchToString());   //通过URL传递的数据过滤参数
         if(isset($_REQUEST["ignoreInitSearch"])){

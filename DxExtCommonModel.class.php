@@ -230,8 +230,8 @@ class DxExtCommonModel extends Model {
             $tListFields[isset($field["name"])?$field["name"]:$key] = $this->getOneListField($key,$field);
         }
         //转换Model的自动验证规则为formValidation形式
-        //dump($this->_validate);
         $tempValid  = $this->convertValid($this->_validate);
+        // dump($this->_validate);dump($tempValid);
         foreach($tempValid as $fld =>$vvvv){
             $tListFields[$fld]["valid"][self::MODEL_INSERT] = "validate[".implode(",",$vvvv[self::MODEL_INSERT])."]";
             $tListFields[$fld]["valid"][self::MODEL_UPDATE] = "validate[".implode(",",$vvvv[self::MODEL_UPDATE])."]";
@@ -1248,7 +1248,9 @@ class DxExtCommonModel extends Model {
                 if(isset($ret[$tfld])){
                     $ret[$tfld]  = array(
                         self::MODEL_INSERT=>array_unique(array_merge($ret[$tfld][self::MODEL_INSERT], $oneValid[self::MODEL_INSERT])),
-                        self::MODEL_UPDATE=>array_unique(array_merge($ret[$tfld][self::MODEL_UPDATE], $oneValid[self::MODEL_UPDATE]))
+                        self::MODEL_UPDATE=>array_unique(array_merge($ret[$tfld][self::MODEL_UPDATE], $oneValid[self::MODEL_UPDATE])),
+                        "validateMsg" => $ret[$tfld]["validateMsg"],
+                        "regex" => $ret[$tfld]["regex"],
                     );
                 }else{
                     $ret[$tfld]  = $oneValid;
@@ -1356,13 +1358,14 @@ class DxExtCommonModel extends Model {
             return $type=="past"?$value<=$otherValue:$value>=$otherValue;
             break;
         default:
-            parent::check($value,$rule,$type);
+            return parent::check($value,$rule,$type);
             break;
         }
     }
 
     /**
      * 验证数据合法性
+     * remoteValidataField 调用，ajax验证
      * @param   $data   要验证的数据，就是where条件
      * @param   $name   要验证的字段
      * */
