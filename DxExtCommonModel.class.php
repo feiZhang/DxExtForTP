@@ -60,6 +60,7 @@ class DxExtCommonModel extends Model {
             "customRowAttribute"=>0,
             "onComplete"=>0,
             "enablePage"=>1,
+            "addDialogButtons"=>"[]"
         );
         $this->modelInfo = array_merge($modelInfoInit,$this->modelInfo);
 

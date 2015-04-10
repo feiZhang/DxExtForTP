@@ -52,7 +52,7 @@ class DxFieldInput{
     }
 
     //使用angular生成输入框。
-    static private function createInputHtml_Angular($fieldSet,$defaultVal=""){
+    static public function createInputHtml_Angular($fieldSet,$defaultVal=""){
             switch($fieldSet["type"]){
             case "editer":
                 $inputRV = sprintf('<script id="editer_%s" name="editer_%s" type="text/plain" style="width:500px;height:200px;">',$fieldSet["name"],$fieldSet["name"]);
@@ -275,6 +275,14 @@ class DxFieldInput{
                     $inputRV .= sprintf("<option value=\"%s\">%s</option>",$key,DxFunction::escapeHtmlValue($val));
                 }
                 $inputRV .= sprintf('</select>');
+                break;
+            case "enum":
+                $inputAddr = "\"";
+                if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo%s textTo="%s">',$inputAddr,$fieldSet['textTo']);
+                $inputRV = "";
+                foreach($fieldSet["valChange"] as $key => $val){
+                    $inputRV .= sprintf('<input name="%3$s" id="%1$s" value="%4$s" class="autowidth%2$s type="radio" />%5$s',$fieldSet["name"],$inputAddr,$fieldSet["searchName"],$key,$val);
+                }
                 break;
             case "canton":
             case "selectselectselect":
