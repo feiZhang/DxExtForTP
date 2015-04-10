@@ -18,10 +18,17 @@ function dataOpeEdit(config){
             }else if(Sigma.GridCache && Sigma.GridCache["theDataOpeGrid"]){
                 Sigma.GridCache["theDataOpeGrid"].reload();
             }
+
+            if(config.buttons!=undefined){
+                $(config.buttons).each(function(i,v){
+                    theDialog.button({id: v.id,disabled: false});
+                });
+            }
             theDialog.content(msg['info']).time(2000).button({id: 'ok',disabled: true},{id:'cancel',value:'关闭'});
         }
         if(config.ok !== undefined) config.ok(form,msg);
     }
+    var editDialog = null;
     var submitCheck = function(){
         return true;
     }
@@ -36,11 +43,7 @@ function dataOpeEdit(config){
     if(dialogTitle=="" || dialogTitle==0 || dialogTitle==undefined) dialogTitle = "修改";
     if(moduleName!=0 && moduleName!='' && moduleName!=undefined) this_post_url = APP_URL + "/" + moduleName;
 
-    var saveButton = {
-                id:"ok",
-                value:"保存",
-                disabled:true,
-                callback:function(){
+    var saveCallBack = function(){
                     var theForm = $("form#itemAddForm");
                     if(theForm.length<1) return true;
                     theForm.attr("action",this_post_url + "/save");
@@ -52,7 +55,12 @@ function dataOpeEdit(config){
                     theForm.data("submitCheck",submitCheck);
                     theForm.submit();
                     return false;
-                }
+                };
+    var saveButton = {
+                id:"ok",
+                value:"保存",
+                disabled:true,
+                callback:saveCallBack
             };
     var showButton = config.isEdit==false?[{
                 id:"editData",
@@ -61,12 +69,25 @@ function dataOpeEdit(config){
                     startEdit(this);
                     return false;
                 }
-            },saveButton]:[$.extend(saveButton,{disabled:false})];
+            },saveButton]:[$.extend(saveButton,{disabled:true})];
+
+    if(config.buttons!=undefined){
+        $(config.buttons).each(function(i,v){
+            var newSaveButton = $.extend(saveButton);
+            newSaveButton.id = v.id;
+            newSaveButton.value = v.value;
+            newSaveButton.callback = function(){
+                (v.callback)();
+                return saveCallBack();
+            }
+            showButton.push(newSaveButton);
+        });
+    }
 
     if(config.onlyShow==true){
         showButton = [];
     }
-    var editDialog = $.dialog({
+    editDialog = $.dialog({
         id:"editObject",
         skin:"editObjectArtDialog",
         title:dialogTitle,
@@ -91,6 +112,14 @@ function dataOpeEdit(config){
 
                 //IE6 select 标签遮挡 div 的 Bug，
                 $("div.editObjectArtDialog").bgiframe();
+                if(config.isEdit!=false){
+                    theThis.button({id: 'ok',disabled: false});
+                    if(config.buttons!=undefined){
+                        $(config.buttons).each(function(i,v){
+                            theThis.button({id: v.id,disabled: false});
+                        });
+                    }
+                }
             });
         },
         button:showButton

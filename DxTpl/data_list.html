@@ -32,6 +32,7 @@
             <button class="btn btn-primary btn-sm" id='item_add' onclick="javascript:dataOpeAdd({ 'isEdit':true,
                 'data':'{$InitSearchPara}',
                 'title':'{$modelInfo['addTitle']}',
+                'buttons':{$modelInfo['addDialogButtons']},
                 'modelName':'{$Think.const.MODULE_NAME}'});">{$modelInfo['addTitle']}</button>
             <?php } ?>
         </literal>

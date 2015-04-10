@@ -377,19 +377,22 @@ class DxFunction{
         return $canton[$cantonFdn];
     }
     function telToCallOut(&$dataList,$fieldNames){
-        if(empty($_SESSION('web_tels'))) return false;
-        $fieldNs = explode(",", $fieldNames);
-        if(!empty($fieldNs)){
-            foreach($dataList as $kk=>$vv){
-                foreach($fieldNs as $fieldName){
-                    $tels = explode(",",$dataList[$kk][$fieldName]);
-                    $telToOut = array();
-                    foreach($tels as $tel){
-                        if(!empty($tel)){
-                            $telToOut[] = sprintf("<a href=\"javascript:callToOut('%1\$s');\">%1\$s</a>",$tel);
+        if(empty($_SESSION['web_tels'])){
+
+        }else{        
+            $fieldNs = explode(",", $fieldNames);
+            if(!empty($fieldNs)){
+                foreach($dataList as $kk=>$vv){
+                    foreach($fieldNs as $fieldName){
+                        $tels = explode(",",$dataList[$kk][$fieldName]);
+                        $telToOut = array();
+                        foreach($tels as $tel){
+                            if(!empty($tel)){
+                                $telToOut[] = sprintf("<a href=\"javascript:callToOut('%1\$s');\">%1\$s</a>",$tel);
+                            }
                         }
+                        $dataList[$kk][$fieldName]  = implode(",", $telToOut);
                     }
-                    $dataList[$kk][$fieldName]  = implode(",", $telToOut);
                 }
             }
         }
@@ -507,7 +510,7 @@ class DxFunction{
     function arrayToArray($tV){
         $rv = array();
         if(empty($tV) || !is_array($tV)){
-           return $v;
+           return $rv;
         }
         
         $keys = array_keys($tV[0]);
