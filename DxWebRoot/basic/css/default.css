@@ -5,7 +5,7 @@ body{
 }
 
 /* bootstrap 的 select默认太宽了 */
-select.autowidth{
+.autowidth{
     width:auto;
 }
 #grid-help-info div.alert{

@@ -162,8 +162,8 @@ class DxFieldInput{
                                             $fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
                 break;
             case "enum":
-                $inputType = "radio";
-                if(!empty($fieldSet["textTo"])) $inputType = sprintf("%s\" class=\"textTo\" textTo=\"%s",$inputType,$fieldSet["textTo"]);
+                $inputType = "radio\" class=\"autowidth textTo";
+                if(!empty($fieldSet["textTo"])) $inputType = sprintf("radio\" class=\"autowidth textTo\" textTo=\"%s",$fieldSet["textTo"]);
                 $inputRV = sprintf('<span ng-show="isEdit">');
                 $inputRV .= sprintf('<span ng-repeat="(key,val) in dataFields.%s.valChange">',$fieldSet["name"]);
                 $inputRV .= sprintf("<input type=\"%1\$s\" name=\"%2\$s\" id=\"%2\$s\" value=\"{{key}}\" text=\"{{val}}\" 
@@ -215,8 +215,8 @@ class DxFieldInput{
                 if(!empty($fieldSet["textTo"])) $textTo = sprintf(' textTo" textTo="%s',$fieldSet['textTo']);
                 else $textTo = "";
                 $inputRV = sprintf('<select name="%1$s" id="%1$s" ng-class="isEdit | validClass:isAdd:\'%3$s\':\'%2$s\'" 
-                                            ng-model="dataInfo.%1$s"%4$s class="autowidth%5$s" ng-show="isEdit" ng-options="key as val for (key,val) in dataFields.%1$s.valChange">',
-                    $fieldSet["name"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputAddr,$textTo);
+                                            ng-model="dataInfo.%1$s"%4$s class="autowidth %6$s %5$s" ng-show="isEdit" ng-options="key as val for (key,val) in dataFields.%1$s.valChange">',
+                    $fieldSet["name"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputAddr,$textTo,$fieldSet["styleClass"]);
                 $inputRV .= sprintf('<option value="">请选择</option>');
                 /*
                 foreach($fieldSet["valChange"] as $key => $val){

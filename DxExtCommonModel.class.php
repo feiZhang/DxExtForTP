@@ -269,7 +269,7 @@ class DxExtCommonModel extends Model {
                 if(empty($field["width"])) $field["width"] = strlen($field["valFormat"])*6+10;
                 $start = strpos("yyyy-MM-dd HH:mm:ss",$field["valFormat"]);
                 if(empty($field["renderer"]) && $start!==false){
-                    $field["renderer"] = sprintf("var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){if(value==null) return '';else if(value.replace(/[:0\- ]*/,'','gi')=='') return '';return value.substr(%d,%d);}",$start,strlen($field["valFormat"]));
+                    $field["renderer"] = sprintf("var valChange=function valChangeCCCC(value ,record,columnObj,grid,colNo,rowNo){if(value==null){return '';}else if(value.replace(/[:0\- ]*/,'','gi')=='') return '';return value.substr(%d,%d);}",$start,strlen($field["valFormat"]));
                 }
             case "idcard":
                 if(empty($field["idcard"])) $field["idcard"] = "'birthday':'birthday','sex':'sex','id_reg_addr':'id_reg_addr'";
