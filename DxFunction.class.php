@@ -388,7 +388,7 @@ class DxFunction{
                         $telToOut = array();
                         foreach($tels as $tel){
                             if(!empty($tel)){
-                                $telToOut[] = sprintf("<a href=\"javascript:callToOut('%1\$s');\">%1\$s</a>",$tel);
+                                $telToOut[] = sprintf("<a href=\"javascript:callToOut('%1\$s','%2\$s','%3\$s');\">%1\$s</a>",$tel,$_SESSION['web_tels'],C("TelNoQianZhui"));
                             }
                         }
                         $dataList[$kk][$fieldName]  = implode(",", $telToOut);

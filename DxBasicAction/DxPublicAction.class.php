@@ -13,16 +13,16 @@
  * */
 class DxPublicAction extends DxExtCommonAction {
     public function resetPass(){
-        echo DxFunction::authcode("2ec9BcQP2uRV5T5U3kGSxYgCvb5xZFMbY3twVkCzH4Ktg3E", 'DECODE');die();
-        if(APP_DEBUG){
-            if(C("LOGIN_MD5")){     //密码验证方式不同。
-                $inputPass = md5('dxinfo');
-            }else{
-                $inputPass = DxFunction::authcode("dxinfo", 'ENCODE');
-            }
-            D("Account")->where(array("login_username"=>"admin"))->save(array("login_pwd"=>$inputPass));
-            echo "success";
-        }
+        echo DxFunction::authcode("ab04xzI6It2MED24iDifN+bg3pSO/xYBcSCZdEpQ4K8oL5Q", 'DECODE');die();
+        // if(APP_DEBUG){
+        //     if(C("LOGIN_MD5")){     //密码验证方式不同。
+        //         $inputPass = md5('dxinfo');
+        //     }else{
+        //         $inputPass = DxFunction::authcode("dxinfo", 'ENCODE');
+        //     }
+        //     D("Account")->where(array("login_username"=>"admin"))->save(array("login_pwd"=>$inputPass));
+        //     echo "success";
+        // }
     }
     private function loginGotoUri(){
         $main_url   = session("main_url");

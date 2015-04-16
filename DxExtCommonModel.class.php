@@ -52,8 +52,8 @@ class DxExtCommonModel extends Model {
         $this->listFields   = $listF;
     }
 
-    function __construct($name='',$connection='') {
-        parent::__construct($name,$connection);
+    function __construct($name='',$tablePrefix='',$connection='') {
+        parent::__construct($name,$tablePrefix,$connection);
 
         //modelInfo的初试值
         $modelInfoInit = array(
