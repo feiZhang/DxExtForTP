@@ -10,7 +10,7 @@ class DxFieldInput{
 
             $inputRV = "";
             if($fieldSet["readOnly"]!==true){
-                if($fieldSet["type"]=="canton" || $fieldSet["type"]=="selectselectselect"){
+                if($fieldSet["type"]=="canton" || $fieldSet["type"]=="selectselectselect" || $fieldSet["type"]=="enum"){
                     //angular生成的select多一个空的option，最新版也是有这个bug
                     $inputRV = DxFieldInput::createInputHtml($fieldSet,$defaultVal);
                 }else{
@@ -165,8 +165,8 @@ class DxFieldInput{
                 $inputType = "radio\" class=\"autowidth textTo";
                 if(!empty($fieldSet["textTo"])) $inputType = sprintf("radio\" class=\"autowidth textTo\" textTo=\"%s",$fieldSet["textTo"]);
                 $inputRV = sprintf('<span ng-show="isEdit">');
-                $inputRV .= sprintf('<span ng-repeat="(key,val) in dataFields.%s.valChange">',$fieldSet["name"]);
-                $inputRV .= sprintf("<input type=\"%1\$s\" name=\"%2\$s\" id=\"%2\$s\" value=\"{{key}}\" text=\"{{val}}\" 
+                $inputRV .= sprintf('<span ng-repeat="(kee,val) in dataFields.%s.valChange">',$fieldSet["name"]);
+                $inputRV .= sprintf("<input type=\"%1\$s\" name=\"%2\$s\" id=\"%2\$s\" value=\"{{kee}}\" text=\"{{val}}\" 
                                                 ng-model=\"dataInfo.%2\$s\" ng-class=\"isEdit | validClass:isAdd:'%4\$s':'%3\$s'\" />{{val}}",
                         $inputType,$fieldSet["name"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
                 $inputRV .= '</span>';
@@ -277,12 +277,14 @@ class DxFieldInput{
                 $inputRV .= sprintf('</select>');
                 break;
             case "enum":
-                $inputAddr = "\"";
-                if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo%s textTo="%s">',$inputAddr,$fieldSet['textTo']);
-                $inputRV = "";
+                $inputType = "radio\" class=\"autowidth";
+                if(!empty($fieldSet["textTo"])) $inputType = sprintf("radio\" class=\"autowidth textTo\" textTo=\"%s",$fieldSet["textTo"]);
+                $inputRV = sprintf('<span class="isEdit">');
                 foreach($fieldSet["valChange"] as $key => $val){
-                    $inputRV .= sprintf('<input name="%3$s" id="%1$s" value="%4$s" class="autowidth%2$s type="radio" />%5$s',$fieldSet["name"],$inputAddr,$fieldSet["searchName"],$key,$val);
+                    $inputRV .= sprintf('<input name="%3$s" id="%1$s" value="%4$s" type="%2$s" text="%5$s" ng-class="isEdit | validClass:isAdd:\'%6$s\':\'%7$s\'" />%5$s',
+                        $fieldSet["name"],$inputType,$fieldSet["searchName"],$key,$val,$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
                 }
+                $inputRV .= sprintf('</span>');
                 break;
             case "canton":
             case "selectselectselect":

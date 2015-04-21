@@ -72,6 +72,7 @@
         if(!empty($recordDataInfo[$kkk])){
             switch($vvv["type"]){
                 case "enum":
+                    $initValueJs[] = "\$('form#itemAddForm input[name=\"".$kkk."\"][value=\"'+ recordDataInfo.".$kkk." + '\"]').attr('checked',true);";
                     break;
                 case "set":
                     // $initValueJs[] = "\$('form#itemAddForm #".$kkk."').val(recordDataInfo.".$kkk.");";
@@ -144,4 +145,3 @@ printf("%s",implode("",$initValueJs));
     </literal>
 </div>
 </form>
-
