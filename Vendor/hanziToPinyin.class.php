@@ -66,6 +66,11 @@ class PinYin {
      +--------------------------------------------------------------------------------
      */
     public function getFirstPY($chinese,$charset='utf-8'){
+      $tsZ = array("窦"=>"D","闫"=>"Y","淇"=>"Q","褚"=>"Z","琚"=>"J","闵"=>"M","翟"=>"Z");
+      $xing = mb_substr($chinese,0,1,'utf-8');
+      if(array_key_exists($xing, $tsZ)){
+        return $tsZ[$xing];
+      }
       if($charset != 'gb2312') $chinese = $this->_U2_Utf8_Gb($chinese);
        $result = '' ;
        for ($i=0; $i<strlen($chinese); $i++) {
