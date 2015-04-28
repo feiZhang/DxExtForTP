@@ -69,13 +69,18 @@
     //angular生成的数据，会自动填充默认值。。。canton和selectselect不适用angular生成（生成异常，多一个空options）
     $initValueJs = array();
     foreach($listFields as $kkk => $vvv){
-        if(!empty($recordDataInfo[$kkk])){
+        if($vvv["readOnly"]==true){
+            $initValueJs[] = "\$('form#itemAddForm #".$kkk."').val(recordDataInfo.".$kkk.");";
+        }else if(!empty($recordDataInfo[$kkk])){
             switch($vvv["type"]){
                 case "enum":
                     $initValueJs[] = "\$('form#itemAddForm input[name=\"".$kkk."\"][value=\"'+ recordDataInfo.".$kkk." + '\"]').attr('checked',true);";
                     break;
                 case "set":
                     // $initValueJs[] = "\$('form#itemAddForm #".$kkk."').val(recordDataInfo.".$kkk.");";
+                    break;
+                case "select":
+                    $initValueJs[] = "\$('form#itemAddForm select[name=\"".$kkk."\"]').find(\"option[value='\"+recordDataInfo.".$kkk."+\"']\").attr(\"selected\", true);";
                     break;
                 default:
                     $initValueJs[] = "\$('form#itemAddForm #".$kkk."').val(recordDataInfo.".$kkk.");";

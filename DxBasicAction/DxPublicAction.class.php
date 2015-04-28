@@ -13,7 +13,7 @@
  * */
 class DxPublicAction extends DxExtCommonAction {
     public function resetPass(){
-        echo DxFunction::authcode("ab04xzI6It2MED24iDifN+bg3pSO/xYBcSCZdEpQ4K8oL5Q", 'DECODE');die();
+        echo DxFunction::authcode("7775lDEyji1YPr9rsZuWmJx0SkV4XfoPsYQ9NgGI6aVGzw", 'DECODE');die();
         // if(APP_DEBUG){
         //     if(C("LOGIN_MD5")){     //密码验证方式不同。
         //         $inputPass = md5('dxinfo');

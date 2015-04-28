@@ -10,14 +10,14 @@ class DxFieldInput{
 
             $inputRV = "";
             if($fieldSet["readOnly"]!==true){
-                if($fieldSet["type"]=="canton" || $fieldSet["type"]=="selectselectselect" || $fieldSet["type"]=="enum"){
+                if($fieldSet["type"]=="canton" || $fieldSet["type"]=="selectselectselect" || $fieldSet["type"]=="enum" || $fieldSet["type"]=="select"){
                     //angular生成的select多一个空的option，最新版也是有这个bug
                     $inputRV = DxFieldInput::createInputHtml($fieldSet,$defaultVal);
                 }else{
                     $inputRV = DxFieldInput::createInputHtml_Angular($fieldSet,$defaultVal);
                 }
             }else if(!empty($defaultVal)){
-                $inputRV = sprintf("<input type='hidden' name='%1\$s' id='%1\$s' value='' />",$fieldSet["name"]);
+                $inputRV = sprintf("<input type='hidden' name='%1\$s' id='%1\$s' value='%2\$s' />",$fieldSet["name"],$defaultVal);
             }
 
             //显示视图模式的内容
@@ -269,7 +269,7 @@ class DxFieldInput{
             case "select":
                 $inputAddr = empty($fieldSet["multiple"])?"\"":"\" multiple";
                 if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo%s textTo="%s">',$inputAddr,$fieldSet['textTo']);
-                $inputRV = sprintf('<select name="%3$s" id="%1$s" class="autowidth%2$s>',$fieldSet["name"],$inputAddr,$fieldSet["searchName"]);
+                $inputRV = sprintf('<select name="%3$s" id="%1$s" class="isEdit autowidth%2$s>',$fieldSet["name"],$inputAddr,$fieldSet["searchName"]);
                 $inputRV .= sprintf('<option value="">请选择</option>');
                 foreach($fieldSet["valChange"] as $key => $val){
                     $inputRV .= sprintf("<option value=\"%s\">%s</option>",$key,DxFunction::escapeHtmlValue($val));

@@ -1,9 +1,10 @@
-function showDialog(strTitle, strContent) {
+function showDialog(strTitle, strContent, showTime) {
+    if(showTime==undefined) showTime = 3000;
     $.dialog({
         title : strTitle,
         content : strContent,
         esc : true,
-        time : 3000,
+        time : showTime,
         lock : true
     });
 }

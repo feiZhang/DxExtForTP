@@ -442,7 +442,12 @@ class DxExtCommonAction extends Action {
         $map    = array ();
         //支持like、大于、小于
         //有些model显示的内容是多表关联，所以不能使用getDbFields
-        $dbFields   = $model->getListFields();
+        if(method_exists($this->model,"getModelInfoMd5")){
+            $dbFields = $model->getListFields();
+        }else{
+            $dbFields = $model->getDbFields();
+        dump($dbFields);
+        }
         foreach($_REQUEST as $key=>$val){
             if (empty($val) && strlen($val)<1) continue;
             $fieldAdd   = "";
