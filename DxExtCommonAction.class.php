@@ -95,7 +95,7 @@ class DxExtCommonAction extends Action {
         //一个Module的同一个页面，不同用户显示的界面不同。。:机构管理－》监测指标
         //相同model的add 和 edit 页面，listFields完全相同，但是显示内容可以不同。
         if(method_exists($this->model,"getModelInfoMd5")){
-            $cacheAliaName = "_".$cacheType."_".$this->model->getModelInfoMd5()."_".$this->model->getListFieldsMd5()."_".session('role_id');
+            $cacheAliaName = "_".$cacheType."_".$this->model->getModelInfoMd5()."_".md5(json_encode($this->model->getListFields()))."_".session('role_id');
         }else{
             //PublicAction 没有model
             $cacheAliaName = "_".$cacheType."_".session('role_id');

@@ -133,7 +133,7 @@ class DxExtCommonModel extends Model {
         if($onlyCache){
             fb::log($listFs,$this->name."->getListFieldsCache");
             return $listFs;
-        }else{        
+        }else{
             //valCahnge数据。
             $rvFields = array();
             foreach($listFs as $key=>$field){

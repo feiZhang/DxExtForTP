@@ -256,7 +256,7 @@ function dataOpeSearch(formId){
 function dataOpeExport(formId){
     var url = "";
     if(formId!=undefined && formId!=''){
-        url = dxGrid.urladd(URL_URL + "/get_datalist?export=xls",$("#" + formId).serialize());
+        url = dxGrid.urladd(dxGrid.urladd(dxGrid.getLoadUrl(),"export=xls"),$("#" + formId).serialize());
     }else{
         url = URL_URL + "/get_datalist?export=xls";
     }

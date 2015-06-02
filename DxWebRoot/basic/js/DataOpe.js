@@ -178,6 +178,9 @@
             _this.mygrid.exportURL  = exportUrl;
             _this.mygrid.reload();
         };
+        _this.getLoadUrl = function(){
+            return _this.orginDataUrl;
+        }
         _this.urladd    = function(url,para){
             if(para=="" || para==undefined){
             }else{
