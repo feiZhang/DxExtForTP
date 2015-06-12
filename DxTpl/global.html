@@ -3,6 +3,7 @@ var cantonData = {$CantonData};
 var cantonIdValChange = new Array();
 var cantonLength = cantonData.length;
 var fdn;
+var tTheParentId;
 //var tempCantonFdn = null;
 for (i=0;i<cantonLength;++i) {
     /*
@@ -11,15 +12,16 @@ for (i=0;i<cantonLength;++i) {
     tempCantonFdn = tempCantonFdn.pop();
     cantonIdValChange[parseInt(tempCantonFdn,10)] = cantonData[i];
     */
-    cantonIdValChange[cantonData[i].pkid] = cantonData[i];
-    if (undefined == cantonFdnTree[cantonData[i].parent_id]) {
-        if(cantonData[i].parent_id==0){
-            cantonFdnTree[cantonData[i].parent_id] = new Array();
+    tTheParentId = cantonData[i].parent_id;
+    cantonIdValChange[parseInt(cantonData[i].pkid,10)] = cantonData[i];
+    if (undefined == cantonFdnTree[tTheParentId]) {
+        if(tTheParentId==0){
+            cantonFdnTree[tTheParentId] = new Array();
         }else{
-            //console.log(cantonData[i].parent_id);
-            fdn = cantonIdValChange[cantonData[i].parent_id]['fdn'];
-            cantonFdnTree[cantonData[i].parent_id] = new Array({pkid:0,'parent_id':0,'name':'请选择','full_name':'','fdn':fdn,'canton_id':0});
+            //console.log(tTheParentId);
+            fdn = cantonIdValChange[tTheParentId]['fdn'];
+            cantonFdnTree[tTheParentId] = new Array({pkid:0,'parent_id':0,'name':'请选择','full_name':'','fdn':fdn,'canton_id':0});
         }
     }
-    cantonFdnTree[cantonData[i].parent_id].push(cantonData[i]);
+    cantonFdnTree[tTheParentId].push(cantonData[i]);
 };

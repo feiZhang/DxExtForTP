@@ -301,10 +301,13 @@ class DxFieldInput{
                     <input type="hidden" name="%3$s" id="%1$s" value="" class="autowidth%2$s" />
                     </span>'
                     ,$fieldSet["name"],$inputAddr,$fieldSet["searchName"],$spanIdRandom);
+                if(empty($fieldSet["fdnChange"])) $tempSelectData = "cantonFdnTree";
+                else $tempSelectData = str_replace("{","{ ",json_encode($fieldSet["fdnChange"]));
                 $inputRV .= sprintf('
                                         <script>
                                         $(function(){
-                                            $.selectselectselect($("#%4$s"),cantonFdnTree,"%1$s","%2$s","1",function(t){
+                                            var tempSelectData = %5$s;
+                                            $.selectselectselect($("#%4$s"),tempSelectData,"%1$s","%2$s","1",function(t){
                                                 $("#%1$s").attr("key",$(t).find("option:selected").attr("key"));
                                                 $("#%1$s").attr("short_name",$(t).find("option:selected").attr("short_name"));
                                                 $("#%1$s").attr("full_name",$(t).find("option:selected").attr("full_name"));
@@ -312,7 +315,7 @@ class DxFieldInput{
                                             },"",false,"");
                                         });
                                         </script>
-                                    ',$fieldSet["name"],$rootFdnId,$fieldSet["textTo"],$spanIdRandom);
+                                    ',$fieldSet["name"],$rootFdnId,$fieldSet["textTo"],$spanIdRandom,$tempSelectData);
                 break;
             case "string":
             case "text":
