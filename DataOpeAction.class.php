@@ -8,7 +8,6 @@
  * */
 class DataOpeAction extends DxExtCommonAction{
     protected $defaultWhere = array();
-    private $disableDxTplCache = false;
 
     /* 数据列表 for Grid **/
     public function get_datalist(){

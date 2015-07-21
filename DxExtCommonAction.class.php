@@ -12,7 +12,8 @@ class DxExtCommonAction extends Action {
     protected $theModelName     = "";
     private $cacheActionList    = array();  //系统action的缓存，对应menu表
     protected $haveHeaderMenu   = true;
-
+    private $disableDxTplCache = false;
+    
     function __construct() {
         $ie = false;
         $liulanqi = $_SERVER["HTTP_USER_AGENT"];

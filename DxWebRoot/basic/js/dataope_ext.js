@@ -71,11 +71,16 @@ function dataOpeEdit(config){
                 }
             },saveButton]:[$.extend(saveButton,{disabled:true})];
 
+    if(config.onlyShow==true){
+        showButton = [];
+    }
+
     if(config.buttons!=undefined){
         $(config.buttons).each(function(i,v){
             var newSaveButton = $.extend(saveButton);
             newSaveButton.id = v.id;
             newSaveButton.value = v.value;
+            newSaveButton.disabled = v.disabled;
             newSaveButton.callback = function(){
                 (v.callback)();
                 return saveCallBack();
@@ -84,9 +89,6 @@ function dataOpeEdit(config){
         });
     }
 
-    if(config.onlyShow==true){
-        showButton = [];
-    }
     editDialog = $.dialog({
         id:"editObject",
         skin:"editObjectArtDialog",
@@ -114,11 +116,11 @@ function dataOpeEdit(config){
                 $("div.editObjectArtDialog").bgiframe();
                 if(config.isEdit!=false){
                     theThis.button({id: 'ok',disabled: false});
-                    if(config.buttons!=undefined){
-                        $(config.buttons).each(function(i,v){
-                            theThis.button({id: v.id,disabled: false});
-                        });
-                    }
+                    // if(config.buttons!=undefined){
+                    //     $(config.buttons).each(function(i,v){
+                    //         theThis.button({id: v.id,disabled: false});
+                    //     });
+                    // }
                 }
             });
         },

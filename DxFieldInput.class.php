@@ -269,7 +269,7 @@ class DxFieldInput{
             case "select":
                 $inputAddr = empty($fieldSet["multiple"])?"\"":"\" multiple";
                 if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo%s textTo="%s">',$inputAddr,$fieldSet['textTo']);
-                $inputRV = sprintf('<select name="%3$s" id="%1$s" class="isEdit autowidth%2$s>',$fieldSet["name"],$inputAddr,$fieldSet["searchName"]);
+                $inputRV = sprintf('<select ng-show="isEdit" name="%3$s" id="%1$s" class="isEdit autowidth%2$s>',$fieldSet["name"],$inputAddr,$fieldSet["searchName"]);
                 $inputRV .= sprintf('<option value="">请选择</option>');
                 foreach($fieldSet["valChange"] as $key => $val){
                     $inputRV .= sprintf("<option value=\"%s\">%s</option>",$key,DxFunction::escapeHtmlValue($val));
@@ -279,7 +279,7 @@ class DxFieldInput{
             case "enum":
                 $inputType = "radio\" class=\"autowidth";
                 if(!empty($fieldSet["textTo"])) $inputType = sprintf("radio\" class=\"autowidth textTo\" textTo=\"%s",$fieldSet["textTo"]);
-                $inputRV = sprintf('<span class="isEdit">');
+                $inputRV = sprintf('<span ng-show="isEdit" class="isEdit">');
                 foreach($fieldSet["valChange"] as $key => $val){
                     $inputRV .= sprintf('<input name="%3$s" id="%1$s" value="%4$s" type="%2$s" text="%5$s" ng-class="isEdit | validClass:isAdd:\'%6$s\':\'%7$s\'" />%5$s',
                         $fieldSet["name"],$inputType,$fieldSet["searchName"],$key,$val,$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
