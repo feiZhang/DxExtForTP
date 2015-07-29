@@ -264,12 +264,17 @@ class DxFieldInput{
     //普通的输入框生成。
     static public function createInputHtml($fieldSet,$defaultVal=""){
         //生成search输入框的时候，会增加searchName，从而使id和name不同。。因为input的id一直使用name进行填充。这里只好新增searchName，以区分name（id）
-        if(empty($fieldSet["searchName"])) $fieldSet["searchName"] = $fieldSet["name"];
+        if(empty($fieldSet["searchName"])){
+            $fieldSet["searchName"] = $fieldSet["name"];
+            $ngShow = 'ng-show="isEdit"';
+        }else{
+            $ngShow = '';
+        }
         switch($fieldSet["type"]){
             case "select":
                 $inputAddr = empty($fieldSet["multiple"])?"\"":"\" multiple";
                 if(!empty($fieldSet["textTo"])) $inputAddr = sprintf(' textTo%s textTo="%s">',$inputAddr,$fieldSet['textTo']);
-                $inputRV = sprintf('<select ng-show="isEdit" name="%3$s" id="%1$s" class="isEdit autowidth%2$s>',$fieldSet["name"],$inputAddr,$fieldSet["searchName"]);
+                $inputRV = sprintf('<select %4$s name="%3$s" id="%1$s" class="isEdit autowidth%2$s>',$fieldSet["name"],$inputAddr,$fieldSet["searchName"],$ngShow);
                 $inputRV .= sprintf('<option value="">请选择</option>');
                 foreach($fieldSet["valChange"] as $key => $val){
                     $inputRV .= sprintf("<option value=\"%s\">%s</option>",$key,DxFunction::escapeHtmlValue($val));
@@ -279,7 +284,7 @@ class DxFieldInput{
             case "enum":
                 $inputType = "radio\" class=\"autowidth";
                 if(!empty($fieldSet["textTo"])) $inputType = sprintf("radio\" class=\"autowidth textTo\" textTo=\"%s",$fieldSet["textTo"]);
-                $inputRV = sprintf('<span ng-show="isEdit" class="isEdit">');
+                $inputRV = sprintf('<span %s class="isEdit">',$ngShow);
                 foreach($fieldSet["valChange"] as $key => $val){
                     $inputRV .= sprintf('<input name="%3$s" id="%1$s" value="%4$s" type="%2$s" text="%5$s" ng-class="isEdit | validClass:isAdd:\'%6$s\':\'%7$s\'" />%5$s',
                         $fieldSet["name"],$inputType,$fieldSet["searchName"],$key,$val,$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE]);
@@ -334,8 +339,9 @@ class DxFieldInput{
                         $fieldSet["name"],$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputType,$fieldSet["width"],$validateMsg,$fieldSet["searchName"]);
                 }else{
                     $inputRV = sprintf('<textarea ng-model="dataInfo.%1$s" rows="%2$d" style="width:400px" name="%8$s" id="%1$s" placeholder="%3$s" 
-                                                ng-class="isEdit | validClass:isAdd:\'%5$s\':\'%4$s\'" ng-show="isEdit" %7$s></textarea>',
-                        $fieldSet["name"],round(intval($fieldSet["width"])/1000),$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],$fieldSet["valid"][MODEL::MODEL_UPDATE],$inputType,$validateMsg,$fieldSet["searchName"]);
+                                                ng-class="isEdit | validClass:isAdd:\'%5$s\':\'%4$s\'" %9$s %7$s></textarea>',
+                        $fieldSet["name"],round(intval($fieldSet["width"])/1000),$fieldSet["note"],$fieldSet["valid"][MODEL::MODEL_INSERT],
+                        $fieldSet["valid"][MODEL::MODEL_UPDATE],$inputType,$validateMsg,$fieldSet["searchName"],$ngShow);
                 }
                 break;
         }

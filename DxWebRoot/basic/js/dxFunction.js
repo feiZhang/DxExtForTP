@@ -29,6 +29,11 @@ function dayu_time(firstTime,secondTime,isServer){
     else return false;
 }
 
+function getNowData(){
+    var d = new Date();
+    return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+}
+
 //根据身份证号获取出生日期，籍贯和年龄
 function checkIdCard(noValue,config) {
     if(noValue == null || noValue==undefined) return false;

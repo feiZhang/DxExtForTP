@@ -244,7 +244,11 @@ class DataOpeAction extends DxExtCommonAction{
             $where   = array($model->getPk()=>$pkId);
             $vo      = $model->where( $where )->getInfo($listFields);
             if($vo){
-                $this->assign('pkId',$pkId);
+                if($_REQUEST["ope"]=="copy"){
+                    $vo = array_merge($vo,$_REQUEST["copyResetVal"]);
+                }else{
+                    $this->assign('pkId',$pkId);
+                }
             }else{
                 $this->error('要修改的数据不存在!请确认操作是否正确!');
             }
@@ -252,6 +256,7 @@ class DataOpeAction extends DxExtCommonAction{
         $recordDataInfo = array_merge($fieldDefaultVal,$vo);
         $recordDataInfo = array_merge($recordDataInfo,$_REQUEST);
         $this->assign('recordDataInfo', $recordDataInfo);
+        fb::log($recordDataInfo);
         //引用于模板继承，使用变量作为模板文件
         $this->assign('dx_data_edit', DXINFO_PATH."/DxTpl/data_edit.html");
 
