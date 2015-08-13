@@ -646,7 +646,10 @@ class DxExtCommonModel extends Model {
          * 增加数据权限域管理的功能。
          * */
         if(APP_DEBUG) Log::write(var_export($options,true).MODULE_NAME."|".ACTION_NAME."__options",Log::INFO);
-        if($this->skipDataPowerCheck || DxFunction::checkInNotArray(C('DP_NOT_CHECK_MODEL'),array(),$this->name)) return;
+        if($this->skipDataPowerCheck 
+            || DxFunction::checkInNotArray(C('DP_NOT_CHECK_MODEL'),array(),$this->name)
+            || in_array($_SESSION["role_id"], C("DP_NOT_CHECK_ROLE"))
+            ) return;
 
         $dataPowerFieldW            = array();
         $dataPowerFieldPublic       = "";

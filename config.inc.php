@@ -15,6 +15,7 @@ return array (
     'USER_AUTH_KEY' => 'login_user_id',
     'LOGIN_USER_NICK_NAME' => "true_name", // 用户昵称字段名
     'DP_NOT_CHECK_ACTION' => array ("Public" => 1,"DataSync" => 1 ), // 不进行数据权限控制的Action
+    'DP_NOT_CHECK_ROLE' => array(),     //不进行数据权限控制的角色。
     'DP_POWER_FIELDS' => array (
         array ('field_name' => 'creater_user_id','auto_type' => 1,'type' => 0,'session_field' => "login_user_id" ),
         array ('field_name' => 'creater_user_name','auto_type' => 1,'type' => 0,'session_field' => 'true_name' ),

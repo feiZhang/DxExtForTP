@@ -144,7 +144,7 @@ class DxExtCommonAction extends Action {
                     $_REQUEST[$fieldName] = $_POST[$fieldName]  = $_GET[$fieldName]   = json_encode($_REQUEST[$fieldName]);
                 else
                     $_REQUEST[$fieldName] = $_POST[$fieldName]  = $_GET[$fieldName]   = "0,".implode(",",$_REQUEST[$fieldName]).",0";
-            }elseif ($val['type']   == 'cutPhoto'){
+            }elseif ($val['type'] == 'cutPhoto'){
                 if(!empty($_REQUEST[$fieldName])){
                     if(!empty($_REQUEST["old_$fieldName"])) unlink(C("UPLOAD_BASE_PATH").$_REQUEST["old_$fieldName"]);
                     $_REQUEST[$fieldName] = $_POST[$fieldName] = $_GET[$fieldName] = DxFunction::move_file(C("TEMP_FILE_PATH").'/'.$_REQUEST[$fieldName],MODULE_NAME);
@@ -438,16 +438,15 @@ class DxExtCommonAction extends Action {
      * @throws ThinkExecption
      +----------------------------------------------------------
      */
-    protected function _search($name = '') {
-        $model  = $this->model;
+    protected function _search($name = '',$model=null) {
+        if($model==null) $model  = $this->model;
         $map    = array ();
         //支持like、大于、小于
         //有些model显示的内容是多表关联，所以不能使用getDbFields
-        if(method_exists($this->model,"getModelInfoMd5")){
+        if(method_exists($model,"getModelInfoMd5")){
             $dbFields = $model->getListFields();
         }else{
             $dbFields = $model->getDbFields();
-        dump($dbFields);
         }
         foreach($_REQUEST as $key=>$val){
             if (empty($val) && strlen($val)<1) continue;
@@ -513,6 +512,7 @@ class DxExtCommonAction extends Action {
         }
         if(APP_DEBUG){
             fb::log($map,"_search");
+            fb::log($dbFields,"_search");
         }
         return $map;
     }
