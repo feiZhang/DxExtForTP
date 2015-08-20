@@ -268,7 +268,7 @@ class DxFunction{
         $my_id          = session(C('USER_AUTH_KEY'));
         if(intval($my_id)<1) return array("allAction"=>$allAction);
 
-        if(!$ignore) $myAction  = S("Cache_module_action_".$my_id);
+        if(!$ignore) $myAction  = $_SESSION["Cache_module_myaction"];
         if(!$ignore && !empty($myAction)){
             $myAction   = json_decode($myAction,true);
             return array("allAction"=>$allAction,"myAction"=>$myAction);
@@ -286,7 +286,7 @@ class DxFunction{
             }
         }
 
-        S("Cache_module_action_".$my_id,json_encode($myAction),3600);
+        $_SESSION["Cache_module_myaction"] = json_encode($myAction);
         return array("allAction"=>$allAction,"myAction"=>$myAction);
     }
     //检验某个Action是否有权限。。用于在页面验证URL是否可以显示

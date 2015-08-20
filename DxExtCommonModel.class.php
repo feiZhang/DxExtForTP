@@ -649,7 +649,9 @@ class DxExtCommonModel extends Model {
         if($this->skipDataPowerCheck 
             || DxFunction::checkInNotArray(C('DP_NOT_CHECK_MODEL'),array(),$this->name)
             || in_array($_SESSION["role_id"], C("DP_NOT_CHECK_ROLE"))
-            ) return;
+            ){
+            return;
+        }
 
         $dataPowerFieldW            = array();
         $dataPowerFieldPublic       = "";

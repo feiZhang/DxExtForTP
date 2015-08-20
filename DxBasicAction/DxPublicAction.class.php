@@ -184,7 +184,7 @@ class DxPublicAction extends DxExtCommonAction {
         session("main_url",$user["main_url"]);
         if($user['role_id']=="1") session('DP_ADMIN', true);
 
-        DxFunction::getModuleActionForMe();
+        DxFunction::getModuleActionForMe(true);
 
         //数据权限功能。
         foreach(C('DP_PWOER_FIELDS') as $dp_fields){
