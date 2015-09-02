@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `canton` (
   `user_deleted` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1为可以删除，0为不能删除',
   `creater_user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '创建人',
   `create_time` TIMESTAMP NOT NULL DEFAULT 0 COMMENT '创建时间',
+  `is_del` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1为已经删除，0为未删除',
   PRIMARY KEY (`canton_id`),
   KEY `parent_id` (`parent_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='行政区域信息表';
