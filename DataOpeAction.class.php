@@ -148,6 +148,9 @@ class DataOpeAction extends DxExtCommonAction{
             $this->ajaxReturn($msg,"创建数据失败!请检查必填项是否填写完整!($msg)",0);
         }else if($v === false){
             $this->ajaxReturn($m->getDbError(),"数据操作失败，请与管理员联系!".$m->getError(),0);
+        }else if($v === "success_msg"){
+            $msg    = $m->getError();
+            $this->ajaxReturn($msg,"数据操作成功!($msg)",1);
         }else{
             $this->ajaxReturn($v,"数据操作成功!",1);
         }

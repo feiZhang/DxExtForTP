@@ -4,13 +4,14 @@ return array (
     'DX_PUBLIC' => DX_PUBLIC,//DxInfo的Web目录地址,目前wpickdate插件不支持跨域引用
     'APP_DEBUG' => false, // 是否开启调试模式
     'UPLOAD_BASE_PATH' => dirname(APP_PATH)."/userUploadFiles",
-    'HAVE_HEADER_MENU' => true,
+    'HAVE_HEADER_MENU' => false,
     'DB_BACK_PATH' => '/tmp/',
     'INDEX_IFRAME' => true,         //是否使用iframe进行首页显示
     'VERIFY_CODE' => true,
     'NOT_OPERATION_LOG' => array('Account-online','Public-verify','Home-main','Home-top','Home-home_top','Home-index','Public-image','Public-js','Public-css'),
 
     //控制data_list的默认是否加载菜单
+    'MENU_TARGET' => 'target="main"',
     'NO_SAVE_DATA_CHANGE' => array('DataChangeLog','Menu','OperationLog'),   //不尽兴data_change记录的Model
     'USER_AUTH_KEY' => 'login_user_id',
     'LOGIN_USER_NICK_NAME' => "true_name", // 用户昵称字段名

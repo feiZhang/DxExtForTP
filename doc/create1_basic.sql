@@ -109,6 +109,7 @@ CREATE TABLE IF NOT EXISTS `account` (
   `true_name` varchar(45) NOT NULL DEFAULT '' COMMENT '用户本人实际姓名',
   `dept_id` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '部门ID',
   `dept_fdn` varchar(45) NOT NULL DEFAULT '' COMMENT '部门fdn',
+  `duty_id` smallint(5) unsigned NOT NULL DEFAULT '0' COMMENT '职务ID',
   `tel` varchar(12) NOT NULL DEFAULT '' COMMENT '联系电话',
   `email` varchar(52) NOT NULL DEFAULT '' COMMENT 'Email',
   `address` varchar(45) NOT NULL DEFAULT '' COMMENT '本人地址',

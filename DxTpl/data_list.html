@@ -36,16 +36,13 @@
                 'modelName':'{$Think.const.MODULE_NAME}'});">{$modelInfo['addTitle']}</button>
             <?php } ?>
         </literal>
-      <?php if ($modelInfo["enableImport"]) { ?>
-        <form method="post" action="__URL__/importFromExcel" enctype="multipart/form-data">
-            <input type="file" name="file_stu" />
-            <input type="submit"  value="导入Excel表" />
-        </form>
-      <?php }
-      if(!empty($modelInfo["otherManageAction"])){
-        print($modelInfo["otherManageAction"]);
-      }
-      ?>
+        <?php if ($modelInfo["enableImport"]) { ?>
+        <button class="btn btn-primary btn-sm" id="item_import">导入数据</button>
+        <?php }
+        if(!empty($modelInfo["otherManageAction"])){
+            print($modelInfo["otherManageAction"]);
+        }
+        ?>
 
         </form>
     </div>

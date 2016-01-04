@@ -3,12 +3,13 @@
  * 1.创建项目数据库，并使用create1_basic.sql初始化数据库
  * 2.运行本脚本初始化代码
  * 3.修改database.inc.php配置
+ * 4.默认配置为iframe状态，使用默认的menu。。。menu_2为非iframe普通菜单。menu_dongtai为非iframe动态菜单
  * 注意:
  * 1.项目虚拟目录不能和APP_NAME相同，TP会删除虚拟目录
  */
 //修改insttall.php的定义，运行之
-define('APP_PATH','/Users/pengL/job/yuanzong/yuanzong');
-define('APP_NAME','yuanzong');
+define('APP_PATH','/m/SkyDrive/kaifeng');
+define('APP_NAME','kftt_fj');
 
 //默认值可以不修改
 define('DXINFO_PATH',substr(__FILE__,0,-16));

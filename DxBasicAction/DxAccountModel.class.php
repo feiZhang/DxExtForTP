@@ -62,6 +62,10 @@ class DxAccountModel extends DxExtCommonModel{
         return true;
     }
     protected function _before_insert(&$data, $options) {
+        if(!array_key_exists("canton_fdn")){
+            $data["canton_fdn"] = $_SESSION["canton_fdn"];
+            $data["canton_id"] = $_SESSION["canton_id"];
+        }
         $pass = $data["login_pwd"];
         if(C("LOGIN_MD5")){     //密码验证方式不同。
             $pass  = md5(trim($pass));

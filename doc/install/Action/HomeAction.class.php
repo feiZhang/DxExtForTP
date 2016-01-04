@@ -5,7 +5,11 @@ class HomeAction extends DxExtCommonAction {
     }
     public function index(){
         if(empty($_REQUEST["showURL"])){
-            $this->assign("mainURL",__URL__."/main");
+            if(empty(C("MAIN_URL"))){
+                $this->assign("mainURL",__URL__."/main");
+            }else{
+                $this->assign("mainURL",C("MAIN_URL"));
+            }
         }else{
             $this->assign("mainURL",$_REQUEST["showURL"]);
         }

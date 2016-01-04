@@ -29,7 +29,7 @@ class DxExtCommonModel extends Model {
     private $cacheListFields= array();  //缓存Model的listFileds数据，经过转换的结果
     //数据权限相关
     public $skipDataPowerCheck  = false;    //关闭数据权限域控制。
-    protected $viewTableName    = "";
+    protected $viewTableName    = "";      //可以是table，也可以是sql语句
     protected $defaultWhere     = array();
     private $viewTableIsSelect  = false;
     protected $DP_POWER_FIELDS  = array();

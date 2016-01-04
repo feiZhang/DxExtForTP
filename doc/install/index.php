@@ -5,7 +5,7 @@ define('APP_DEBUG', true);
 define('DXINFO_PATH','DXINFO_DIR_PATH');
 define('DX_PUBLIC',dirname($_SERVER["SCRIPT_NAME"]).'/DxWebRoot');
 require_once '../FirePHPCore-0.3.2/lib/FirePHPCore/fb.php';
-fb::setEnabled(false);
+fb::setEnabled(true);
 define('THINK_PATH', '../ThinkPHP/ThinkPHP312/');
 error_reporting(E_ALL);
 ini_set("display_errors","On");
