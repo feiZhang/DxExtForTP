@@ -320,7 +320,7 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 *die显示的内容，会因为编码问题，在浏览器上显示为乱码
 
 ## 全局数据缓存
-DxModel方法cacheData(false)对此表进行全局数据缓存，通过Think.config.modelName.key获取数据.(目前仅缓存SysSetting表，使用name，val字段作为key和数据,若需扩展功能，可借鉴DictCache的方法)
+DxModel方法cacheDataToConfig(false)对此表进行全局数据缓存，通过Think.config.modelName.key获取数据.(目前仅缓存SysSetting表，使用name，val字段作为key和数据,若需扩展功能，可借鉴DictCache的方法)
 
 ## 对话框显示数据列表
 增加了js函数：dataOpeListDialog，［居家业务的客户购买服务对话框使用到下面的所有参数］其参数config的值定义

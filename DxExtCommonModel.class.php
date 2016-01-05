@@ -769,7 +769,7 @@ class DxExtCommonModel extends Model {
     }
 
     //将Model数据作为缓存进行存储,目前用于SysSetting的设置
-    public function cacheData($reset=false){
+    public function cacheDataToConfig($reset=false){
         $modelName = $this->getModelName();
         $sysSetData     = S("Cache_Global_".$modelName);
         if(empty($sysSetData) || $reset || C("APP_DEBUG")){

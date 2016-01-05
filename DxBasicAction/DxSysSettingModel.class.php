@@ -29,17 +29,17 @@ class DxSysSettingModel extends DxExtCommonModel {
 
     protected function _after_update($data, $options){
         parent::_after_update($data, $options);
-        $this->cacheData(true);
+        $this->cacheDataToConfig(true);
     }
 
     protected function _after_insert($data, $options){
         parent::_after_insert($data, $options);
-        $this->cacheData(true);
+        $this->cacheDataToConfig(true);
     }
 
     protected function _after_delete($data, $options){
         parent::_after_delete($data, $options);
-        $this->cacheData(true);
+        $this->cacheDataToConfig(true);
     }
 }
 

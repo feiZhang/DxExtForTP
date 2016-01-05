@@ -83,7 +83,7 @@ class DxExtCommonAction extends Action {
         }
 
         //将系统变量加载到config中，供系统使用。
-        D("SysSetting")->cacheData();
+        D("SysSetting")->cacheDataToConfig();
     }
 
     /**
