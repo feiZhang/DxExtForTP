@@ -32,7 +32,16 @@ class DataOpeAction extends DxExtCommonAction{
 
         $where          = array_merge($model->getDefaultWhere(),$this->defaultWhere,$this->_search());
         //使用Model连贯操作时，每一个连贯操作，都会往Model对象中赋值，如果嵌套使用Model的连贯操作，会覆盖掉原来已经存在的值，导致bug。
-        if(isset($_REQUEST['export']) && !empty($_REQUEST['export'])){
+        if(isset($_REQUEST['delete']) && !empty($_REQUEST['delete']) && $_REQUEST['delete']=="search"){
+            $where = array_merge($where,$model->noDeleteSearchWhere);
+            $rv  = $model->where($where)->delete();
+            if($rv===false){
+                $info = "删除失败，请与管理员联系！";
+            }else{
+                $info = "删除成功！";
+            }
+            $this->ajaxReturn(array("status"=>$rv,"info"=>$info,"data"=>$rv));
+        }else if(isset($_REQUEST['export']) && !empty($_REQUEST['export'])){
             $orderBy = $model->getModelInfo("export_order");
             if(empty($orderBy)) $model->getModelInfo("order");
             $data_list  = $model->where($where)->field($fieldsStr)->order($orderBy)->select();

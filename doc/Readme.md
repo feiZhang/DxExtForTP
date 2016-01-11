@@ -237,6 +237,7 @@ listFields的hide属性，来确定打印字段，使用了打印组件：[Lodop
 12. enablePage:grid是否提供分页。（sigma相关）
 13. enablePrint:grid是否提供打印
 14. enableExport:grid是否提供导出excel功能
+14. enableDeleteSelected:grid是否提供删除选择的数据的功能
 15. enableImport:grid是否提供导入功能，一般为Excel
 13. gridHeader:自定义报表的个性化表头，不要写table标签，只写TR标签即可。系统会自动追加Table标签。（sigma相关）
 14. order:默认的数据排序（sigma相关）

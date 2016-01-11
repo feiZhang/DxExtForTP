@@ -35,11 +35,11 @@ div.top-menu-list ul li a.selectTag{ line-height: 42px;background:url(__DXPUBLIC
                 <td width="160">
                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                         <tr id="main-operation">
-                            <td align="center" valign="middle"><a href="__APP__/Home/index" target="_top"><img src="__DXPUBLIC__/basic/images/top-and-menu/home.png" width="34" height="35" /></a></td>
+                            <td align="center" valign="middle"><a href="{$mainURL}" {$Think.config.MENU_TARGET}><img src="__DXPUBLIC__/basic/images/top-and-menu/home.png" width="34" height="35" /></a></td>
                             <td align="center" valign="middle"><a href="__APP__/Public/logout" target="_top"><img src="__DXPUBLIC__/basic/images/top-and-menu/logout.png" width="36" height="31" /></a></td>
                         </tr>
                         <tr>
-                            <td align="center" valign="middle"><a href="{$mainURL}" target="_top">返回首页</a></td>
+                            <td align="center" valign="middle"><a href="{$mainURL}" {$Think.config.MENU_TARGET}>返回首页</a></td>
                             <td align="center" valign="middle"><a href="__APP__/Public/logout" target="_top">用户退出</a></td>
                         </tr>
                     </table>
@@ -79,4 +79,4 @@ div.top-menu-list ul li a.selectTag{ line-height: 42px;background:url(__DXPUBLIC
         </tr>
     </table>
 </div>
-
+<div id="sound" style="width:0px;height:0px"></div>

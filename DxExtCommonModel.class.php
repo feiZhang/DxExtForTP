@@ -34,6 +34,7 @@ class DxExtCommonModel extends Model {
     private $viewTableIsSelect  = false;
     protected $DP_POWER_FIELDS  = array();
 
+    public $noDeleteSearchWhere = array();
     protected $fullTextState    = 0;        //Model追加的fulltext数据的状态,一般在model的_before_insert  _before_update中改变此属性
     /* 将所有的数据库字段，全初始化为数据列表字段，默认使用数据库字段名 */
     function initListFields(){

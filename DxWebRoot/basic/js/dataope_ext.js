@@ -264,6 +264,41 @@ function dataOpeExport(formId){
     }
     window.open(url);
 }
+//导出按钮
+function dataOpeDeleteSearch(formId){
+    $.dialog({
+        id:"deleteDataOpeItem",
+        skin:"editObjectArtDialog",
+        title:"警告",
+        lock:artDialogLock,
+        content:"<div class='text-danger'>此次操作，将删除大量数据，请先点击查询，确认是否您要删除这些数据！</div>",
+        ok:function(){
+            _this   = this;
+            _this.button({id: 'ok',disabled: true},{id:'cancel',disabled:true});
+
+            var url = "";
+            if(formId!=undefined && formId!=''){
+                url = dxGrid.urladd(dxGrid.urladd(dxGrid.getLoadUrl(),"delete=search"),$("#" + formId).serialize());
+            }else{
+                url = URL_URL + "/get_datalist?delete=search";
+            }
+            $.ajax({
+                type : "GET",
+                url : url,
+                success : function(data){
+                    _this.time(2000).title("提示").content(data.info);
+                    Sigma.GridCache["theDataOpeGrid"].reload();
+                },
+                dataType : "json"
+            });
+
+            return false;
+        },
+        okValue:"确定",
+        cancel:function(){},
+        cancelValue:"取消"
+    });
+}
 
 function resetPasswd(config){
     $.dialog({

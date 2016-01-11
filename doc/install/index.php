@@ -15,7 +15,18 @@ if(ini_get("magic_quotes_gpc")=="1"){
 }
 define('APP_PATH', '../'.APP_NAME.'/');
 //设置临时路径
-define('RUNTIME_PATH', '/tmp/'.APP_NAME."/");
+if(strpos($_SERVER["SERVER_SOFTWARE"],"Unix")===false){
+    define('DXINFO_PATH','C:/Users/fei/OneDrive/DxInfo');
+    define('RUNTIME_PATH', 'e:/tmp/'.APP_NAME."/");
+}else{
+    define('DXINFO_PATH','/m/SkyDrive/DxInfo');
+    if(file_exists("/dev/shm")){
+        define('RUNTIME_PATH', '/dev/shm/'.APP_NAME."/");
+    }else{
+        define('RUNTIME_PATH', '/tmp/'.APP_NAME."/");
+    }
+    define("LOG_PATH","/tmp/".APP_NAME."_log/");
+}
 
 //加载框架入口函数
 require(THINK_PATH."ThinkPHP.php");

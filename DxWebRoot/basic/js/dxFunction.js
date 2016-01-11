@@ -193,3 +193,20 @@ $.fn.serializeObject = function() {
     });
     return o;
 }
+
+//播放声音文件
+function playSoundfile( fileurl ){
+    var borswer = window.navigator.userAgent.toLowerCase();
+    if ( borswer.indexOf( "ie" ) >= 0 ){
+        var sound = document.getElementById('sound');
+        sound.innerHTML = '<embed src="' + fileurl + '" loop="0" width="0" height="0" autostart="true" hidden="true"></embed>';
+    }else{
+        //非IE内核浏览器
+        var strAudio = "<audio id='audioPlay' src='" + fileurl + "' hidden='true'>";
+        if ( $( "body" ).find( "audio" ).length <= 0 )
+          $( "body" ).append( strAudio );
+        var audio = document.getElementById( "audioPlay" );
+        //浏览器支持 audion
+        audio.play();
+    }
+}

@@ -1,12 +1,12 @@
 <?php
 class HomeAction extends DxExtCommonAction {
     public function home_top(){
-        $this->display();
         if(empty(C("MAIN_URL"))){
             $this->assign("mainURL",__URL__."/main");
         }else{
             $this->assign("mainURL",C("MAIN_URL"));
         }
+        $this->display();
     }
     public function index(){
         if(empty($_REQUEST["showURL"])){

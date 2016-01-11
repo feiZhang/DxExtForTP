@@ -35,15 +35,20 @@
                 'buttons':{$modelInfo['addDialogButtons']},
                 'modelName':'{$Think.const.MODULE_NAME}'});">{$modelInfo['addTitle']}</button>
             <?php } ?>
+            <?php if ($modelInfo["enableImport"]) { ?>
+            <button class="btn btn-primary btn-sm" id="item_import">导入数据</button>
+            <?php }
+            if(!empty($modelInfo["otherManageAction"])){
+                print($modelInfo["otherManageAction"]);
+            }
+            ?>
+            <?php if ($modelInfo["enableExport"]) { ?>
+            <input onclick='javascript:dataOpeExport(\"dataListSearch\");' type='button' class='btn btn-success btn-sm' value='导出' id='item_export_all' />
+            <?php }?>
+            <?php if ($modelInfo["enableDeleteSelected"]) { ?>
+            <input onclick='javascript:dataOpeDeleteSearch(\"dataListSearch\");' type='button' class='btn btn-danger btn-sm' value='删除查询到的数据' id='item_delete_search' />
+            <?php }?>
         </literal>
-        <?php if ($modelInfo["enableImport"]) { ?>
-        <button class="btn btn-primary btn-sm" id="item_import">导入数据</button>
-        <?php }
-        if(!empty($modelInfo["otherManageAction"])){
-            print($modelInfo["otherManageAction"]);
-        }
-        ?>
-
         </form>
     </div>
     </notempty>
