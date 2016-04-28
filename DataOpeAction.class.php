@@ -45,6 +45,11 @@ class DataOpeAction extends DxExtCommonAction{
             $orderBy = $model->getModelInfo("export_order");
             if(empty($orderBy)) $model->getModelInfo("order");
             $data_list  = $model->where($where)->field($fieldsStr)->order($orderBy)->select();
+            $max_export = intval($model->getModelInfo("max_export"));
+            if($max_export>0 && sizeof($data_list)>$max_export){
+                $this->assign("jumpUrl","showmsg");
+                $this->error("每次导出数据不能大于".$max_export."条（本次导出".sizeof($data_list)."条）");
+            }
         }else{
             if($enablePage){
                 $data_list  = $model->where($where)->field($fieldsStr)->limit( $start.",".$pageSize )->order($model->getModelInfo("order"))->select();

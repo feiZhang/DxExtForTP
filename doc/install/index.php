@@ -15,7 +15,7 @@ if(ini_get("magic_quotes_gpc")=="1"){
 }
 define('APP_PATH', '../'.APP_NAME.'/');
 //设置临时路径
-if(strpos($_SERVER["SERVER_SOFTWARE"],"Unix")===false){
+if(strpos($_SERVER["SERVER_SOFTWARE"],"Unix")===false && strpos($_SERVER["SERVER_SOFTWARE"],"CentOS")===false){
     define('DXINFO_PATH','C:/Users/fei/OneDrive/DxInfo');
     define('RUNTIME_PATH', 'e:/tmp/'.APP_NAME."/");
 }else{
