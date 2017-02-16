@@ -4,9 +4,9 @@ INSERT INTO `account` (`account_id`, `login_username`, `login_pwd`, `true_name`,
 
 TRUNCATE table sys_setting;
 INSERT INTO `sys_setting` (`set_id`, `name`, `val`, `type`, `memo`, `order`) VALUES
-(1, 'SITE_TITLE', '机构养老业务管理平台--大象通信', 'user', '浏览器标题栏标题', 0),
-(2, 'SITE_NAME', '机构养老业务管理平台', 'user', '系统名称', 1),
-(3, 'SITE_COPYRIGHT', '<b>Copyright © 2012-2022 技术支持：<a href=''http://www.dxinfo.com'' target=''_blank''>郑州大象通信信息技术有限公司</a>   ', 'sys', '系统登录后底部信息展示，可内嵌html代码', 2);
+(1, 'SITE_TITLE', '郑州良朋科技发展有限公司--良朋科技', 'user', '浏览器标题栏标题', 0),
+(2, 'SITE_NAME', '郑州良朋科技发展有限公司', 'user', '系统名称', 1),
+(3, 'SITE_COPYRIGHT', '<b>Copyright © 2012-2022 技术支持：<a href='http://soft.liangpeng.net' target='_blank'>郑州良朋科技发展有限公司</a>', 'sys', '系统登录后底部信息展示，可内嵌html代码', 2);
 
 TRUNCATE table role;
 INSERT INTO `role` (`role_id`, `name`, `menu_ids`, `shortcut_ids`, `desk_ids`, `level`) VALUES

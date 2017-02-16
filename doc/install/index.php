@@ -19,7 +19,7 @@ if(strpos($_SERVER["SERVER_SOFTWARE"],"Unix")===false && strpos($_SERVER["SERVER
     define('DXINFO_PATH','C:/Users/fei/OneDrive/DxInfo');
     define('RUNTIME_PATH', 'e:/tmp/'.APP_NAME."/");
 }else{
-    define('DXINFO_PATH','/m/SkyDrive/DxInfo');
+    define('DXINFO_PATH','DXINFO_DIR_PATH');
     if(file_exists("/dev/shm")){
         define('RUNTIME_PATH', '/dev/shm/'.APP_NAME."/");
     }else{

@@ -34,9 +34,15 @@ class CantonAction extends DataOpeAction {
         $this->display($tempFile);
     }
 
-     public function index(){
-         $this->assign('dx_data_list', DXINFO_PATH."/DxTpl/data_list.html");
-         $this->display("data_list");
-     }
+    public function index(){
+        $this->assign('dx_data_list', DXINFO_PATH."/DxTpl/data_list.html");
+
+        echo $this->display("Public:header");
+        if($this->haveHeaderMenu){
+            echo $this->display("Public:menu");
+        }
+        $this->display("data_list");
+        echo $this->display("Public:footer");
+    }
 }
 

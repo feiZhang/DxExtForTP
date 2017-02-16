@@ -8,8 +8,8 @@
  * 1.项目虚拟目录不能和APP_NAME相同，TP会删除虚拟目录
  */
 //修改insttall.php的定义，运行之
-define('APP_PATH','/m/SkyDrive/kaifeng');
-define('APP_NAME','kftt_fj');
+define('APP_PATH','/m/SkyDrive/caipiao/admin');
+define('APP_NAME','caipiao_yang');
 
 //默认值可以不修改
 define('DXINFO_PATH',substr(__FILE__,0,-16));

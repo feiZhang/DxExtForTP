@@ -3,7 +3,7 @@ class DxDeptModel extends DxExtCommonModel {
     protected  $listFields = array (
         "name" => array('title'=>'部门名称','hide'=>00,),
         "parent_id" => array("title"=>"父ID","hide"=>00,"display_none"=>06),
-        "layer" => array("title"=>"父ID","hide"=>00,"display_none"=>06),
+        "layer" => array("title"=>"层次","hide"=>00,"display_none"=>06),
         "creater_user_id" => array('title'=>'创建人',"hide"=>06,"width"=>80,"valChange"=>array("model"=>"Account")),
         "create_time"    => array('title'=>'创建时间','type'=>'date','hide'=>06),
     );

@@ -1,5 +1,5 @@
 <?php
-class DxCantonModel extends DxExtCommonModel {
+class DxCantonModel extends DxFdnModel {
     //put your code here
     protected $modelInfo=array(
         "title"=>'行政区域','readOnly'=>true,
@@ -35,14 +35,14 @@ class DxCantonModel extends DxExtCommonModel {
         if(empty($canton_id)){
             $canton_id = session('canton_id');
         }
-        $canton_list = $this->where(array('parent_id'=>$canton_id))->field('id,fdn,name')->select();
+        $canton_list = $this->where(array('parent_id'=>$canton_id))->field('canton_id,fdn,name')->select();
         return $canton_list ;
     }
     /**
      * 通过canton_id得到区域名称
      */
     public function getCantonNameByID($canton_id){
-        return $this->where(array('id'=>$canton_id))->getField('text_name');
+        return $this->where(array('canton_id'=>$canton_id))->getField('text_name');
     }
     /**
      * $canton_uniqueno
@@ -63,19 +63,6 @@ class DxCantonModel extends DxExtCommonModel {
     public function _after_insert($data,$option){
         S("Cache_SELECT_SELECT_SELECT_Canton",null);
         parent::_after_insert($data,$option);
-        if(!empty($data['parent_id'])){
-            $map[$this->getPk()]    =  $data['parent_id'];
-            $p_info = $this->where($map)->field('fdn,text_name')->find();//父fdn
-            $p_fdn = $p_info['fdn'];
-            $text_name = sprintf('%s%s',$p_info['text_name'],$data['name']);
-        }else {
-            $p_fdn="";
-            $text_name=$data['name'];
-        }
-
-        $fdn = sprintf('%s%5d.',$p_fdn,$data[$this->getPk()]);
-        $this->where(array('canton_id'=>$data['canton_id']))->save(array('fdn'=>$fdn,'text_name'=>$text_name));
-        return $data;
     }
 }
 

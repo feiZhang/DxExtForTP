@@ -197,12 +197,12 @@ class DataOpeAction extends DxExtCommonAction{
         $this->assign('dx_data_list', DXINFO_PATH."/DxTpl/data_list.html");
         $dataListHtml = $this->dxDisplay("data_list");
 
-        echo $this->display("Public:header");
+        echo $this->fetch("Public:header");
         if($this->haveHeaderMenu){
-            echo $this->display("Public:menu");
+            echo $this->fetch("Public:menu");
         }
         echo $dataListHtml;
-        echo $this->display("Public:footer");
+        echo $this->fetch("Public:footer");
     }
     protected function getModelInfo(){
         $model = $this->model;
