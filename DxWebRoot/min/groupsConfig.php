@@ -8,7 +8,7 @@
  * You may wish to use the Minify URI Builder app to suggest
  * changes. http://yourdomain/min/builder/
  *
- * See http://code.google.com/p/minify/wiki/CustomSource for other ideas
+ * See https://github.com/mrclay/minify/blob/master/docs/CustomServer.wiki.md for other ideas
  **/
 
 $groupBasePath      = "/".substr($_SERVER["SCRIPT_NAME"],0,-14);
@@ -20,19 +20,19 @@ return array(
         $groupBasePath."/basic/css/default.css",
     ),
     'headerJs' => array(
-        $groupBasePath."/public/Jquery/jquery-1.11.1.js",
-        $groupBasePath."/public/Jquery/jquery-migrate-1.2.1.js",
+        $groupBasePath."/public/Jquery/jquery-3.1.1.js", //貌似太大，无法压缩
+        $groupBasePath."/public/Jquery/jquery-migrate-3.0.0.js",
         $groupBasePath."/public/date.js",
         $groupBasePath."/public/bootstrap/js/bootstrap.js",
         $groupBasePath."/basic/js/selectselectselect.js"
     ),
-    'footerCss'	=> array(
+    'footerCss' => array(
         $groupBasePath."/public/explain_prompt/example.css",
         $groupBasePath."/basic/js/explain_prompt/explain.imprompt.css",
         $groupBasePath."/public/artDialog5/skins/default.css",
         // $groupBasePath."/public/artDialog6/css/ui-dialog.css",
     ),
-    'footerJs'	=> array(
+    'footerJs'  => array(
         $groupBasePath."/public/bgiframe/jquery.bgiframe.js",
         $groupBasePath."/public/artDialog5/source/jquery.artDialog.js",
         $groupBasePath."/public/artDialog5/source/artDialog.plugins.js",

@@ -12,7 +12,7 @@ var MUB = {
         $.ajax({
             url : '../f=' + testUri + '&' + (new Date()).getTime(),
             success : function (data) {
-                if (data === '1') {
+                if (data === '1' || data === '1;') {
                     MUB._minRoot = '/min/';
                     $('span.minRoot').html('/min/');
                 } else
@@ -25,7 +25,7 @@ var MUB = {
      * Get markup for new source LI element
      */
     newLi : function () {
-        return '<li id="li' + MUB._uid + '">http://' + location.host + '/<input type=text size=20>' +
+        return '<li id="li' + MUB._uid + '">' + location.protocol + '//' + location.host + '/<input type=text size=20>' +
         ' <button class="btn btn-danger btn-sm" title="Remove">x</button> <button class="btn btn-default btn-sm" title="Include Earlier">&uarr;</button>' +
         ' <button class="btn btn-default btn-sm" title="Include Later">&darr;</button> <span></span></li>';
     },
