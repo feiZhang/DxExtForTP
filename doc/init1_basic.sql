@@ -6,7 +6,7 @@ TRUNCATE table sys_setting;
 INSERT INTO `sys_setting` (`set_id`, `name`, `val`, `type`, `memo`, `order`) VALUES
 (1, 'SITE_TITLE', '郑州良朋科技发展有限公司--良朋科技', 'user', '浏览器标题栏标题', 0),
 (2, 'SITE_NAME', '郑州良朋科技发展有限公司', 'user', '系统名称', 1),
-(3, 'SITE_COPYRIGHT', '<b>Copyright © 2012-2022 技术支持：<a href='http://soft.liangpeng.net' target='_blank'>郑州良朋科技发展有限公司</a>', 'sys', '系统登录后底部信息展示，可内嵌html代码', 2);
+(3, 'SITE_COPYRIGHT', "<b>Copyright © 2012-2022 技术支持：<a href='http://soft.liangpeng.net' target='_blank'>郑州良朋科技发展有限公司</a>", 'sys', '系统登录后底部信息展示，可内嵌html代码', 2);
 
 TRUNCATE table role;
 INSERT INTO `role` (`role_id`, `name`, `menu_ids`, `shortcut_ids`, `desk_ids`, `level`) VALUES
@@ -22,9 +22,10 @@ INSERT INTO `menu` (`menu_id`, `parent_id`, `order_no`, `order_level`, `fdn`, `m
 
 (120, 0, 30*power(32,5), 1, '5.', '系统管理', 'Account', 'index', '', 'menu', 0, '', ''),
 (121, 120, 30*power(32,5) + 6*power(32,4), 2, '', '用户管理', 'Account', 'index', '', 'sub_menu', 0, '', ''),
-(126, 120, 30*power(32,5) + 7*power(32,4), 2, '', '部门管理', 'Dept', 'index', '', 'sub_menu', 0, '', ''),
-(122, 120, 30*power(32,5) + 8*power(32,4), 2, '', '系统参数配置', 'SysSetting', 'index', '?type=user', 'sub_menu', 0, '', ''),
-(123, 120, 30*power(32,5) + 9*power(32,4), 2, '', '系统日志', 'OperationLog', 'index', '', 'sub_menu', 0, '', ''),
+(126, 120, 30*power(32,5) + 12*power(32,4), 2, '', '组织机构管理', 'Dept', 'index', '', 'sub_menu', 0, '', ''),
+(124, 120, 30*power(32,5) + 13*power(32,4), 2, '', '角色管理', 'Role', 'index', '', 'sub_menu', 0, '', ''),
+(122, 120, 30*power(32,5) + 19*power(32,4), 2, '', '系统参数配置', 'SysSetting', 'index', '?type=user', 'sub_menu', 0, '', ''),
+(123, 120, 30*power(32,5) + 20*power(32,4), 2, '', '系统日志', 'OperationLog', 'index', '', 'sub_menu', 0, '', ''),
 (124, 120, 30*power(32,5) + 29*power(32,4), 2, '', '清除缓存', 'Basic', 'clearCache', '', 'action', 0, '', ''),
 (125, 120, 30*power(32,5) + 30*power(32,4), 2, '', '修改密码', 'Account', 'editpass', '', 'sub_menu', 0, '', '');
 

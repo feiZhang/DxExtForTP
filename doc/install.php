@@ -8,8 +8,9 @@
  * 1.项目虚拟目录不能和APP_NAME相同，TP会删除虚拟目录
  */
 //修改insttall.php的定义，运行之
-define('APP_PATH','/m/SkyDrive/caipiao/admin');
-define('APP_NAME','caipiao_yang');
+define('APP_PATH','C:\Users\fei\OneDrive\ttwz');
+define('APP_NAME','tietong_wuzi');
+define('LIB_PATH', 'E:/360/2016/ThinkPHP/');
 
 //默认值可以不修改
 define('DXINFO_PATH',substr(__FILE__,0,-16));
@@ -44,6 +45,7 @@ $index = file(DXINFO_PATH."/doc/install/index.php");
 $index = implode("",$index);
 $index = str_replace("DXINFO_DIR_PATH",DXINFO_PATH,$index);
 $index = str_replace("JGGL",APP_NAME,$index);
+$index = str_replace("INSTALL_SYS_LIB_PATH",LIB_PATH,$index);
 file_put_contents(APP_PATH."/www/index.php",$index);
 
 echo "finish";

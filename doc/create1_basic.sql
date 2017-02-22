@@ -55,7 +55,7 @@ DROP TABLE IF EXISTS `menu`;
 CREATE TABLE `menu` (
   `menu_id` smallint(5) unsigned zerofill NOT NULL AUTO_INCREMENT,
   `parent_id` smallint(5) unsigned zerofill NOT NULL DEFAULT '00000' COMMENT '上级菜单编号',
---  `order_no` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '序号,等于:父亲的order_no+自己的显示order_no*power(32,6-order_level)',
+  `order_no` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '序号,等于:父亲的order_no+自己的显示order_no*power(32,6-order_level)',
   `order_level` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT 'order层次',
   `click_times` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '被点击的次数',
   `fdn` varchar(40) NOT NULL DEFAULT '' COMMENT 'fdn值',

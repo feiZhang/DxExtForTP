@@ -2,11 +2,11 @@
 session_name('JGGL');
 define('APP_NAME', 'JGGL');
 define('APP_DEBUG', true);
-define('DXINFO_PATH','DXINFO_DIR_PATH');
+define('SYS_LIB_PATH', 'INSTALL_SYS_LIB_PATH');
+define('THINK_PATH', SYS_LIB_PATH.'ThinkPHP312/');
 define('DX_PUBLIC',dirname($_SERVER["SCRIPT_NAME"]).'/DxWebRoot');
-require_once '../FirePHPCore-0.3.2/lib/FirePHPCore/fb.php';
+require_once SYS_LIB_PATH.'FirePHPCore-0.3.2/lib/FirePHPCore/fb.php';
 fb::setEnabled(true);
-define('THINK_PATH', '../ThinkPHP/ThinkPHP312/');
 error_reporting(E_ALL);
 ini_set("display_errors","On");
 
@@ -16,7 +16,7 @@ if(ini_get("magic_quotes_gpc")=="1"){
 define('APP_PATH', '../'.APP_NAME.'/');
 //设置临时路径
 if(strpos($_SERVER["SERVER_SOFTWARE"],"Unix")===false && strpos($_SERVER["SERVER_SOFTWARE"],"CentOS")===false){
-    define('DXINFO_PATH','C:/Users/fei/OneDrive/DxInfo');
+    define('DXINFO_PATH','DXINFO_DIR_PATH');
     define('RUNTIME_PATH', 'e:/tmp/'.APP_NAME."/");
 }else{
     define('DXINFO_PATH','DXINFO_DIR_PATH');
