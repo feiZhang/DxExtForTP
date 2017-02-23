@@ -1,0 +1,155 @@
+<notempty name="modelInfo.leftArea">
+<div class="dataListLeftMenuArea">
+    {$modelInfo.leftArea}
+</div>
+</notempty>
+
+<div class="dataListDataArea">
+
+    <div class="place">
+        <span>位置：</span>
+        <ul class="placeul">
+        <li><a href="#">首页</a></li>
+        <li><a href="#">模块设计</a></li>
+        <li><a href="#">图片</a></li>
+        </ul>
+    </div>
+
+<block name="dataListContent">
+    <input id="modelInfo_editTitle" value="{$modelInfo.editTitle}" type="hidden" />
+    <table id="gridHeader" style="display:none">{$modelInfo['gridHeader']}</table>
+    <notempty name="modelInfo.modelTitle">
+    <div id="header_title" class="dataListHeader" style="margin-bottom: 0px;">
+        <literal>
+        <!-- 数据字典功能 -->
+        <span style="vertical-align: middle;font-size: 22px;font-weight: bold;">{$modelInfo.modelTitle}</span>
+        </literal>
+
+        <form id="dataListSearch" style="padding:0; margin:0;">
+            <php>
+            //searchHtml中可以存放动态的数据，比如：员工组
+            if(!empty($modelInfo["searchHTML"])){
+            printf('<span id="query_items" class="">');
+                if(!empty($modelInfo["searchHTML"])){
+                print($modelInfo["searchHTML"]);
+                }
+                printf("</span>");
+            }
+            </php>
+
+        <literal>
+            <?php if (!$modelInfo["readOnly"]) { ?>
+            <button class="btn btn-primary btn-sm" id='item_add' onclick="javascript:dataOpeAdd({ 'isEdit':true,
+                'data':'{$InitSearchPara}',
+                'title':'{$modelInfo['addTitle']}',
+                'buttons':{$modelInfo['addDialogButtons']},
+                'modelName':'{$Think.const.MODULE_NAME}'});">{$modelInfo['addTitle']}</button>
+            <?php } ?>
+            <?php if ($modelInfo["enableImport"]) { ?>
+            <button class="btn btn-primary btn-sm" id="item_import">导入数据</button>
+            <?php }
+            if(!empty($modelInfo["otherManageAction"])){
+                print($modelInfo["otherManageAction"]);
+            }
+            ?>
+            <?php if ($modelInfo["enableExport"]) { ?>
+            <input onclick='javascript:dataOpeExport(\"dataListSearch\");' type='button' class='btn btn-success btn-sm' value='导出' id='item_export_all' />
+            <?php }?>
+            <?php if ($modelInfo["enableDeleteSelected"]) { ?>
+            <input onclick='javascript:dataOpeDeleteSearch(\"dataListSearch\");' type='button' class='btn btn-danger btn-sm' value='删除查询到的数据' id='item_delete_search' />
+            <?php }?>
+        </literal>
+        </form>
+    </div>
+    </notempty>
+
+    <notempty name="modelInfo.helpInfo">
+    <div id="grid-help-info">
+        {$modelInfo["helpInfo"]}
+    </div>
+    </notempty>
+
+    <!-- 如果有选择框，则此处可以填充选择框已选定的内容 -->
+    <notempty name="modelInfo.hasCheckBox">
+    <div id="checkdDatas">
+    </div>
+    </notempty>
+
+    <div id="dataListCon">
+        <div id="dataList"></div>
+    </div>
+    <!-- grid的辅助代码-->
+    <eq name="Think.config.APP_DEBUG" value="true">
+    <link href="__DXPUBLIC__/min/index.php?g=dataListCss&debug=1" rel="stylesheet" type="text/css" />
+    <else/>
+    <link href="__DXPUBLIC__/min/index.php?g=dataListCss" rel="stylesheet" type="text/css" />
+    </eq>
+    <script src="__DXPUBLIC__/public/WDatePicker/WdatePicker.js" type="text/javascript"></script>
+    <script src="__DXPUBLIC__/public/sigma_grid/gt_grid_all.js" type="text/javascript"></script>
+
+    <eq name="Think.config.APP_DEBUG" value="true">
+    <script src="__DXPUBLIC__/public/sigma_grid/src/gt_base.js" type="text/javascript"></script>
+    <script src="__DXPUBLIC__/public/sigma_grid/src/gt_grid.js" type="text/javascript"></script>
+    <script src="__DXPUBLIC__/public/sigma_grid/src/gt_column.js" type="text/javascript"></script>
+    <script src="__DXPUBLIC__/public/sigma_grid/src/gt_tool.js" type="text/javascript"></script>
+    </eq>
+
+    <script src="__DXPUBLIC__/basic/js/sigma_custom/fix.toolbar.js" type="text/javascript"></script>
+
+    <!--数据修改和新增的js 因为ajax加载js会出现异常，所以在这里进行加载-->
+    <script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/load-image.min.js"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/public/jquery-upload-file/blueimp/js/tmpl.min.js"></script>
+
+    <eq name="Think.config.APP_DEBUG" value="true">
+    <script type="text/javascript" src="__DXPUBLIC__/min/index.php?g=dataListJs&debug=1"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/min/index.php?g=dataEditJs&debug=1"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/public/umeditor1_2_2-utf8-php/umeditor.config.js"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/public/umeditor1_2_2-utf8-php/umeditor.js"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/public/umeditor1_2_2-utf8-php/lang/zh-cn/zh-cn.js"></script>
+    <else/>
+    <script type="text/javascript" src="__DXPUBLIC__/min/index.php?g=dataListJs"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/min/index.php?g=dataEditJs"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/public/umeditor1_2_2-utf8-php/umeditor.config.js"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/public/umeditor1_2_2-utf8-php/umeditor.min.js"></script>
+    <script type="text/javascript" src="__DXPUBLIC__/public/umeditor1_2_2-utf8-php/lang/zh-cn/zh-cn.js"></script>
+    </eq>
+    <script type="text/javascript" src="__PUBLIC__/js/dataope_ext.js"></script>
+<script>
+<!--
+var dxGrid  = null;
+$(function(){
+    dxGrid  = new $.dxGrid();
+<literal>
+    var gridFields        = {$gridFields};
+    var datasetFields     = {$datasetFields};
+</literal>
+    dxGrid.init({ "gridId":"theDataOpeGrid","gridDiv":"dataList",",loadUrl":"","gridFields":gridFields,"datasetFields":datasetFields,"parentGridDiv":"dataListCon",
+        "enablePage":"{$modelInfo['enablePage']}","enableExport":"{$modelInfo['enableExport']}","enablePrint":"{$modelInfo['enablePrint']}",
+        "customRowAttribute":{$modelInfo['customRowAttribute']},
+        "onComplete":{$modelInfo['onComplete']},
+        "stripeRows":"{$modelInfo['stripeRows']}","pkId":"{$pkId}"
+        });
+    dxGrid.setBaseURL("__URL__");
+    dxGrid.setData(dxGrid.urladd("__URL__/get_datalist",<literal>"{$InitSearchPara}"</literal>));
+    <notempty name="ignoreInitSearch">
+    dxGrid.setOrginURL("__URL__/get_datalist");
+    </notempty>
+    dxGrid.showGrid({"excludeHeight":['.global_top_menu','.global_title','#header_title','#grid-help-info','#dataListGridExt','#Copyright',<?php echo intval(C("DATAOPE_LIST_HEIGHT"));?>,<?php echo empty($modelInfo["exclude_data_list_height"])?0:$modelInfo["exclude_data_list_height"];?>]});
+});
+-->
+</script>
+    <eq name="modelInfo.enablePrint" value="1">
+    <script language="javascript" src="__DXPUBLIC__/public/Lodop6.010/LodopFuncs.js"></script>
+    <object id="LODOP_OB" classid="clsid:2105C259-1E0C-4534-8141-A753534CB4CA" width=0 height=0>
+    <embed id="LODOP_EM" type="application/x-print-lodop" width=0 height=0 pluginspage="install_lodop32.exe"></embed>
+    </object>
+    </eq>
+
+</block>
+
+<div id="dataListGridExt">
+<block name="dataListGridExt">
+</block>
+</div>
+
+</div>

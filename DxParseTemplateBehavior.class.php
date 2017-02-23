@@ -51,7 +51,10 @@ class DxParseTemplateBehavior extends Behavior {
         }else if(file_exists(THEME_PATH.'Public/'.$action.C('TMPL_TEMPLATE_SUFFIX'))){
             $tplFile    = THEME_PATH.'Public/'.$action.C('TMPL_TEMPLATE_SUFFIX');
         }else{
-            $tplFile	= sprintf("%s/DxTpl/%s%s",dirname(__FILE__),$action,C('TMPL_TEMPLATE_SUFFIX'));
+            $tplFile    = sprintf("%s/DxTpl/%s%s%s",dirname(__FILE__),DX_THEME_PATH,$action,C('TMPL_TEMPLATE_SUFFIX'));
+            if(!file_exists($tplFile)){
+                $tplFile= sprintf("%s/DxTpl/%s%s",dirname(__FILE__),$action,C('TMPL_TEMPLATE_SUFFIX'));
+            }
         }
         return $tplFile;
     }
