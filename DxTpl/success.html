@@ -54,7 +54,7 @@ $(document).ready(function() {
                         location.href=jumpUrl;
                     }
                 }
-            }else if(($.browser.msie && self.frameElement && self.frameElement.tagName=="IFRAME") || (!$.browser.msie && top!=this)){
+            }else if((BowerSys.ie && self.frameElement && self.frameElement.tagName=="IFRAME") || (!BowerSys.ie && top!=this)){
                 //是否在frame中，session过期，则要跳转_top
                 top.href        = jumpUrl;
             }else{

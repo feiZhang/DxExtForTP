@@ -13,7 +13,7 @@ class DxAccountModel extends DxExtCommonModel{
             "role_id"        => array('title'=>'角色','type'=>'enum','valChange'=>array('model'=>'Role'),'default'=>2),
             "dept_id"        => array('title'=>'部门','hide'=>01,'display_none'=>07777),
             "dept_fdn"       => array('title'=>'部门','hide'=>00,'type'=>'selectselectselect',
-                                        'fdn'=>array("pkid_name"=>"dept_id"),
+                                        'fdn'=>array("pkid_to_name"=>"dept_id"),
                                         'valChange'=>array("model"=>"Dept"),"default"=>"00001."),
             "duty_id"        => array('title'=>'职务','hide'=>00,'display_none'=>00,"type"=>"enum","valChange"=>array("model"=>"Duty")),
             "login_pwd"      => array('title'=>'登录密码','hide'=>05,'type'=>'password'),

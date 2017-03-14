@@ -27,6 +27,7 @@ return array (
     'REQUIST_AUTH_ACTION' => array (), // 必须权限认证的Action
     'LOGIN_MD5' => true, // 是否md5加密密码
     'ROOT_CANTON_FDN' => "03520.",
+    'ROOT_CANTON_ID' => 3520,
 
     //--偶尔需要变动的
     'DELETE_TAGS' => array ("delete_status" => "1" ),

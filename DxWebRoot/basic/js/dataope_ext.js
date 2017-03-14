@@ -445,7 +445,7 @@ function formSubmitComplete(form, r){
         formCheck = submitCheck(form);
     }
     if(r && formCheck){
-        //将textTo的数据赋值
+        //将textTo的数据赋值，html的属性生成的时候是大写，浏览器自动调整为小写。
         $("#" + formId +" input.textTo[type='radio']:checked").each(function(){
             toId  = $(this).attr("textto");
             $("#" + formId + " #" + toId).val($(this).attr("text"));

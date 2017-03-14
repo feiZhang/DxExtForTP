@@ -96,6 +96,7 @@ var cantonInit          = false;
         }
         //选取某个数据后，触发，生成下级选取列表
         _this.select = function(key) {
+            key = parseInt(key,10);
             _this.createSelect(tree[key]);
         }
         //根据数组生成select下拉选项

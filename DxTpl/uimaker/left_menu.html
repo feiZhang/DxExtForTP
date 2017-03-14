@@ -1,4 +1,14 @@
 <include file="Public:header" />
+
+<?php
+$userTrueName = session(C("LOGIN_USER_NICK_NAME"));
+if(array_key_exists("p",$_REQUEST) && !empty($_REQUEST["p"])){
+    $menu = D("Menu")->getChildrenMenu($_REQUEST["p"]);
+}else{
+    $menu = D("Menu")->getMenu();
+}
+?>
+
     <style>
     <!--
     body{
@@ -27,55 +37,35 @@
     })  
     </script>
 
-    <div class="lefttop"><span></span>通讯录</div>
-    
+    <!-- <div class="lefttop"><span></span>功能</div> -->
+
     <dl class="leftmenu">
+        <?php
+        $menuC = sizeof($menu);
+        for($i=0;$i<$menuC;++$i){
+            if(intval($menu[$i]["parent_id"])==0){
+        ?>
         <dd>
             <div class="title">
-                <span><img src="__DXPUBLIC__/uimaker/images/leftico01.png" /></span>管理信息
+                <!-- <?php echo $menu[$i]["menu_icon"];?> -->
+                <span><img src="__DXPUBLIC__/uimaker/images/leftico01.png" /></span><?php echo $menu[$i]["menu_name"];?>
             </div>
             <ul class="menuson">
-                <li><cite></cite><a href="index.html" target="main">首页模版</a><i></i></li>
-                <li class="active"><cite></cite><a href="right.html" target="main">数据列表</a><i></i></li>
-                <li><cite></cite><a href="imgtable.html" target="main">图片数据表</a><i></i></li>
-                <li><cite></cite><a href="form.html" target="main">添加编辑</a><i></i></li>
-                <li><cite></cite><a href="imglist.html" target="main">图片列表</a><i></i></li>
-                <li><cite></cite><a href="imglist1.html" target="main">自定义</a><i></i></li>
-                <li><cite></cite><a href="tools.html" target="main">常用工具</a><i></i></li>
-                <li><cite></cite><a href="filelist.html" target="main">信息管理</a><i></i></li>
-                <li><cite></cite><a href="tab.html" target="main">Tab页</a><i></i></li>
-                <li><cite></cite><a href="error.html" target="main">404页面</a><i></i></li>
-            </ul>    
+                <?php
+                $parentId = intval($menu[++$i]["parent_id"]);
+                while($i<$menuC && $parentId!=0){
+                    $active = "";
+                    printf('<li class="%s"><cite></cite><a target="main" href="__APP__/%s/%s%s">%s</a><i></i></li>',$active,$menu[$i]["module_name"],$menu[$i]["action_name"],$menu[$i]["args"],$menu[$i]["menu_name"]);
+                    $parentId = intval($menu[++$i]["parent_id"]);
+                }
+                --$i;
+                ?>
+            </ul>
         </dd>
-        <dd>
-            <div class="title">
-                <span><img src="__DXPUBLIC__/uimaker/images/leftico02.png" /></span>其他设置
-            </div>
-            <ul class="menuson">
-                <li><cite></cite><a href="#">编辑内容</a><i></i></li>
-                <li><cite></cite><a href="#">发布信息</a><i></i></li>
-                <li><cite></cite><a href="#">档案列表显示</a><i></i></li>
-            </ul>
-        </dd> 
-        <dd><div class="title"><span><img src="__DXPUBLIC__/uimaker/images/leftico03.png" /></span>编辑器</div>
-            <ul class="menuson">
-                <li><cite></cite><a href="#">自定义</a><i></i></li>
-                <li><cite></cite><a href="#">常用资料</a><i></i></li>
-                <li><cite></cite><a href="#">信息列表</a><i></i></li>
-                <li><cite></cite><a href="#">其他</a><i></i></li>
-            </ul>    
-        </dd>  
-
-
-        <dd><div class="title"><span><img src="__DXPUBLIC__/uimaker/images/leftico04.png" /></span>日期管理</div>
-            <ul class="menuson">
-                <li><cite></cite><a href="#">自定义</a><i></i></li>
-                <li><cite></cite><a href="#">常用资料</a><i></i></li>
-                <li><cite></cite><a href="#">信息列表</a><i></i></li>
-                <li><cite></cite><a href="#">其他</a><i></i></li>
-            </ul>
-
-        </dd>   
+        <?php
+            }
+        }
+        ?>
 
     </dl>
     

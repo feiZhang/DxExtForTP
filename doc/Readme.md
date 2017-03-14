@@ -141,7 +141,7 @@ listFields属性详解：
     	文件上传的路径，在config中配置：UPLOAD_BASE_PATH 和 TEMP_FILE_PATH
         set的附加参数:valFormat=json,douhao   分别表示，以json 或 逗号(默认)隔开 存储多选数据,注意：如果存储为json，则无法对此字段进行数据检索
         date的附加参数:valFormat=yyyy-MM-dd HH:mm:ss  就是js插件WdatePicker的参数格式
-        canton的附加属性 fdn=>array("pkid_name"=>"canton_id")，即跟区域的Id，是否将选择的值赋值给pkid_name设定的input
+        canton的附加属性 fdn=>array("pkid_to_name"=>"canton_id")，即跟区域的Id，是否将选择的值赋值给pkid_to_name设定的input
         idcard类型，附加属性idcard：'birthday':'birthday','sex':'sex','id_reg_addr':'id_reg_addr',自动根据身份证填充生日、性别、户籍地
         selectselectselect类型,类似于canton，必须有默认值
 

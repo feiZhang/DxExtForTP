@@ -122,7 +122,7 @@ class DxFieldInput{
 
                     <input type="text" ng-hide="true" name="%1$s" id="%1$s" ng-model="dataInfo.%1$s" value="" class="dataOpeSearch likeRight" />
                     </span>'
-                    ,$fieldSet["name"],$inputAddr,empty($fieldSet["fdn"]["pkid_name"])?"":"dataInfo.".$fieldSet["fdn"]["pkid_name"]);
+                    ,$fieldSet["name"],$inputAddr,empty($fieldSet["fdn"]["pkid_to_name"])?"":"dataInfo.".$fieldSet["fdn"]["pkid_to_name"]);
                 break;
             case "dialogSelect":
                 /*
@@ -293,7 +293,7 @@ class DxFieldInput{
                 break;
             case "canton":
             case "selectselectselect":
-                $rootFdnId = $fieldSet["canton"]["rootCantonId"];
+                $rootFdnId = $fieldSet["fdn"]["rootCantonId"];
                 if(!empty($fieldSet["textTo"])){
                     if(!empty($fieldSet["texttoattr"])){
                         $inputAddr = sprintf(' textTo" textTo="%s" texttoattr="%s',$fieldSet['textTo'],$fieldSet["texttoattr"]);
@@ -312,15 +312,15 @@ class DxFieldInput{
                                         <script>
                                         $(function(){
                                             var tempSelectData = %5$s;
-                                            $.selectselectselect($("#%4$s"),tempSelectData,"%1$s","%2$s","1",function(t){
-                                                $("#%1$s").attr("key",$(t).find("option:selected").attr("key"));
+                                            $.selectselectselect($("#%4$s"),tempSelectData,"%1$s","%2$s","3520",function(t){
+                                                if($("#%6$s").length>0) $("#%6$s").val($(t).find("option:selected").attr("key"));
                                                 $("#%1$s").attr("short_name",$(t).find("option:selected").attr("short_name"));
                                                 $("#%1$s").attr("full_name",$(t).find("option:selected").attr("full_name"));
                                                 $("#%1$s").val($(t).val());
                                             },"",false,"");
                                         });
                                         </script>
-                                    ',$fieldSet["name"],$rootFdnId,$fieldSet["textTo"],$spanIdRandom,$tempSelectData);
+                                    ',$fieldSet["name"],$rootFdnId,$fieldSet["textTo"],$spanIdRandom,$tempSelectData,empty($fieldSet["fdn"]["pkid_to_name"])?"":$fieldSet["fdn"]["pkid_to_name"]);
                 break;
             case "string":
             case "text":

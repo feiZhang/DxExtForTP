@@ -25,13 +25,18 @@ class DxMenuModel extends  DxExtCommonModel{
         return $this->where(array("type"=>array('in',"menu,sub_menu"),$this->getPk()=>array('in',D("Role")->getMenuID())))->order("click_times desc,order_no asc")->select();
     }
     public function getAllMenu(){
-        $data	= $this->where(array("type"=>array('in',"hide_sub_menu,sub_menu,menu"),'menu_id'=>array('in',D("Role")->getMenuID())))->order("order_no asc")->select();
+        $data   = $this->where(array("type"=>array('in',"hide_sub_menu,sub_menu,menu"),'menu_id'=>array('in',D("Role")->getMenuID())))->order("order_no asc")->select();
+        //die($this->getLastSQL());
+        return $data;
+    }
+    public function getTopMenu(){
+        $data   = $this->where(array("type"=>array('in',"menu"),'menu_id'=>array('in',D("Role")->getMenuID())))->order("order_no asc")->select();
         //die($this->getLastSQL());
         return $data;
     }
     public function getMenu(){
-        $data	= $this->where(array("type"=>array('in',"menu"),'menu_id'=>array('in',D("Role")->getMenuID())))->order("order_no asc")->select();
-        //die($this->getLastSQL());
+        $data   = $this->where(array("type"=>array('in',"sub_menu,menu"),'menu_id'=>array('in',D("Role")->getMenuID())))->order("fdn asc")->select();
+        fb::log($this->getLastSQL());
         return $data;
     }
 
@@ -43,7 +48,7 @@ class DxMenuModel extends  DxExtCommonModel{
         return $data;
     }
     public function getRoleDeskTop(){
-        $data	= $this->where(array("is_desktop"=>"1",'menu_id'=>array('in',D("Role")->getMenuID())))->order("order_no asc")->select();
+        $data   = $this->where(array("is_desktop"=>"1",'menu_id'=>array('in',D("Role")->getMenuID())))->order("order_no asc")->select();
         return $data;
     }
     public function getMenuID( $ModuleName,$ActionName){
@@ -51,9 +56,8 @@ class DxMenuModel extends  DxExtCommonModel{
     }
     public function getChildrenMenu($parent_id){
         $my = $this->where(array("menu_id"=>$parent_id))->find();
-        $len        = 5*(6-intval($my["order_level"]));
-        $order_no   = intval($my["order_no"])>>$len;
-        $data   = $this->where(array("_string"=>"`order_no`>>".$len."=".$order_no." AND menu_id<>".$my["menu_id"],'menu_id'=>array('in',D("Role")->getMenuID()),'type'=>array('in','sub_menu,hide_sub_menu')))->order("order_no asc")->select();
+        $parendFdh      = $my["fdh"];
+        $data   = $this->where(array('fdn'=>array('like',$my["fdn"]."%"),'menu_id'=>array('in',D("Role")->getMenuID()),'type'=>array('in','menu')))->order("order_no asc")->select();
         return $data;
     }
     public function updateClickTimes($where){
